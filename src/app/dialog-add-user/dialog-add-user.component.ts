@@ -17,6 +17,7 @@ export class DialogAddUserComponent {
   constructor(private firestore: Firestore) {}
 
   saveUser() {
+    console.log('user', this. user);
     this.user.birthDate = this.birthDate.getTime();
     this.loading = true;
 
