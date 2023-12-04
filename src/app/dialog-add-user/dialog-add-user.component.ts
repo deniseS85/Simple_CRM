@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-
+import { User } from '../models/user.class';
+import { Firestore, addDoc } from '@angular/fire/firestore';
+import { collection } from 'firebase/firestore';
 
 @Component({
   selector: 'app-dialog-add-user',
@@ -7,5 +9,24 @@ import { Component } from '@angular/core';
   styleUrl: './dialog-add-user.component.scss'
 })
 export class DialogAddUserComponent {
+
+  user = new User();
+  birthDate!: Date;
+  loading = false;
+
+  constructor(private firestore: Firestore) {}
+
+  saveUser() {
+    this.user.birthDate = this.birthDate.getTime();
+    this.loading = true;
+
+    this.firestore
+   /*  .collection('users')
+    .add(this.user.toJson())
+    .then((result: any) {
+      console.log(result)
+    }); */
+
+  }
 
 }
