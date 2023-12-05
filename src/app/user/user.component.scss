@@ -1,37 +1,41 @@
 mat-card-content, mat-card-content:first-child, mat-card-content:last-child {
-    padding: 0;
+    padding: 10px 20px 20px 20px;
     background-color: rgb(3, 33, 56);
+    box-shadow: 1px 1px 20px 1px black;
     .user-table {
         width: 100%;
         border-collapse: collapse;
         tr {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
             cursor: pointer;
+            color: white;
+            opacity: 0.9;
             &:first-child {
                 cursor: default;
+                opacity: unset;
                 &:hover {
                     background-color: unset;
                 }
             }
-            &:last-child {
-                border-bottom: unset;
+            &:nth-child(even) {
+                background-color: rgb(12, 54, 89);
             }
             th {
                 font-size: 16px;
                 text-align: start;
-                height: 48px;
+                height: 60px;
+                color: rgb(5, 251, 251);
                 &:first-child {
-                    padding-left: 16px;
+                    padding-left: 20px;
                 }
             }
             td {
-                height: 48px;
+                height: 60px;
                 &:first-child {
-                    padding-left: 16px;
+                    padding-left: 20px;
                 }
             }
             &:hover {
-                background-color: rgba(255, 255, 255, 0.1);
+                background-color: rgb(1,103,175);;
             }
         }
     }
@@ -41,5 +45,5 @@ mat-card-content, mat-card-content:first-child, mat-card-content:last-child {
     position: absolute;
     right: 56px;
     bottom: 56px;
-    background-color: #6d5dd5;
+    background-color: rgb(1,103,175);
 }
