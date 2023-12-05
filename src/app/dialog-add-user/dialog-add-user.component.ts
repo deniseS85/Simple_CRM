@@ -19,7 +19,6 @@ export class DialogAddUserComponent {
   constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>) {}
 
    async saveUser() {
-      console.log('user', this. user);
       this.user.birthDate = this.birthDate.getTime();
       this.loading = true;
 
@@ -31,22 +30,10 @@ export class DialogAddUserComponent {
         this.loading = false; 
         this.dialogRef.close();
       })
-
-    
-  
-
-
-   /*  this.firestore */
-    /* .collection('user')
-    .add(this.user.toJson())
-    .then((result: any) {
-      console.log(result)
-    }); */
-
   }
 
-  getUserRef(){
-    return collection(this.firestore, 'users');
+  getUserRef() {
+      return collection(this.firestore, 'users');
   }
 
 }
