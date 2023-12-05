@@ -1,5 +1,6 @@
 mat-card-content, mat-card-content:first-child, mat-card-content:last-child {
     padding: 0;
+    background-color: rgb(3, 33, 56);
     .user-table {
         width: 100%;
         border-collapse: collapse;
@@ -40,4 +41,5 @@ mat-card-content, mat-card-content:first-child, mat-card-content:last-child {
     position: absolute;
     right: 56px;
     bottom: 56px;
+    background-color: #6d5dd5;
 }
