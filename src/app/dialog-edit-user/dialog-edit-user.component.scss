@@ -1,0 +1,24 @@
+.dialog-container {
+    position: relative;
+    h1 {
+        margin-bottom: 0;
+    }
+    .dialog-edit-content {
+        padding-top: 16px;
+    }
+    .input-field {
+        margin-top: 10px;
+        &:first-child {
+            margin-right: 16px;
+        }
+    }
+    .dialog-button {
+        padding: 16px;
+    }
+    .input-full-width {
+        width: 100%;
+    }
+    mat-label {
+        color: white;
+    }
+}

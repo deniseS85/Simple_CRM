@@ -3,6 +3,12 @@
     background-color: #29b3fa;
     display: flex;
     justify-content: flex-end;
+    position: relative;
+    .menu-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
     .user-info-content {
         display: flex;
         align-items: center;
@@ -23,4 +29,12 @@
 
 .user-subinfo-container {
     margin-top: 32px;
+    .user-subinfo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        mat-icon {
+            cursor: pointer;
+        }
+    }
 }

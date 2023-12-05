@@ -18,6 +18,7 @@ export class DialogAddUserComponent {
 
   constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>) {}
 
+  
    async saveUser() {
       this.user.birthDate = this.birthDate.getTime();
       this.loading = true;
