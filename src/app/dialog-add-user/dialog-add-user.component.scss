@@ -1,5 +1,6 @@
 .dialog-container {
     position: relative;
+    background-color: rgb(3, 33, 56);
     h1 {
         margin-bottom: 0;
     }
@@ -11,6 +12,9 @@
     }
     .dialog-button {
         padding: 16px;
+        button:hover {
+            background-color: rgb(1,103,175);
+        }
     }
     .input-full-width {
         width: 100%;
@@ -18,4 +22,14 @@
     mat-label {
         color: white;
     }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #ffffff;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px #23232329;
 }

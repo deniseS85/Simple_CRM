@@ -17,7 +17,6 @@ export class DialogAddUserComponent {
   firestore: Firestore = inject(Firestore);
 
   constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>) {}
-
   
    async saveUser() {
       this.user.birthDate = this.birthDate.getTime();
@@ -33,8 +32,8 @@ export class DialogAddUserComponent {
       })
   }
 
+
   getUserRef() {
       return collection(this.firestore, 'users');
   }
-
 }

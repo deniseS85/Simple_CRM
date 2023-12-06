@@ -8,11 +8,14 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
   title = 'simple-crm';
+  currentLink = '';
 
-  constructor(private router: Router) {
-  }
+  constructor(private router: Router) {}
 
   activeLink(routerLink: string) {
+      if (this.router.isActive(routerLink, true)) {
+          this.currentLink = routerLink.charAt(0).toUpperCase() + routerLink.slice(1);
+      }
       return this.router.isActive(routerLink, true);
   }
 }
