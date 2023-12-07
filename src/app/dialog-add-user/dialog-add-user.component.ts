@@ -15,6 +15,7 @@ export class DialogAddUserComponent {
   birthDate!: Date;
   loading = false;
   firestore: Firestore = inject(Firestore);
+  hideRequired="true";
 
   constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>) {}
   

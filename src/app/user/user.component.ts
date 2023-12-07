@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from '../models/user.class';
 import { Firestore } from '@angular/fire/firestore';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { UserTableService } from '../user-table.service';
 
 
 @Component({
@@ -14,18 +15,17 @@ import { collection, onSnapshot } from 'firebase/firestore';
 export class UserComponent {
   firestore: Firestore = inject(Firestore);
   user = new User();
-  userList: any = [];
   unsubList;
 
-  constructor(public dialog: MatDialog) {
-      this.unsubList = this.subUsersList();
+  constructor(public dialog: MatDialog, public userTableService: UserTableService) {
+        this.unsubList = this.subUsersList();
   }
 
-  subUsersList(){
+  subUsersList() {
       return onSnapshot(this.getUserRef(), (list) =>{
-          this.userList = [];
+          this.userTableService.userList = [];
           list.forEach(element => {
-              this.userList.push(this.setUserObject(element.data(), element.id));
+            this.userTableService.userList.push(this.setUserObject(element.data(), element.id));
           });
       })
   }
