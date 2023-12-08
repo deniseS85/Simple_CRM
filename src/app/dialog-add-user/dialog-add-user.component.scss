@@ -1,8 +1,19 @@
 .dialog-container {
     position: relative;
     background-color: rgb(3, 33, 56);
+    padding: 20px;
+    .add-user-content {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
     h1 {
         margin-bottom: 0;
+        font-size: 24px;
+        color: rgb(5, 251, 251);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 0 20px 0;
     }
     .input-field {
         margin-top: 10px;
@@ -12,8 +23,16 @@
     }
     .dialog-button {
         padding: 16px;
-        button:hover {
-            background-color: rgb(1,103,175);
+        display: flex;
+        justify-content: center;
+        button {
+            color: rgb(5, 251, 251);
+            &:disabled {
+                color: rgba(5, 251, 251, 0.6);
+            }
+            &:hover {
+                background-color: rgb(1,103,175);
+            }
         }
     }
     .input-full-width {

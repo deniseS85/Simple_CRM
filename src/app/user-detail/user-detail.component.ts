@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../models/user.class';
 import { Firestore } from '@angular/fire/firestore';
-import { collection, onSnapshot, doc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditUserComponent } from '../dialog-edit-user/dialog-edit-user.component';
 import { DialogEditAddressComponent } from '../dialog-edit-address/dialog-edit-address.component';
@@ -20,7 +20,7 @@ export class UserDetailComponent {
   userID: any;
   userList;
 
-  constructor(private route: ActivatedRoute, public dialog: MatDialog) {
+  constructor(private router: Router, private route: ActivatedRoute, public dialog: MatDialog) {
     this.userID = this.route.snapshot.paramMap.get('id');
     this.userList = this.getUserIDfromFirebase();
   }
@@ -38,6 +38,17 @@ export class UserDetailComponent {
           this.user = new User(element.data());
           this.user.id = this.userID;
       });
+  }
+
+  async deleteUser() {
+      await deleteDoc(this.getUserID()).catch(
+        (err) => { console.error(err); }
+      );
+      this.navigateToUserList();
+  }
+
+  navigateToUserList() {
+      this.router.navigate(['user']);
   }
 
   editUser() {

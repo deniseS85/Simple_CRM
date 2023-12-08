@@ -1,10 +1,19 @@
 .dialog-container {
     position: relative;
+    background-color: rgb(3,33,56);
+    padding: 20px;
     h1 {
         margin-bottom: 0;
+        font-size: 24px;
+        color: rgb(5, 251, 251);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 0 20px 0;
     }
     .dialog-edit-content {
-        padding-top: 16px;
+        padding-top: 5px;
+        padding-bottom: 5px;
     }
     .input-field {
         margin-top: 10px;
@@ -14,6 +23,11 @@
     }
     .dialog-button {
         padding: 16px;
+        display: flex;
+        justify-content: center;
+        button {
+            color: rgb(5, 251, 251);
+        }
     }
     .input-full-width {
         width: 100%;

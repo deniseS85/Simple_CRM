@@ -1,7 +1,7 @@
 <div class="dialog-container">
     <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 
-    <h1 mat-dialog-title>Edit User</h1>
+    <h1 mat-dialog-title>Edit User Info</h1>
     <div mat-dialog-content class="dialog-edit-content">
         <div>
             <mat-form-field class="input-field" appearance="outline">
@@ -15,16 +15,16 @@
         </div>
         <div>
             <mat-form-field class="input-full-width" appearance="outline">
-                <mat-label>Email</mat-label>
-                <input [disabled]="loading" [(ngModel)]="user.email" matInput placeholder="E-mail">
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field class="input-full-width" appearance="outline">
                 <mat-label>Birth Date</mat-label>
                 <input [disabled]="loading" [(ngModel)]="birthDate" matInput placeholder="Placeholder" [matDatepicker]="picker1">
                 <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                 <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field class="input-full-width" appearance="outline">
+                <mat-label>Email</mat-label>
+                <input [disabled]="loading" [(ngModel)]="user.email" matInput placeholder="E-mail">
             </mat-form-field>
         </div>
     </div>

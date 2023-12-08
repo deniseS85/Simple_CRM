@@ -1,33 +1,77 @@
 <mat-card class="user-info-container">
     <div class="menu-icon">
-        <button mat-icon-button [matMenuTriggerFor]="userMenu">
-            <mat-icon>more_vert</mat-icon>
+        <button mat-icon-button [matMenuTriggerFor]="deleteMenu">
+            <mat-icon>delete_forever</mat-icon>
         </button>
-        <mat-menu #userMenu="matMenu" xPosition="before">
-            <button (click)="editUser()" mat-menu-item>Edit</button>
+        <mat-menu #deleteMenu="matMenu" xPosition="before">
+            <button (click)="deleteUser()" mat-menu-item>Delete User</button>
         </mat-menu>
     </div>
     <mat-card-content class="user-info-content">
-        <img src="./assets/img/profile.png">
+        <img class="profile-img" src="./assets/img/profile.png">
         <div class="user-info">
             <h2>{{ user.firstName}} {{ user.lastName}}</h2>
-            {{ user.email}}
+            <a href="mailto:{{user.email}}">
+                <img class="mail-img" src="assets/img/mail.png" matTooltip='Send Mail to {{ user.firstName }}'>
+            </a>
         </div>
     </mat-card-content>
 </mat-card>
 
-<mat-card class="user-subinfo-container">
-    <mat-card-header class="user-subinfo-header">
-        <button mat-icon-button [matMenuTriggerFor]="adressMenu">
-            <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #adressMenu="matMenu" xPosition="before">
-            <button (click)="editAddress()" mat-menu-item>Edit</button>
-        </mat-menu>
-        <mat-card-title>Address</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        {{ user.street }}<br>
-        {{ user.postCode}} {{ user.city}}
-    </mat-card-content>
-</mat-card>
+<div class="user-info-wrapper">
+    <mat-card class="user-subinfo-container">
+        <mat-card-header class="user-subinfo-header">
+            <button mat-icon-button [matMenuTriggerFor]="userMenu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #userMenu="matMenu" xPosition="before">
+                <button (click)="editUser()" mat-menu-item>Edit</button>
+            </mat-menu>
+            <mat-card-title class="user-info-title">User Info</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="user-info-sub-content">
+            <p>
+                <span>Firstname: </span>
+                {{ user.firstName }}
+            </p>
+            <p>
+                <span>Lastname: </span>
+                {{ user.lastName }}
+            </p>
+            <p>
+                <span>Birthdate: </span>
+                {{ user.birthDate| date: 'dd.MM.yyyy' }}
+            </p>
+            <p>
+                <span>E-Mail: </span>
+                {{ user.email }}
+            </p>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card class="user-subinfo-container">
+        <mat-card-header class="user-subinfo-header">
+            <button mat-icon-button [matMenuTriggerFor]="adressMenu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #adressMenu="matMenu" xPosition="before">
+                <button (click)="editAddress()" mat-menu-item>Edit</button>
+            </mat-menu>
+            <mat-card-title class="user-info-title">Address</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="user-info-sub-content">
+            <p>
+                <span>Street: </span>
+                {{ user.street }}
+            </p>
+            <p>
+                <span>Postcode: </span>
+                {{ user.postCode}}
+            </p>
+            <p>
+                <span>City: </span>
+                {{ user.city}}
+            </p>
+        </mat-card-content>
+    </mat-card>
+</div>

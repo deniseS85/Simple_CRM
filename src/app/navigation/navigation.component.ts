@@ -12,7 +12,7 @@ export class NavigationComponent {
   currentLink = '';
   isUser = false;
   @ViewChild('inputValue') inputValue!: ElementRef;
-  
+
   constructor(private router: Router, public userTableService: UserTableService) {}
 
   activeLink(routerLink: string) {
@@ -37,16 +37,20 @@ export class NavigationComponent {
       
             if (firstname || lastname || city) {
                 filteredUserList.push(userTable[i]);
-                console.log(userTable[i]);
+                
+            } else {
+             /* kein filteredUserlist = userTable!!!!! */
             }
           }
-      } else {
-        console.log(inputValue.length >= 1);
+      } /* else {
+       
        
           filteredUserList = userTable;
          
-      }
+      } */
+
       this.userTableService.userList = filteredUserList;
+      
   }
 }
 
