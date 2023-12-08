@@ -1,19 +1,38 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { User } from '../models/user.class';
+import { Firestore } from '@angular/fire/firestore';
+import { Router, NavigationEnd } from '@angular/router';
 import { UserTableService } from '../user-table.service';
+
 
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.scss'
 })
-export class NavigationComponent {
+export class NavigationComponent implements OnInit {
+  firestore: Firestore = inject(Firestore);
+  user!: User;
+  userList: any;
+  loading =  false;
 
   currentLink = '';
+  currentUrl: string = '';
+  username: string = '';
   isUser = false;
+  isUserSelected = false;
   @ViewChild('inputValue') inputValue!: ElementRef;
 
-  constructor(private router: Router, public userTableService: UserTableService) {}
+  constructor(private router: Router, public userTableService: UserTableService) {
+    this.currentUrl = this.router.url;
+    this.getSubURL();
+    console.log(this.user);
+  }
+
+  ngOnInit(): void {
+    
+}
+
 
   activeLink(routerLink: string) {
       if (this.router.isActive(routerLink, true)) {
@@ -22,6 +41,35 @@ export class NavigationComponent {
       }
       return this.router.isActive(routerLink, true);
   }
+
+  getSubURL() {
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.currentUrl = event.url;
+          this.hasSubPage();
+          this.getUserFromId();
+        }
+      });
+  }
+
+  hasSubPage() {
+      if (this.currentUrl.split('/').length > 2) {
+          this.isUser = false;
+          this.isUserSelected = true;
+      } else {
+          this.isUserSelected = false;
+      }
+  }
+
+  getUserFromId() {
+      for (let i = 0; i < this.userTableService.userList.length; i++) {
+          const user = this.userTableService.userList[i];
+          if (this.currentUrl == "/user/" + user.id) {
+              this.username = user.firstName + ' ' + user.lastName;
+          }
+      }
+  }
+
 
 
   filterUser() {

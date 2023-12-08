@@ -14,7 +14,6 @@ import { DialogEditAddressComponent } from '../dialog-edit-address/dialog-edit-a
 })
  
 export class UserDetailComponent {
-
   firestore: Firestore = inject(Firestore);
   user = new User();
   userID: any;
@@ -51,7 +50,7 @@ export class UserDetailComponent {
       this.router.navigate(['user']);
   }
 
-  editUser() {
+  editUser() { 
       const dialog = this.dialog.open(DialogEditUserComponent);
       /* Kopie vom Objekt erstellen, damit es nicht gleich überschrieben wird, sondern erst beim speichern */
       dialog.componentInstance.user = new User(this.user.toJson()); 

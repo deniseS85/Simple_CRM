@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DateAdapter } from '@angular/material/core';
 
 
 @Component({
@@ -7,7 +8,11 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'simple-crm';
+  title = 'simple-crm'
+
+  constructor(public dateAdapter: DateAdapter<Date>) {
+      this.dateAdapter.setLocale('en-GB');
+  }
 }
 
 

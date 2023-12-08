@@ -6,10 +6,16 @@
   
         <ul class="menu-items">
             <li routerLink="/dashboard" [class.active]="activeLink('dashboard')">
-                <mat-icon>fact_check</mat-icon>Dashboard
+                <mat-icon>fact_check</mat-icon>
+                <span>Dashboard</span>
             </li>
             <li routerLink="/user" [class.active]="activeLink('user')">
-                <mat-icon>perm_identity</mat-icon>User
+                <mat-icon>perm_identity</mat-icon>
+                <span>User</span>
+            </li>
+            <li *ngIf="isUserSelected" class="active"> 
+                <mat-icon class="arrow-img">subdirectory_arrow_right</mat-icon>
+                <span class="selected-user-name">{{ username }}</span>
             </li>
         </ul>
      

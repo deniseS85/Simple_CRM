@@ -35,7 +35,7 @@
             <div>
                 <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
                     <mat-label>Street, Door Number</mat-label>
-                    <input [disabled]="loading" [(ngModel)]="user.street" type="text" name="street" matInput placeholder="Street, Door Number" pattern="^[a-zA-Z0-9\s\-,]*$" required>
+                    <input [disabled]="loading" [(ngModel)]="user.street" type="text" name="street" matInput placeholder="Street, Door Number" pattern="^[a-zA-ZÄÖÜäöüß0-9\s\-,]*$" required>
                 </mat-form-field>
             </div>
 

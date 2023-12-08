@@ -36,7 +36,7 @@ export class UserComponent {
         firstName: obj.firstName || "",
         lastName: obj.lastName || "",
         email: obj.email || "",
-        birthDate: obj.birthDate || "",
+        birthDate: obj.birthDate || 0,
         street: obj.street || "",
         postCode: obj.postCode || "",
         city: obj.city || ""
@@ -47,7 +47,7 @@ export class UserComponent {
       this.unsubList();
   }
 
-  getUserRef(){
+  getUserRef() {
       return collection(this.firestore, 'users');
   }
 
