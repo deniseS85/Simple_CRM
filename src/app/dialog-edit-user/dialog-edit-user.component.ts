@@ -22,6 +22,7 @@ export class DialogEditUserComponent implements OnInit {
 
   ngOnInit(): void {
       this.birthDate = new Date(this.user.birthDate);
+      console.log(this.user);
   }
 
   async saveUserChange() {

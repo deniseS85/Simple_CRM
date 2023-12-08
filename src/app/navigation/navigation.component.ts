@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { User } from '../models/user.class';
 import { Firestore } from '@angular/fire/firestore';
 import { Router, NavigationEnd } from '@angular/router';
@@ -10,11 +10,11 @@ import { UserTableService } from '../user-table.service';
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.scss'
 })
-export class NavigationComponent implements OnInit {
+export class NavigationComponent {
   firestore: Firestore = inject(Firestore);
   user!: User;
   userList: any;
-  loading =  false;
+  
 
   currentLink = '';
   currentUrl: string = '';
@@ -26,12 +26,7 @@ export class NavigationComponent implements OnInit {
   constructor(private router: Router, public userTableService: UserTableService) {
     this.currentUrl = this.router.url;
     this.getSubURL();
-    console.log(this.user);
   }
-
-  ngOnInit(): void {
-    
-}
 
 
   activeLink(routerLink: string) {
