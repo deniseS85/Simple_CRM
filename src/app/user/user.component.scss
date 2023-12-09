@@ -49,3 +49,25 @@ mat-card-content, mat-card-content:first-child, mat-card-content:last-child {
     bottom: 56px;
     background-color: rgb(1,103,175);
 }
+
+.search-container {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 13px;
+    right: 21px;
+    .input-search {
+        padding: 5px;
+        border: 1px transparent;
+        border-radius: 5px;
+        box-shadow: 0 0 16px -2px #0000007a;
+    }
+    .search-btn {
+        background-color: transparent;
+        border: none;
+        img {
+            height: 25px;
+            cursor: pointer;
+        }
+    }
+}

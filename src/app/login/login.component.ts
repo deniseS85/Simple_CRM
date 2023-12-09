@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { getAuth, signInAnonymously, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { Auth, signInAnonymously, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
 
 
 @Component({
@@ -17,15 +17,12 @@ export class LoginComponent {
   hideRequired ="true";
   signupForm!: FormGroup;
   loginForm!: FormGroup;
-  auth = getAuth();
   userNotFound: boolean = false;
 
-  constructor(private router: Router, private formBuilder: FormBuilder) {
-    this.setSignUpForm();
-    this.setLoginForm();
-    this.auth;
+  constructor(private router: Router, private formBuilder: FormBuilder, private auth: Auth) {
+      this.setSignUpForm();
+      this.setLoginForm();
   }
-
 
   /**
    * Benuter wird als Gast angemeldet

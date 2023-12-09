@@ -72,24 +72,6 @@
                 width: 30px;
             }
         }
-        .search-container {
-            display: flex;
-            align-items: center;
-            .input-search {
-                padding: 5px;
-                border: 1px transparent;
-                border-radius: 5px;
-                box-shadow: 0 0 16px -2px #0000007a;
-            }
-            .search-btn {
-                background-color: transparent;
-                border: none;
-                img {
-                    height: 25px;
-                    cursor: pointer;
-                }
-            }
-        }
         
     }
     .router-container {

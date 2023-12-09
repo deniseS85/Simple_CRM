@@ -7,7 +7,7 @@
                 <th>Email</th>
                 <th>City</th>
             </tr>
-            <tr *ngFor="let user of userTableService.userList" [routerLink]="['/user/' + user.id]">
+            <tr *ngFor="let user of filteredUser; let i = index" [routerLink]="['/user/' + user.id]">
                 <td>{{ user.firstName }}</td>
                 <td>{{ user.lastName }}</td>
                 <td>{{ user.email}}</td>
@@ -20,3 +20,11 @@
 <button (click)="openDialog()" class="add-user-button" mat-fab color="primary" matTooltip="Add user" [matTooltipPosition]="'above'">
     <mat-icon>add</mat-icon>
 </button>
+
+<div class="search-container">
+    <input class="input-search" placeholder="Search" type="text" [(ngModel)]="inputValue"
+    (ngModelChange)="filterUser()">
+    <button (click)="filterUser()" class="search-btn">
+        <img src="./assets/img/search.png">
+    </button>
+</div>
