@@ -67,7 +67,6 @@ export class UserComponent {
       }
   }
 
-
   compareInputUser(item: any) {
       return item.firstName.toLowerCase().substring(0, this.inputValue.length) == this.inputValue.toLowerCase() ||
         item.lastName.toLowerCase().substring(0, this.inputValue.length) == this.inputValue.toLowerCase() ||

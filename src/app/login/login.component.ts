@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Auth, signInAnonymously, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
+import { Auth, signInAnonymously, signInWithEmailAndPassword } from '@angular/fire/auth';
 
 
 @Component({

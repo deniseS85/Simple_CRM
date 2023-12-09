@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { collection, doc, onSnapshot } from '@angular/fire/firestore';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { Firestore } from '@angular/fire/firestore';
+import { User } from '../models/user.class';
+import { Auth, signOut } from '@angular/fire/auth';
 
 
 @Component({
@@ -9,17 +13,22 @@ import { filter } from 'rxjs/operators';
   styleUrl: './navigation.component.scss'
 })
 export class NavigationComponent implements OnInit {
+  firestore: Firestore = inject(Firestore);
+  user = new User();
   showNavbar: boolean = true;
   currentLink = '';
   currentUrl: string = '';
   isUser = false;
   isUserSelected = false;
-   
 
-  constructor(private router: Router) {
+ 
+  
+   
+  constructor(private router: Router, private auth: Auth) {
     this.currentUrl = this.router.url;
     this.getSubURL();
   }
+ 
 
   ngOnInit() {
     this.router.events.pipe(
@@ -33,7 +42,8 @@ export class NavigationComponent implements OnInit {
                 document.getElementById('drawer')?.classList.add('d-none');
                 document.getElementById('menu')?.classList.add('d-none');
             }
-    });
+    }); 
+    
   }
 
   activeLink(routerLink: string) {
@@ -49,9 +59,10 @@ export class NavigationComponent implements OnInit {
         if (event instanceof NavigationEnd) {
           this.currentUrl = event.url;
           this.hasSubPage();
-        }
+        } 
       });
   }
+
 
   hasSubPage() {
       if (this.currentUrl.split('/').length > 2) {
@@ -61,5 +72,11 @@ export class NavigationComponent implements OnInit {
           this.isUserSelected = false;
       }
   }
+
+  logout() {
+      signOut(this.auth);
+        this.router.navigate(['/']);
+  } 
+
 }
 
