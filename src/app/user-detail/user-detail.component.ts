@@ -54,7 +54,6 @@ export class UserDetailComponent {
       const dialog = this.dialog.open(DialogEditUserComponent);
       /* Kopie vom Objekt erstellen, damit es nicht gleich überschrieben wird, sondern erst beim speichern */
       dialog.componentInstance.user = new User(this.user.toJson()); 
-      
   }
 
   editAddress() {

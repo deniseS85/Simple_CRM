@@ -1,0 +1,69 @@
+<div class="login-bg">
+    <mat-card class="login-container">
+        <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+        <img class="logo" src="assets/img/logo.png">
+        <h1 class="login-title">{{ isSignUp ? 'Sign up' : 'Log in' }}</h1>
+        
+        <form (ngSubmit)="isSignUp ? signUpUser() : signIn()" [formGroup]="getForm()" *ngIf="!isLogin">
+            <mat-icon (click)="navigateToLogInSelection()" class="arrow-back" matTooltip="Got to Log In">arrow_back_ios</mat-icon>
+        
+            <div class="form-group">
+                <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound">
+                    <mat-label>Email</mat-label>
+                    <input [disabled]="loading" type="email" matInput placeholder="Email" id="email" formControlName="email" required autocomplete="username">
+                </mat-form-field>
+
+                <div class="input-feedback"
+                    *ngIf="getForm().get('email')?.hasError('required') && getForm().get('email')?.touched">
+                    Email is required.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <mat-form-field class="input-full-width"  appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound">
+                    <mat-label>Password</mat-label>
+                    <input [disabled]="loading" type="password" matInput placeholder="Password" id="password" formControlName="password" required autocomplete="current-password">
+                </mat-form-field>
+
+                <div class="input-feedback" id="passwordFeedback"
+                    *ngIf="getForm().get('password')?.hasError('pattern') && getForm().get('password')?.touched">
+                    Password must contain at least one uppercase letter, one digit, and one special character.
+                </div>
+            </div>
+
+            <div class="form-group" *ngIf="isSignUp">
+                <mat-form-field class="input-full-width"  appearance="outline" [hideRequiredMarker]="hideRequired">
+                    <mat-label>Confirm Password</mat-label>
+                    <input [disabled]="loading" type="password" matInput placeholder="Confirm Password" id="confirmPassword" formControlName="confirmPassword" required autocomplete="new-password">
+                </mat-form-field>
+
+                <div class="input-feedback"
+                    *ngIf="getForm().hasError('passwordMismatch') && getForm().get('confirmPassword')?.touched">
+                    Passwords do not match.
+                </div>
+            </div>
+            
+            <button type="submit" [ngClass]="{ 'disabled-button': getForm().invalid }" [disabled]="getForm().invalid">{{ isSignUp ? 'Sign up' : 'Log in' }}</button>
+        </form>
+
+        <div class="button-container" *ngIf="isLogin">
+            <button (click)="isLogin = false">
+                <mat-icon>email</mat-icon>
+                Email/Password
+            </button>
+            <button (click)="signInAnonymously()">
+                <mat-icon>login</mat-icon>
+                Guest Login
+            </button>
+        </div>
+
+        <div class="sign-up-link" *ngIf="!isSignUp">New here
+            <a (click)="addNewUser()">Sign up</a>
+        </div>
+
+        <div class="sign-up-link" *ngIf="isSignUp">Already have an account? 
+            <a (click)="alreadyUser()">Log in</a>
+        </div>
+       
+    </mat-card>
+</div>

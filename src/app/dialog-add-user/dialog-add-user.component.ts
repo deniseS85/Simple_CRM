@@ -15,7 +15,7 @@ export class DialogAddUserComponent {
   birthDate!: Date;
   loading = false;
   firestore: Firestore = inject(Firestore);
-  hideRequired="true";
+  hideRequired ="true";
 
   constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>) {}
   
@@ -32,7 +32,6 @@ export class DialogAddUserComponent {
         this.dialogRef.close();
       })
   }
-
 
   getUserRef() {
       return collection(this.firestore, 'users');

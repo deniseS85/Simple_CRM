@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { User } from '../models/user.class';
 import { Firestore } from '@angular/fire/firestore';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserTableService } from '../user-table.service';
+import { filter } from 'rxjs/operators';
 
 
 @Component({
@@ -10,22 +11,38 @@ import { UserTableService } from '../user-table.service';
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.scss'
 })
-export class NavigationComponent {
+export class NavigationComponent implements OnInit {
   firestore: Firestore = inject(Firestore);
   user!: User;
-  userList: any;
   
 
+  showNavbar: boolean = true;
   currentLink = '';
   currentUrl: string = '';
   username: string = '';
   isUser = false;
   isUserSelected = false;
   @ViewChild('inputValue') inputValue!: ElementRef;
+   
 
   constructor(private router: Router, public userTableService: UserTableService) {
     this.currentUrl = this.router.url;
     this.getSubURL();
+  }
+
+  ngOnInit() {
+    this.router.events.pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+        this.showNavbar = event.url !== '/';
+            if (this.showNavbar) {
+                document.getElementById('drawer')?.classList.remove('d-none');
+                document.getElementById('menu')?.classList.remove('d-none');
+            } else {
+                document.getElementById('drawer')?.classList.add('d-none');
+                document.getElementById('menu')?.classList.add('d-none');
+            }
+    });
   }
 
 
@@ -61,7 +78,7 @@ export class NavigationComponent {
           const user = this.userTableService.userList[i];
           if (this.currentUrl == "/user/" + user.id) {
               this.username = user.firstName + ' ' + user.lastName;
-          }
+          } 
       }
   }
 

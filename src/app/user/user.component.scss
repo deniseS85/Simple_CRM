@@ -9,6 +9,7 @@ mat-card-content, mat-card-content:first-child, mat-card-content:last-child {
             cursor: pointer;
             color: white;
             opacity: 0.9;
+            transition: all 125ms ease-in-out;
             &:first-child {
                 cursor: default;
                 opacity: unset;
@@ -35,7 +36,8 @@ mat-card-content, mat-card-content:first-child, mat-card-content:last-child {
                 }
             }
             &:hover {
-                background-color: rgb(1,103,175);;
+                background-color: rgb(1,103,175);
+                transition: all 125ms ease-in-out;
             }
         }
     }

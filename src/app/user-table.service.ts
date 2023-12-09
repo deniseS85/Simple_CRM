@@ -7,5 +7,6 @@ export class UserTableService {
 
   userList: any = [];
 
-  constructor() { }
+  constructor() { 
+  }
 }

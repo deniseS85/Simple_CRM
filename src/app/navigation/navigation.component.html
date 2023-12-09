@@ -1,5 +1,5 @@
 <mat-drawer-container class="mat-drawer-container" autosize>
-    <mat-drawer #drawer class="sidenav" [opened]="true" mode="side">
+    <mat-drawer #drawer class="sidenav d-none" [opened]="true" mode="side" id="drawer" >
         <div class="logo-container">
             <img src="./assets/img/logo.png">
         </div>
@@ -21,7 +21,7 @@
      
     </mat-drawer>
   
-    <div class="example-sidenav-content">
+    <div class="example-sidenav-content d-none" id="menu">
         <mat-toolbar>
               <mat-toolbar-row>
                   <div class="menu-left">
@@ -36,9 +36,10 @@
                   </div>
               </mat-toolbar-row>
         </mat-toolbar>
-        <div class="router-container">
-            <router-outlet></router-outlet>
-        </div>
+    </div>
+
+    <div class="router-container">
+        <router-outlet></router-outlet>
     </div>
   
   </mat-drawer-container>
