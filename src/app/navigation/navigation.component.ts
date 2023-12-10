@@ -4,7 +4,8 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Firestore } from '@angular/fire/firestore';
 import { User } from '../models/user.class';
-import { Auth, signOut } from '@angular/fire/auth';
+import { signOut } from '@angular/fire/auth';
+import { AuthService } from '../auth.service';
 
 
 @Component({
@@ -24,7 +25,7 @@ export class NavigationComponent implements OnInit {
  
   
    
-  constructor(private router: Router, private auth: Auth) {
+  constructor(private router: Router, private authService: AuthService) {
     this.currentUrl = this.router.url;
     this.getSubURL();
   }
@@ -74,9 +75,14 @@ export class NavigationComponent implements OnInit {
   }
 
   logout() {
-      signOut(this.auth);
-        this.router.navigate(['/']);
+      signOut(this.authService.auth)
+      .then(() => {
+          this.router.navigate(['/']);
+      })
+      .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+      });  
   } 
-
 }
 

@@ -8,9 +8,9 @@
             <mat-icon (click)="navigateToLogInSelection()" class="arrow-back" matTooltip="Got to Log In">arrow_back_ios</mat-icon>
         
             <div class="form-group">
-                <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound">
+                <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound && redirectUser">
                     <mat-label>Email</mat-label>
-                    <input [disabled]="loading" type="email" matInput placeholder="Email" id="email" formControlName="email" required autocomplete="username">
+                    <input [disabled]="loading" type="email" matInput placeholder="Email" id="email" formControlName="email" required ngModel>
                 </mat-form-field>
 
                 <div class="input-feedback"
@@ -20,9 +20,9 @@
             </div>
 
             <div class="form-group">
-                <mat-form-field class="input-full-width"  appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound">
+                <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound && redirectUser">
                     <mat-label>Password</mat-label>
-                    <input [disabled]="loading" type="password" matInput placeholder="Password" id="password" formControlName="password" required autocomplete="current-password">
+                    <input [disabled]="loading" type="password" matInput placeholder="Password" id="password" formControlName="password" required ngModel>
                 </mat-form-field>
 
                 <div class="input-feedback" id="passwordFeedback"
@@ -34,7 +34,7 @@
             <div class="form-group" *ngIf="isSignUp">
                 <mat-form-field class="input-full-width"  appearance="outline" [hideRequiredMarker]="hideRequired">
                     <mat-label>Confirm Password</mat-label>
-                    <input [disabled]="loading" type="password" matInput placeholder="Confirm Password" id="confirmPassword" formControlName="confirmPassword" required autocomplete="new-password">
+                    <input [disabled]="loading" type="password" matInput placeholder="Confirm Password" id="confirmPassword" formControlName="confirmPassword" required ngModel>
                 </mat-form-field>
 
                 <div class="input-feedback"
@@ -44,6 +44,17 @@
             </div>
             
             <button type="submit" [ngClass]="{ 'disabled-button': getForm().invalid }" [disabled]="getForm().invalid">{{ isSignUp ? 'Sign up' : 'Log in' }}</button>
+
+            <div class="alert-bg" *ngIf="userNotFound">
+                <mat-card class="alert-container">
+                    <mat-icon class="error-img">error</mat-icon>
+                    <span class="info-text">{{ isSignUp ? 'You are already registered' : 'You are not yet registered.' }}</span>
+                    <span class="link-text">Go to
+                        <span (click)="isSignUp ? alreadyUser(): addNewUser()" class="link">{{ isSignUp ? 'Log in' : 'Sign up' }}</span>
+                    </span>
+                </mat-card>
+                
+            </div>
         </form>
 
         <div class="button-container" *ngIf="isLogin">
@@ -64,6 +75,8 @@
         <div class="sign-up-link" *ngIf="isSignUp">Already have an account? 
             <a (click)="alreadyUser()">Log in</a>
         </div>
-       
     </mat-card>
 </div>
+
+
+

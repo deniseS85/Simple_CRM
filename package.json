@@ -10,6 +10,7 @@
   },
   "private": true,
   "dependencies": {
+    "-": "^0.0.1",
     "@angular/animations": "^17.0.0",
     "@angular/cdk": "^17.0.2",
     "@angular/common": "^17.0.0",
@@ -23,6 +24,7 @@
     "@angular/router": "^17.0.0",
     "blip-ds": "^1.270.2",
     "esbuild": "^0.19.8",
+    "firebase-tools": "^12.9.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
