@@ -10,7 +10,7 @@
             <div class="form-group">
                 <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound && redirectUser">
                     <mat-label>Email</mat-label>
-                    <input [disabled]="loading" type="email" matInput placeholder="Email" id="email" formControlName="email" required ngModel>
+                    <input [disabled]="loading" type="email" matInput placeholder="Email" id="email" formControlName="email" required>
                 </mat-form-field>
 
                 <div class="input-feedback"
@@ -20,9 +20,9 @@
             </div>
 
             <div class="form-group">
-                <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound && redirectUser">
+                <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired" [class.mat-form-field-invalid]="userNotFound">
                     <mat-label>Password</mat-label>
-                    <input [disabled]="loading" type="password" matInput placeholder="Password" id="password" formControlName="password" required ngModel>
+                    <input [disabled]="loading" type="password" matInput placeholder="Password" id="password" formControlName="password" required>
                 </mat-form-field>
 
                 <div class="input-feedback" id="passwordFeedback"
@@ -34,7 +34,7 @@
             <div class="form-group" *ngIf="isSignUp">
                 <mat-form-field class="input-full-width"  appearance="outline" [hideRequiredMarker]="hideRequired">
                     <mat-label>Confirm Password</mat-label>
-                    <input [disabled]="loading" type="password" matInput placeholder="Confirm Password" id="confirmPassword" formControlName="confirmPassword" required ngModel>
+                    <input [disabled]="loading" type="password" matInput placeholder="Confirm Password" id="confirmPassword" formControlName="confirmPassword" required>
                 </mat-form-field>
 
                 <div class="input-feedback"

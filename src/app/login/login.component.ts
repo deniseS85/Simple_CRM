@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormGroupDirective } from '@angular/forms';
 import { signInAnonymously, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { createUserWithEmailAndPassword } from '@firebase/auth';
 import { AuthService } from '../auth.service';
@@ -20,13 +20,13 @@ export class LoginComponent {
   signupForm!: FormGroup;
   loginForm!: FormGroup;
   userNotFound: boolean = false;
+  @ViewChild(FormGroupDirective, {static: false}) formGroupDirective!: FormGroupDirective;
 
 
   constructor(private router: Router, private formBuilder: FormBuilder, private authService: AuthService) {
-      this.setSignUpForm();
-      this.setLoginForm();
+       this.setSignUpForm();
+       this.setLoginForm();
   }
-
 
 
   /**
@@ -101,10 +101,7 @@ export class LoginComponent {
       this.isSignUp = false;
       this.loading = false;
       this.userNotFound = false;
-     
-      
-
-
+      this.formGroupDirective.resetForm();
   }
 
   /**
@@ -116,9 +113,7 @@ export class LoginComponent {
     this.isLogin = false;
     this.loading = false;
     this.userNotFound = false;
-    
-    
-
+    this.formGroupDirective.resetForm();
 }
 
 
