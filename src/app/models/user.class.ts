@@ -31,4 +31,17 @@ export class User {
             city: this.city
         };
     }
+
+    setUserObject(obj:any, id:string) {
+        return new User({
+            id: id || "",
+            firstName: obj.firstName || "",
+            lastName: obj.lastName || "",
+            email: obj.email || "",
+            birthDate: obj.birthDate || 0,
+            street: obj.street || "",
+            postCode: obj.postCode || "",
+            city: obj.city || ""
+        });
+    } 
 }

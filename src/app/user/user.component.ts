@@ -13,7 +13,6 @@ import { collection, onSnapshot } from 'firebase/firestore';
 })
 export class UserComponent {
   firestore: Firestore = inject(Firestore);
-  user = new User();
   unsubList;
   isUser = false;
   userList:any = [];
@@ -28,23 +27,10 @@ export class UserComponent {
       return onSnapshot(this.getUserRef(), (list) =>{
           this.userList = [];
           list.forEach(element => {
-            this.userList.push(this.setUserObject(element.data(), element.id));
+            this.userList.push(new User().setUserObject(element.data(), element.id));
             this.filteredUser = this.userList;
           });
       }) 
-  }
-
-  setUserObject(obj:any, id:string) {
-      return {
-        id: id || "",
-        firstName: obj.firstName || "",
-        lastName: obj.lastName || "",
-        email: obj.email || "",
-        birthDate: obj.birthDate || 0,
-        street: obj.street || "",
-        postCode: obj.postCode || "",
-        city: obj.city || ""
-      }
   }
 
   ngOnDestroy(){

@@ -41,7 +41,7 @@ export class UserDetailComponent {
 
   async deleteUser() {
       await deleteDoc(this.getUserID()).catch(
-        (err) => { console.error(err); }
+          (err) => { console.error(err); }
       );
       this.navigateToUserList();
   }
