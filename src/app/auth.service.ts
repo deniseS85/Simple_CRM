@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, inject  } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { Auth, User, authState, idToken, user } from '@angular/fire/auth';
 import { Subscription } from 'rxjs';
 

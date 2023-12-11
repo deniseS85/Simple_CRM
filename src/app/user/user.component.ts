@@ -19,6 +19,7 @@ export class UserComponent {
   @Input() inputValue!: string;
   filteredUser!: any[];
   
+  
   constructor(public dialog: MatDialog) {
         this.unsubList = this.subUsersList();
   }
@@ -46,6 +47,7 @@ export class UserComponent {
   }
 
   filterUser() {
+    console.log(this.userList);
       if (this.inputValue) {
           this.filteredUser = this.userList.filter((item: any) => this.compareInputUser(item));
       } else {

@@ -1,0 +1,53 @@
+<div class="dialog-container">
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+    <h1 mat-dialog-title>Add Animal</h1>
+    <form #addAnimalForm="ngForm">
+        <div mat-dialog-content class="add-user-content">
+            <div>
+                <mat-form-field class="input-field" appearance="outline" [hideRequiredMarker]="hideRequired">
+                    <mat-label>Name</mat-label>
+                    <input [disabled]="loading" type="text" matInput placeholder="Name" pattern="[a-zA-Z ]*" required>
+                </mat-form-field>
+
+                <mat-form-field class="input-field" appearance="outline" [hideRequiredMarker]="hideRequired">
+                    <mat-select [disabled]="loading" required id="select" name="select" placeholder="Select the Species">
+                      @for (animal of animals; track animal) {
+                        <mat-option class="select-field" [value]="animal.value">{{animal.viewValue}}</mat-option>
+                      }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div>
+                <section class="gender-selection">
+                    <label class="example-margin">Gender:</label>
+                    <mat-radio-group [disabled]="loading" class="radio-group" [(ngModel)]="labelPosition" [ngModelOptions]="{standalone: true}" required> 
+                        <mat-radio-button value="1">Female</mat-radio-button>
+                        <mat-radio-button value="2">Male</mat-radio-button>
+                    </mat-radio-group>
+                  </section>
+            </div>
+
+            <div>
+                <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
+                    <mat-label>Birth Date</mat-label>
+                    <input [disabled]="loading"  name="birthdate" matInput placeholder="Birth Date" [matDatepicker]="picker1" required>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+            </div>
+
+            <div>
+                <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
+                    <mat-label>Microchip-ID</mat-label>
+                    <input [disabled]="loading" type="number" name="microchipID" matInput placeholder="Microchip-ID" required>
+                </mat-form-field>
+            </div>
+        </div>
+        <div mat-dialog-actions class="dialog-button">
+            <button [disabled]="loading" mat-dialog-close mat-button>Cancel</button>
+            <button [disabled]="loading || addAnimalForm.invalid" (click)="saveAnimal()" mat-button>Save</button>
+        </div>
+    </form>
+</div>

@@ -7,7 +7,7 @@
                 <th>Email</th>
                 <th>District</th>
             </tr>
-            <tr *ngFor="let user of filteredUser; let i = index" [routerLink]="['/user/' + user.id]">
+            <tr *ngFor="let user of filteredUser; let i = index" [routerLink]="['/patients/' + user.id]">
                 <td>{{ user.firstName }}</td>
                 <td>{{ user.lastName }}</td>
                 <td>{{ user.email}}</td>

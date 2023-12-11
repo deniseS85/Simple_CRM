@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { collection, onSnapshot } from '@angular/fire/firestore';
@@ -18,13 +18,12 @@ export class NavigationComponent implements OnInit {
     showNavbar: boolean = true;
     currentLink = '';
     currentUrl: string = '';
-    isUser = false;
     userList:any = [];
     userName: string = '';
     currentUserId: string = '';
     unsubList;
 
-    constructor(private router: Router, private authService: AuthService, private route: ActivatedRoute) {
+    constructor(private router: Router, private authService: AuthService) {
         this.currentUrl = this.router.url;
         this.unsubList = this.subUsersList();
         this.getSubURL();
@@ -61,12 +60,15 @@ export class NavigationComponent implements OnInit {
      * @returns 
      */
     activeLink(routerLink: string) {
+        const hasSubURL = routerLink.split('/').length > 1;
+    
         if (this.router.isActive(routerLink, true)) {
-            this.currentLink = routerLink.charAt(0).toUpperCase() + routerLink.slice(1);
-            this.isUser = this.currentLink == 'User' ? true : false;
+            this.currentLink = hasSubURL ? 'Patient File' : routerLink.charAt(0).toUpperCase() + routerLink.slice(1);
         }
         return this.router.isActive(routerLink, true);
     }
+
+
 
     /**
      * ermittelt die Url, wenn die Navigation abgeschlossen ist
@@ -108,16 +110,15 @@ export class NavigationComponent implements OnInit {
         let userFound = false;
 
         this.userList.forEach((user:any) => {
-            if (this.currentUrl == "/user/" + user.id) {
+            if (this.currentUrl == "/patients/" + user.id) {
                 this.currentUserId = user.id;
                 this.userName = user.firstName + ' ' + user.lastName;
                 userFound = true;
                 this.saveUserNameinLocalStorage();
+            } else if (!userFound) {
+                localStorage.removeItem('userName');
             }
         });
-        if (!userFound) {
-            localStorage.removeItem('userName');
-          }
     }
 
     /**

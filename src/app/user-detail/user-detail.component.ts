@@ -6,6 +6,7 @@ import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditUserComponent } from '../dialog-edit-user/dialog-edit-user.component';
 import { DialogEditAddressComponent } from '../dialog-edit-address/dialog-edit-address.component';
+import { DialogAddAnimalComponent } from '../dialog-add-animal/dialog-add-animal.component';
 
 @Component({
   selector: 'app-user-detail',
@@ -59,5 +60,9 @@ export class UserDetailComponent {
   editAddress() {
       const dialog = this.dialog.open(DialogEditAddressComponent);
       dialog.componentInstance.user = new User(this.user.toJson());
+  }
+
+  addAnimal() {
+    const dialog = this.dialog.open(DialogAddAnimalComponent);
   }
 }

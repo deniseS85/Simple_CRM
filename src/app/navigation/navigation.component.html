@@ -6,16 +6,24 @@
   
         <ul class="menu-items">
             <li routerLink="/dashboard" [class.active]="activeLink('dashboard')">
-                <mat-icon>fact_check</mat-icon>
+                <mat-icon>space_dashboard</mat-icon>
                 <span>Dashboard</span>
             </li>
-            <li routerLink="/user" [class.active]="activeLink('user')">
+            <li routerLink="/patients" [class.active]="activeLink('patients')">
                 <mat-icon>perm_identity</mat-icon>
-                <span>User</span>
+                <span>Patients</span>
             </li> 
-            <li *ngIf="currentUserId && activeLink('user/' + currentUserId) || currentUrl.includes('user/')" [ngClass]="{'active': activeLink('user/' + currentUserId) || currentUrl.includes('user/')}"> 
+            <li *ngIf="currentUserId && activeLink('patients/' + currentUserId) || currentUrl.includes('patients/')" [ngClass]="{'active': activeLink('patients/' + currentUserId) || currentUrl.includes('patients/')}"> 
                 <mat-icon class="arrow-img">subdirectory_arrow_right</mat-icon>
-                <span class="selected-user-name">{{ userName }}</span>
+                <span id="userName" class="selected-user-name">{{ userName }}</span>
+            </li>
+            <li routerLink="/workflow" [class.active]="activeLink('workflow')">
+                <mat-icon>view_kanban</mat-icon>
+                <span>Workflow</span>
+            </li>
+            <li routerLink="/calendar" [class.active]="activeLink('calendar')">
+                <mat-icon>calendar_month</mat-icon>
+                <span>Calendar</span>
             </li>
         </ul>
      

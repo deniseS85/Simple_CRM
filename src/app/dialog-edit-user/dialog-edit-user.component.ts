@@ -17,13 +17,13 @@ export class DialogEditUserComponent implements OnInit {
   loading =  false;
   user!: User;
   birthDate: any;
+  
 
   constructor(public dialogRef: MatDialogRef<DialogEditUserComponent>) {}
 
   ngOnInit(): void {
       this.birthDate = new Date(this.user.birthDate);
   }
-
   async saveUserChange() {
       this.loading = true;
       await updateDoc(this.getUserID(), this.user.toJson()).then(() => {

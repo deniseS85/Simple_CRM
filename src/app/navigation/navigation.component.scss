@@ -4,17 +4,18 @@
     .sidenav {
         width: 300px;
         background-color: rgb(3, 33, 56);
-        box-shadow: 3px 121px 20px 3px black;
         border-right: none;
+        box-shadow: 0 0 10px rgb(1,103,175);
         .logo-container {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-            min-height: 57px;
+            box-shadow: 0 0 10px rgb(1,103,175);
             display: flex;
             align-items: center;
             justify-content: center;
+            height: 113px;
+            padding-top: 15px;
+            box-sizing: border-box;
             img {
-                height: 113px;
-                object-fit: contain;
+                height: 135px;
             }
         }
         .menu-items {
