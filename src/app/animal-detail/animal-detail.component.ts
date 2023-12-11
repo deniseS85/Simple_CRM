@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogAddAnimalComponent } from '../dialog-add-animal/dialog-add-animal.component';
+
 
 @Component({
   selector: 'app-animal-detail',
@@ -7,4 +10,9 @@ import { Component } from '@angular/core';
 })
 export class AnimalDetailComponent {
 
+  constructor(public dialog: MatDialog) {}
+
+  addAnimal() {
+    const dialog = this.dialog.open(DialogAddAnimalComponent);
+  }
 }

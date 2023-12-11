@@ -6,14 +6,20 @@ import { UserDetailComponent } from './user-detail/user-detail.component';
 import { LoginComponent } from './login/login.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { WorkflowComponent } from './workflow/workflow.component';
+import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
 
 const routes: Routes = [
     { path: '', component: LoginComponent },
     { path: 'dashboard', component: DashboardComponent },
     { path: 'patients', component: UserComponent },
-    { path: 'patients/:id', component: UserDetailComponent},
+    { path: 'patients/:id', component: UserDetailComponent, 
+      children: [ 
+        { path: '', redirectTo: 'animals', pathMatch: 'full'},
+        { path: 'animals', component: AnimalDetailComponent}
+      ]
+    },
     { path: 'calendar', component: CalendarComponent},
-    { path: 'workflow', component: WorkflowComponent}
+    { path: 'workflow', component: WorkflowComponent},
 ];
 
 
