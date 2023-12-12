@@ -9,7 +9,7 @@ export class User {
     street: string;
     postCode: number;
     city: string;
-    pets: Animals[];
+    animals: { [key: string]:Animals };
 
     constructor(obj?: any) {
         this.id = obj && obj.id ? obj.id : '';
@@ -20,7 +20,7 @@ export class User {
         this.street = obj && obj.street ? obj.street : '';
         this.postCode = obj && obj.postCode ? obj.postCode : '';
         this.city = obj && obj.city ? obj.city : '';
-        this.pets = obj && obj.pets ? obj.pets : [];
+        this.animals = obj && obj.animals ? obj.animals : {};
     }
 
     public toJson() {
@@ -33,7 +33,7 @@ export class User {
             street: this.street,
             postCode: this.postCode,
             city: this.city,
-            pets: this.pets
+            animals: this.animals
         };
     }
 
@@ -45,9 +45,9 @@ export class User {
             email: obj.email || "",
             birthDate: obj.birthDate || 0,
             street: obj.street || "",
-            postCode: obj.postCode || "",
+            postCode: obj.postCode || 0,
             city: obj.city || "",
-            pets: obj.pets || []
+            animals: obj.animals || {}
         });
     } 
 }

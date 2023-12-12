@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogAddAnimalComponent } from '../dialog-add-animal/dialog-add-animal.component';
 
 
 @Component({
@@ -10,9 +8,5 @@ import { DialogAddAnimalComponent } from '../dialog-add-animal/dialog-add-animal
 })
 export class AnimalDetailComponent {
 
-  constructor(public dialog: MatDialog) {}
-
-  addAnimal() {
-    const dialog = this.dialog.open(DialogAddAnimalComponent);
-  }
+  constructor() {}
 }

@@ -12,12 +12,7 @@ const routes: Routes = [
     { path: '', component: LoginComponent },
     { path: 'dashboard', component: DashboardComponent },
     { path: 'patients', component: UserComponent },
-    { path: 'patients/:id', component: UserDetailComponent, 
-      children: [ 
-        { path: '', redirectTo: 'animals', pathMatch: 'full'},
-        { path: 'animals', component: AnimalDetailComponent}
-      ]
-    },
+    { path: 'patients/:id', component: UserDetailComponent },
     { path: 'calendar', component: CalendarComponent},
     { path: 'workflow', component: WorkflowComponent},
 ];

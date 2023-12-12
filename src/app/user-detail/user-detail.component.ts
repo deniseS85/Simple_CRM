@@ -6,6 +6,8 @@ import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditUserComponent } from '../dialog-edit-user/dialog-edit-user.component';
 import { DialogEditAddressComponent } from '../dialog-edit-address/dialog-edit-address.component';
+import { DialogAddAnimalComponent } from '../dialog-add-animal/dialog-add-animal.component';
+import { Animals } from '../models/animals.class';
 
 
 @Component({
@@ -17,6 +19,7 @@ import { DialogEditAddressComponent } from '../dialog-edit-address/dialog-edit-a
 export class UserDetailComponent {
   firestore: Firestore = inject(Firestore);
   user = new User();
+  animal = new Animals();
   userID: any;
   userList;
 
@@ -48,7 +51,7 @@ export class UserDetailComponent {
   }
 
   navigateToUserList() {
-      this.router.navigate(['user']);
+      this.router.navigate(['patients']);
   }
 
   editUser() { 
@@ -60,5 +63,9 @@ export class UserDetailComponent {
   editAddress() {
       const dialog = this.dialog.open(DialogEditAddressComponent);
       dialog.componentInstance.user = new User(this.user.toJson());
+  }
+
+  addAnimal() {
+      this.dialog.open(DialogAddAnimalComponent);
   }
 }
