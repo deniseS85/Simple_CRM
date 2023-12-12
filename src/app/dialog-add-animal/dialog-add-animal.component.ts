@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { Firestore, addDoc, collection, doc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, doc, updateDoc} from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 
-interface Animal {
+interface Species {
   value: string;
   viewValue: string;
 }
@@ -15,8 +14,9 @@ interface Animal {
   templateUrl: './dialog-add-animal.component.html',
   styleUrls: ['./dialog-add-animal.component.scss']
 })
+
 export class DialogAddAnimalComponent {
-  animals: Animal[] = [
+  animals: Species[] = [
     { value: 'cat-0', viewValue: 'Cat' },
     { value: 'dog-1', viewValue: 'Dog' },
     { value: 'hamster-2', viewValue: 'Hamster' },
@@ -28,6 +28,7 @@ export class DialogAddAnimalComponent {
   genders: string[] = ['Female', 'Male'];
 
   firestore: Firestore = inject(Firestore);
+  user!: User;
   animal = new Animals();
   loading = false;
   hideRequired = 'true';
@@ -35,49 +36,24 @@ export class DialogAddAnimalComponent {
   selectedAnimal!: string;
   selectedGender!: string;
   userId: any = '';
-  user!: User;
+ 
+  constructor(public dialogRef: MatDialogRef<DialogAddAnimalComponent>) {}
 
-  constructor(private router: Router, public dialogRef: MatDialogRef<DialogAddAnimalComponent>) {}
 
   async saveAnimal() {
-   /*  this.getUserId(); 
-  
-    this.user.animals[animals.id] = this.animal.toJsonAnimals();
-  
-    
-    try {
-      await updateDoc(doc(this.firestore, 'users', this.userId), { animals: this.user.animals });
-      this.loading = false;
-      this.dialogRef.close();
-    } catch (err) {
-      console.error('Fehler beim Hinzufügen des Tiers:', err);
-      this.loading = false;
-    } */
+      this.animal.birthDate = this.birthDate.getTime();
+      this.animal.gender = this.selectedGender;
+      this.animal.species = this.selectedAnimal;
+      this.loading = true;
+     
+      await updateDoc(this.getUserID(), { animals: this.user.animals }).then(() => {
+          this.loading = false; 
+          this.dialogRef.close();
+      }); 
   }
   
-  
-  getUserId() {
-    const currentUrl = this.router.url;
-    const userIdMatch = currentUrl.match(/\/patients\/([^\/]+)/);
-  
-    if (userIdMatch && userIdMatch[1]) {
-      const userId = userIdMatch[1];
-      this.userId = userId;
-    }
-  }
-  
-
- /*  getUserID() {
-    return (collection(this.firestore, 'users'), this.userId);
-  } */
-
-  
-
-  getAnimalRef() {
-      return collection(this.firestore, 'users', this.userId, 'animals');
+  getUserID() {
+      return doc(collection(this.firestore, 'users'), this.user.id);
   }
 
 }
-
-
-

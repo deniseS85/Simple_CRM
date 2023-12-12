@@ -4,15 +4,15 @@ export class Animals {
     species: string;
     gender: string;
     birthDate: number;
-    microchipID: string;
+    microchipID: number;
 
     constructor(obj?: any) {
         this.id = obj && obj.id ? obj.id : '';
         this.name = obj && obj.name ? obj.name : '';
         this.species = obj && obj.species ? obj.species : '';
         this.gender = obj && obj.gender ? obj.gender : '';
-        this.birthDate = obj && obj.birthDate ? obj.birthDate : '';
-        this.microchipID = obj && obj.microchipID ? obj.microchipID : '';
+        this.birthDate = obj && obj.birthDate ? obj.birthDate : 0;
+        this.microchipID = obj && obj.microchipID ? obj.microchipID : "";
     }
 
     public toJsonAnimals() {

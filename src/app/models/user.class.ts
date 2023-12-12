@@ -9,18 +9,18 @@ export class User {
     street: string;
     postCode: number;
     city: string;
-    animals: { [key: string]:Animals };
+    animals: Animals;
 
     constructor(obj?: any) {
         this.id = obj && obj.id ? obj.id : '';
         this.firstName = obj && obj.firstName ? obj.firstName : '';
         this.lastName = obj && obj.lastName ? obj.lastName : '';
         this.email = obj && obj.email ? obj.email : '';
-        this.birthDate = obj && obj.birthDate ? obj.birthDate : '';
+        this.birthDate = obj && obj.birthDate ? obj.birthDate : 0;
         this.street = obj && obj.street ? obj.street : '';
-        this.postCode = obj && obj.postCode ? obj.postCode : '';
+        this.postCode = obj && obj.postCode ? obj.postCode : 0;
         this.city = obj && obj.city ? obj.city : '';
-        this.animals = obj && obj.animals ? obj.animals : {};
+        this.animals = obj && obj.animals ? new Animals(obj.animals) : new Animals();
     }
 
     public toJson() {
@@ -33,7 +33,7 @@ export class User {
             street: this.street,
             postCode: this.postCode,
             city: this.city,
-            animals: this.animals
+            animals: this.animals.toJsonAnimals()
         };
     }
 
@@ -47,7 +47,7 @@ export class User {
             street: obj.street || "",
             postCode: obj.postCode || 0,
             city: obj.city || "",
-            animals: obj.animals || {}
+            animals: obj.animals ? new Animals(obj.animals) : new Animals()
         });
     } 
 }
