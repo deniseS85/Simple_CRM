@@ -7,12 +7,12 @@
             <div>
                 <mat-form-field class="input-field" appearance="outline" [hideRequiredMarker]="hideRequired">
                     <mat-label>Firstname</mat-label>
-                    <input [disabled]="loading" [(ngModel)]="user.firstName" type="text" name="firstname" matInput placeholder="Firstname" pattern="[a-zA-Z ]*" required>
+                    <input [disabled]="loading" [(ngModel)]="user.firstName" type="text" name="firstname" matInput placeholder="Firstname" pattern="[A-Za-zÄäÖöÜüß ]+" required>
                 </mat-form-field>
 
                 <mat-form-field class="input-field" appearance="outline" [hideRequiredMarker]="hideRequired">
                     <mat-label>Lastname</mat-label>
-                    <input [disabled]="loading" [(ngModel)]="user.lastName" type="text" name="lastname" matInput placeholder="Lastname" pattern="[a-zA-Z ]*" required>
+                    <input [disabled]="loading" [(ngModel)]="user.lastName" type="text" name="lastname" matInput placeholder="Lastname" pattern="[A-Za-zÄäÖöÜüß ]+" required>
                 </mat-form-field>
             </div>
 

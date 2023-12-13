@@ -88,42 +88,12 @@
             </mat-menu>
             <mat-card-title class="user-info-title">Animals</mat-card-title>
         </mat-card-header>
-        <mat-card-content class="user-info-sub-content">
-            <p>
-                <span></span>
-            </p>
-        </mat-card-content>
 
-        <mat-card-content class="animals-list">
+        <mat-card-content class="animals-list" *ngFor="let animal of getAnimals()">
             <div class="single-animal">
-                <img src="./assets/img/hund.png">
-                <p>Lotta</p>
+                <img [src]="'./assets/img/' + animal.species">
+                <p>{{ animal.name }}</p>
             </div>
-            <div class="single-animal">
-                <img src="./assets/img/katze.png">
-                <p>Luna</p>
-            </div>
-            <div class="single-animal">
-                <img src="./assets/img/frettchen.png">
-                <p>Lotta</p>
-            </div>
-            <div class="single-animal">
-                <img src="./assets/img/meerschweinchen.png">
-                <p>Luna</p>
-            </div>
-            <div class="single-animal">
-                <img src="./assets/img/hase.png">
-                <p>Lotta</p>
-            </div>
-            <div class="single-animal">
-                <img src="./assets/img/ratte.png">
-                <p>Luna</p>
-            </div>
-            <div class="single-animal">
-                <img src="./assets/img/hamster.png">
-                <p>Lotta</p>
-            </div>
-            
         </mat-card-content>
     </mat-card>
    

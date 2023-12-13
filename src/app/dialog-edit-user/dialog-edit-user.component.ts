@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { User } from '../models/user.class';
 import { Firestore, updateDoc } from '@angular/fire/firestore';
 import { collection, doc } from 'firebase/firestore';
@@ -28,10 +28,16 @@ export class DialogEditUserComponent implements OnInit {
   async saveUserChange() {
       this.loading = true;
       await updateDoc(this.getUserID(), this.user.toJson()).then(() => {
-          this.loading = false; 
+          this.loading = false;
+          this.updateUserNameInLocalStorage();
           this.dialogRef.close();
       }); 
-}
+  }
+
+  updateUserNameInLocalStorage() {
+        let userName = this.user.firstName + ' ' + this.user.lastName;
+        localStorage.setItem('userName', userName);
+  }
 
   getUserID() {
       return doc(collection(this.firestore, 'users'), this.user.id);

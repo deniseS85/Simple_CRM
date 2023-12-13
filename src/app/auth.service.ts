@@ -23,7 +23,6 @@ export class AuthService implements OnDestroy {
  
 
   ngOnDestroy() {
-      // when manually subscribing to an observable remember to unsubscribe in ngOnDestroy
       this.userSubscription.unsubscribe();
       this.authStateSubscription.unsubscribe();
       this.idTokenSubscription.unsubscribe();

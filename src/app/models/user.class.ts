@@ -9,7 +9,7 @@ export class User {
     street: string;
     postCode: number;
     city: string;
-    animals: Animals;
+    animals: Animals[] = [];
 
     constructor(obj?: any) {
         this.id = obj && obj.id ? obj.id : '';
@@ -18,9 +18,9 @@ export class User {
         this.email = obj && obj.email ? obj.email : '';
         this.birthDate = obj && obj.birthDate ? obj.birthDate : 0;
         this.street = obj && obj.street ? obj.street : '';
-        this.postCode = obj && obj.postCode ? obj.postCode : 0;
+        this.postCode = obj && obj.postCode ? obj.postCode : '';
         this.city = obj && obj.city ? obj.city : '';
-        this.animals = obj && obj.animals ? new Animals(obj.animals) : new Animals();
+        this.animals = obj && obj.animals && Array.isArray(obj.animals) ? obj.animals.map((animal: any) => new Animals(animal)) : [];    
     }
 
     public toJson() {
@@ -33,7 +33,7 @@ export class User {
             street: this.street,
             postCode: this.postCode,
             city: this.city,
-            animals: this.animals.toJsonAnimals()
+            animals: this.animals.map(animal => animal.toJsonAnimals())
         };
     }
 
@@ -45,9 +45,9 @@ export class User {
             email: obj.email || "",
             birthDate: obj.birthDate || 0,
             street: obj.street || "",
-            postCode: obj.postCode || 0,
+            postCode: obj.postCode || "",
             city: obj.city || "",
-            animals: obj.animals ? new Animals(obj.animals) : new Animals()
+            animals: obj.animals && Array.isArray(obj.animals) ? obj.animals.map((animal: any) => new Animals(animal)) : []
         });
     } 
 }

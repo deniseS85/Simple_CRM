@@ -22,6 +22,7 @@ export class UserDetailComponent {
   animal = new Animals();
   userID: any;
   userList;
+  
 
   constructor(private router: Router, private route: ActivatedRoute, public dialog: MatDialog) {
     this.userID = this.route.snapshot.paramMap.get('id');
@@ -33,7 +34,7 @@ export class UserDetailComponent {
   }
 
   getUserID() {
-      return doc(collection(this.firestore, 'users'),this.userID);
+      return doc(collection(this.firestore, 'users'), this.userID);
   }
 
   getUserIDfromFirebase() {
@@ -66,6 +67,13 @@ export class UserDetailComponent {
   }
 
   addAnimal() {
-      this.dialog.open(DialogAddAnimalComponent);
+      const dialog = this.dialog.open(DialogAddAnimalComponent);
+      dialog.componentInstance.user = new User(this.user.toJson());
   }
+
+  getAnimals(): Animals[] {
+        return Array.isArray(this.user.animals) ? this.user.animals : [this.user.animals];
+  }
+
+  
 }

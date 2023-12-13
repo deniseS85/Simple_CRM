@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Firestore, collection, doc, updateDoc} from '@angular/fire/firestore';
+import { Firestore, collection, doc, onSnapshot, updateDoc} from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -17,13 +17,13 @@ interface Species {
 
 export class DialogAddAnimalComponent {
   animals: Species[] = [
-    { value: 'cat-0', viewValue: 'Cat' },
-    { value: 'dog-1', viewValue: 'Dog' },
-    { value: 'hamster-2', viewValue: 'Hamster' },
-    { value: 'rabbit-3', viewValue: 'Rabbit' },
-    { value: 'guineapig-4', viewValue: 'Guinea pig' },
-    { value: 'ferret-5', viewValue: 'Ferret' },
-    { value: 'mouserat-6', viewValue: 'Mouse/Rat' },
+    { value: 'katze.png', viewValue: 'Cat' },
+    { value: 'hund.png', viewValue: 'Dog' },
+    { value: 'hamster.png', viewValue: 'Hamster' },
+    { value: 'hase.png', viewValue: 'Rabbit' },
+    { value: 'meerschweinchen.png', viewValue: 'Guinea pig' },
+    { value: 'frettchen.png', viewValue: 'Ferret' },
+    { value: 'ratte.png', viewValue: 'Mouse/Rat' },
   ];
   genders: string[] = ['Female', 'Male'];
 
@@ -45,8 +45,10 @@ export class DialogAddAnimalComponent {
       this.animal.gender = this.selectedGender;
       this.animal.species = this.selectedAnimal;
       this.loading = true;
-     
-      await updateDoc(this.getUserID(), { animals: this.user.animals }).then(() => {
+      
+      this.user.animals.push(new Animals(this.animal.toJsonAnimals()));
+      
+      await updateDoc(this.getUserID(), this.user.toJson()).then(() => {
           this.loading = false; 
           this.dialogRef.close();
       }); 
@@ -55,5 +57,12 @@ export class DialogAddAnimalComponent {
   getUserID() {
       return doc(collection(this.firestore, 'users'), this.user.id);
   }
+
+  limitLength(event: any) {
+    const maxLength = 15;
+      if (event.target.value.length > maxLength) {
+          event.target.value = event.target.value.slice(0, maxLength);
+      }
+    }
 
 }

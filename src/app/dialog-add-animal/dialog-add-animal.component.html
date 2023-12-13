@@ -7,7 +7,7 @@
             <div>
                 <mat-form-field class="input-field" appearance="outline" [hideRequiredMarker]="hideRequired">
                     <mat-label>Name</mat-label>
-                    <input [disabled]="loading" [(ngModel)]="animal.name" name="name" type="text" matInput placeholder="Name" pattern="[a-zA-Z ]*" required>
+                    <input [disabled]="loading" [(ngModel)]="animal.name" name="name" type="text" matInput placeholder="Name" pattern="[A-Za-zÄäÖöÜüß ]+" required>
                 </mat-form-field>
 
                 <mat-form-field class="input-field" appearance="outline" [hideRequiredMarker]="hideRequired">
@@ -43,14 +43,13 @@
             <div>
                 <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
                     <mat-label>Microchip-ID</mat-label>
-                    <input [disabled]="loading" [(ngModel)]="animal.microchipID" type="number" name="microchipID" matInput placeholder="Microchip-ID" required>
+                    <input [disabled]="loading" [(ngModel)]="animal.microchipID" type="number" (input)="limitLength($event)" name="microchipID" matInput placeholder="Microchip-ID" required>
                 </mat-form-field>
             </div>
         </div>
         <div mat-dialog-actions class="dialog-button">
             <button [disabled]="loading" mat-dialog-close mat-button>Cancel</button>
-            <button  (click)="saveAnimal()" mat-button>Save</button>
+            <button [disabled]="loading || addAnimalForm.invalid" (click)="saveAnimal()" mat-button>Save</button>
         </div>
     </form>
 </div>
-<!-- [disabled]="loading || addAnimalForm.invalid" -->

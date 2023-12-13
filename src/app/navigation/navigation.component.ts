@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -68,8 +68,6 @@ export class NavigationComponent implements OnInit {
         return this.router.isActive(routerLink, true);
     }
 
-
-
     /**
      * ermittelt die Url, wenn die Navigation abgeschlossen ist
      */
@@ -113,8 +111,8 @@ export class NavigationComponent implements OnInit {
             if (this.currentUrl == "/patients/" + user.id) {
                 this.currentUserId = user.id;
                 this.userName = user.firstName + ' ' + user.lastName;
-                userFound = true;
                 this.saveUserNameinLocalStorage();
+                userFound = true;
             } else if (!userFound) {
                 localStorage.removeItem('userName');
             }
