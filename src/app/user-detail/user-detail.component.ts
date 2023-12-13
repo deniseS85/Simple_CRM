@@ -11,69 +11,67 @@ import { Animals } from '../models/animals.class';
 
 
 @Component({
-  selector: 'app-user-detail',
-  templateUrl: './user-detail.component.html',
-  styleUrl: './user-detail.component.scss'
+    selector: 'app-user-detail',
+    templateUrl: './user-detail.component.html',
+    styleUrl: './user-detail.component.scss'
 })
  
 export class UserDetailComponent {
-  firestore: Firestore = inject(Firestore);
-  user = new User();
-  animal = new Animals();
-  userID: any;
-  userList;
-  
+    firestore: Firestore = inject(Firestore);
+    user = new User();
+    animal = new Animals();
+    userID: any;
+    userList;
 
-  constructor(private router: Router, private route: ActivatedRoute, public dialog: MatDialog) {
-    this.userID = this.route.snapshot.paramMap.get('id');
-    this.userList = this.getUserIDfromFirebase();
-  }
+
+    constructor(private router: Router, private route: ActivatedRoute, public dialog: MatDialog) {
+        this.userID = this.route.snapshot.paramMap.get('id');
+        this.userList = this.getUserIDfromFirebase();
+    }
  
-  ngOnDestroy(){
-      this.userList();
-  }
+    ngOnDestroy(){
+        this.userList();
+    }
 
-  getUserID() {
-      return doc(collection(this.firestore, 'users'), this.userID);
-  }
+    getUserID() {
+        return doc(collection(this.firestore, 'users'), this.userID);
+    }
 
-  getUserIDfromFirebase() {
-      return onSnapshot(this.getUserID(), (element) => {
-          this.user = new User(element.data());
-          this.user.id = this.userID;
-      });
-  }
+    getUserIDfromFirebase() {
+        return onSnapshot(this.getUserID(), (element) => {
+            this.user = new User(element.data());
+            this.user.id = this.userID;
+        });
+    }
+    
+    async deleteUser() {
+        await deleteDoc(this.getUserID()).catch(
+            (err) => { console.error(err); }
+        );
+        this.navigateToUserList();
+    }
 
-  async deleteUser() {
-      await deleteDoc(this.getUserID()).catch(
-          (err) => { console.error(err); }
-      );
-      this.navigateToUserList();
-  }
+    navigateToUserList() {
+        this.router.navigate(['patients']);
+    }
 
-  navigateToUserList() {
-      this.router.navigate(['patients']);
-  }
+    editUser() { 
+        const dialog = this.dialog.open(DialogEditUserComponent);
+        /* Kopie vom Objekt erstellen, damit es nicht gleich überschrieben wird, sondern erst beim speichern */
+        dialog.componentInstance.user = new User(this.user.toJson()); 
+    }
 
-  editUser() { 
-      const dialog = this.dialog.open(DialogEditUserComponent);
-      /* Kopie vom Objekt erstellen, damit es nicht gleich überschrieben wird, sondern erst beim speichern */
-      dialog.componentInstance.user = new User(this.user.toJson()); 
-  }
+    editAddress() {
+        const dialog = this.dialog.open(DialogEditAddressComponent);
+        dialog.componentInstance.user = new User(this.user.toJson());
+    }
 
-  editAddress() {
-      const dialog = this.dialog.open(DialogEditAddressComponent);
-      dialog.componentInstance.user = new User(this.user.toJson());
-  }
+    addAnimal() {
+        const dialog = this.dialog.open(DialogAddAnimalComponent);
+        dialog.componentInstance.user = new User(this.user.toJson());
+    }
 
-  addAnimal() {
-      const dialog = this.dialog.open(DialogAddAnimalComponent);
-      dialog.componentInstance.user = new User(this.user.toJson());
-  }
-
-  getAnimals(): Animals[] {
-        return Array.isArray(this.user.animals) ? this.user.animals : [this.user.animals];
-  }
-
-  
+    getAnimals(): Animals[] {
+            return Array.isArray(this.user.animals) ? this.user.animals : [this.user.animals];
+    }
 }

@@ -13,6 +13,7 @@ const routes: Routes = [
     { path: 'dashboard', component: DashboardComponent },
     { path: 'patients', component: UserComponent },
     { path: 'patients/:id', component: UserDetailComponent },
+    { path: 'patients/:id/:animal', component: AnimalDetailComponent},
     { path: 'calendar', component: CalendarComponent},
     { path: 'workflow', component: WorkflowComponent},
 ];

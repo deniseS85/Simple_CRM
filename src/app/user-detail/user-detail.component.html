@@ -90,12 +90,13 @@
         </mat-card-header>
 
         <mat-card-content class="animals-list" *ngFor="let animal of getAnimals()">
-            <div class="single-animal">
+            <div [routerLink]="['/patients/', user.id, animal.name]" class="single-animal">
                 <img [src]="'./assets/img/' + animal.species">
                 <p>{{ animal.name }}</p>
             </div>
         </mat-card-content>
-    </mat-card>
+    </mat-card> 
    
 </div>
+
 

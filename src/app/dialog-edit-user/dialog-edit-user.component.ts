@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { User } from '../models/user.class';
 import { Firestore, updateDoc } from '@angular/fire/firestore';
 import { collection, doc } from 'firebase/firestore';

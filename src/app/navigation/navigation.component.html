@@ -17,6 +17,16 @@
                 <mat-icon class="arrow-img">subdirectory_arrow_right</mat-icon>
                 <span id="userName" class="selected-user-name">{{ userName }}</span>
             </li>
+
+
+
+            <li class="sub-menu-animals" *ngIf="activeLink('patients/' + currentUserId + animal.name) || currentUrl.includes(animal.name)" [ngClass]="{'active': activeLink('patients/' + currentUserId + animal.name) || currentUrl.includes(animal.name)}">
+                <span id="userName" class="selected-user-name">tiername</span>
+            </li>
+
+
+
+
             <li routerLink="/workflow" [class.active]="activeLink('workflow')">
                 <mat-icon>view_kanban</mat-icon>
                 <span>Workflow</span>
