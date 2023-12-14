@@ -17,7 +17,7 @@ import { Animals } from '../models/animals.class';
 export class NavigationComponent implements OnInit {
     firestore: Firestore = inject(Firestore);
     showNavbar: boolean = true;
-    currentLink = '';
+    currentLink = 'Patient File';
     currentUrl: string = '';
     userList:any = [];
     userName: string = '';
@@ -42,7 +42,6 @@ export class NavigationComponent implements OnInit {
      */
     ngOnInit() {
         this.userName = localStorage.getItem('userName') || '';
-
         this.router.events.pipe(
             filter((event): event is NavigationEnd => event instanceof NavigationEnd)
             ).subscribe((event: NavigationEnd) => {
@@ -119,7 +118,6 @@ export class NavigationComponent implements OnInit {
     getAnimals(): Animals[] {
         return Array.isArray(this.user.animals) ? this.user.animals : [this.user.animals];
     }
-
 
     /**
      * Der Nutzer kann sich ausloggen, bei anonymen Nutzer wird dieser in der Firebase gelöscht

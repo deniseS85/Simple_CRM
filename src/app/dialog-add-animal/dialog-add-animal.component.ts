@@ -17,13 +17,13 @@ interface Species {
 
 export class DialogAddAnimalComponent {
   animals: Species[] = [
-    { value: 'katze.png', viewValue: 'Cat' },
-    { value: 'hund.png', viewValue: 'Dog' },
-    { value: 'hamster.png', viewValue: 'Hamster' },
-    { value: 'hase.png', viewValue: 'Rabbit' },
-    { value: 'meerschweinchen.png', viewValue: 'Guinea pig' },
-    { value: 'frettchen.png', viewValue: 'Ferret' },
-    { value: 'ratte.png', viewValue: 'Mouse/Rat' },
+    { value: 'Cat', viewValue: 'Cat' },
+    { value: 'Dog', viewValue: 'Dog' },
+    { value: 'Hamster', viewValue: 'Hamster' },
+    { value: 'Rabbit', viewValue: 'Rabbit' },
+    { value: 'Guinea pig', viewValue: 'Guinea pig' },
+    { value: 'Ferret', viewValue: 'Ferret' },
+    { value: 'Mouse/Rat', viewValue: 'Mouse/Rat' },
   ];
   genders: string[] = ['Female', 'Male'];
 
@@ -53,7 +53,7 @@ export class DialogAddAnimalComponent {
           this.dialogRef.close();
       }); 
   }
-  
+
   getUserID() {
       return doc(collection(this.firestore, 'users'), this.user.id);
   }

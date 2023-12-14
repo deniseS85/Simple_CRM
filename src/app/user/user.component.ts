@@ -12,52 +12,51 @@ import { collection, onSnapshot } from 'firebase/firestore';
   styleUrl: './user.component.scss'
 })
 export class UserComponent {
-  firestore: Firestore = inject(Firestore);
-  unsubList;
-  isUser = false;
-  userList:any = [];
-  @Input() inputValue!: string;
-  filteredUser!: any[];
+    firestore: Firestore = inject(Firestore);
+    unsubList;
+    isUser = false;
+    userList:any = [];
+    @Input() inputValue!: string;
+    filteredUser!: any[];
   
   
-  constructor(public dialog: MatDialog) {
+    constructor(public dialog: MatDialog) {
         this.unsubList = this.subUsersList();
-  }
+    }
 
-  subUsersList() {
-      return onSnapshot(this.getUserRef(), (list) =>{
-          this.userList = [];
-          list.forEach(element => {
-            this.userList.push(new User().setUserObject(element.data(), element.id));
+    subUsersList() {
+        return onSnapshot(this.getUserRef(), (list) =>{
+            this.userList = [];
+            list.forEach(element => {
+              this.userList.push(new User().setUserObject(element.data(), element.id));
+              this.filteredUser = this.userList;
+            });
+        }) 
+    }
+
+    ngOnDestroy(){
+        this.unsubList();
+    }
+
+    getUserRef() {
+        return collection(this.firestore, 'users');
+    }
+
+    openDialog() {
+        this.dialog.open(DialogAddUserComponent);
+    }
+
+    filterUser() {
+        if (this.inputValue) {
+            this.filteredUser = this.userList.filter((item: any) => this.compareInputUser(item));
+        } else {
             this.filteredUser = this.userList;
-          });
-      }) 
-  }
+        }
+    }
 
-  ngOnDestroy(){
-      this.unsubList();
-  }
-
-  getUserRef() {
-      return collection(this.firestore, 'users');
-  }
-
-  openDialog() {
-      this.dialog.open(DialogAddUserComponent);
-  }
-
-  filterUser() {
-    console.log(this.userList);
-      if (this.inputValue) {
-          this.filteredUser = this.userList.filter((item: any) => this.compareInputUser(item));
-      } else {
-          this.filteredUser = this.userList;
-      }
-  }
-
-  compareInputUser(item: any) {
-      return item.firstName.toLowerCase().substring(0, this.inputValue.length) == this.inputValue.toLowerCase() ||
-        item.lastName.toLowerCase().substring(0, this.inputValue.length) == this.inputValue.toLowerCase() ||
-        item.city.toLowerCase().substring(0, this.inputValue.length) == this.inputValue.toLowerCase();
-  } 
+    compareInputUser(item: any) {
+        return item.firstName.toLowerCase().substring(0, this.inputValue.length) == this.inputValue.toLowerCase() ||
+          item.lastName.toLowerCase().substring(0, this.inputValue.length) == this.inputValue.toLowerCase() ||
+          item.city.toLowerCase().substring(0, this.inputValue.length) == this.inputValue.toLowerCase();
+    } 
 } 

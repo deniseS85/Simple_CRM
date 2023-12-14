@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
-import { ActivatedRoute } from '@angular/router';
+import { User } from '../models/user.class';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -12,29 +13,48 @@ import { ActivatedRoute } from '@angular/router';
 export class AnimalDetailComponent {
 
     firestore: Firestore = inject(Firestore);
-    animal = new Animals();
-    animalName: any;
-    animalList;
+    user = new User();
+    userID: any;
+    animalNameUrl: any;
+    animalList: Animals[] = [];
+    unsubAnimalList;
+    selectedAnimal:any = '';
 
-    constructor(private route: ActivatedRoute) {
-        this.animalName = this.route.snapshot.paramMap.get('animal');
-        this.animalList = this.getAnimalNameFromFirebase();
+    constructor(private route: ActivatedRoute, private router: Router) {
+        this.userID = this.route.snapshot.paramMap.get('id');
+        this.animalNameUrl = this.route.snapshot.paramMap.get('animal');
+        this.unsubAnimalList = this.getAnimalfromUser();
     }
 
     ngOnDestroy(){
-        this.animalList();
+        this.unsubAnimalList();
     }
 
-    getAnimalName() {
-        return doc(collection(this.firestore, 'users', 'animals', 'name'), this.animalName);
+    getUserID() {
+        return doc(collection(this.firestore, 'users'), this.userID);
     }
 
-    getAnimalNameFromFirebase() {
-        return onSnapshot(this.getAnimalName(), (snapshot) => {
-            const animalData = snapshot.data();
-            if (animalData && animalData["name"]) {
-                this.animalName = animalData["name"];
-            }
+    getAnimalfromUser() {
+        return onSnapshot(this.getUserID(), (element) => {
+            this.user = new User(element.data());
+            this.animalList = this.user.animals;
+            this.getSelectedAnimalFromUser();
         });
     }
+
+    getSelectedAnimalFromUser() {
+        for (let i = 0; i < this.animalList.length; i++) {
+            let animals = this.animalList[i];
+
+            if (animals.name === this.animalNameUrl) {
+                this.selectedAnimal = animals;
+                return this.selectedAnimal;
+            }
+        }
+    }
+
+    goBack() {
+        const userId = this.route.snapshot.paramMap.get('id');
+        this.router.navigate(['/patients', userId]);
+      }
 }

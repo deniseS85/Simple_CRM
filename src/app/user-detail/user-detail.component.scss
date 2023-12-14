@@ -1,5 +1,5 @@
 .user-info-container {
-    min-height: 180px;
+    min-height: 150px;
     background-color: rgb(1, 103, 175);
     display: flex;
     justify-content: center;
@@ -66,30 +66,54 @@
                 opacity: 0.6;
             }
         }
-        .animals-list {
-            .single-animal {
-                display: flex;
-                display: flex;
-                align-items: center;
-                transition: all 125ms ease-in-out;
-                height: 48px;
-                padding: 0 20px;
-                img {
-                    width: 25px;
+        .animals-list-container {
+            background-color: rgb(3, 33, 56);
+            border-radius: 20px;
+            padding-bottom: 0;
+            .animals-list {
+                width: 100%;
+                border-collapse: collapse;
+                tr {
                     cursor: pointer;
-                    margin-right: 20px;
-                }
-                p {
-                    font-size: 16px;
-                    margin-bottom: 0; 
-                    cursor: pointer;
-                }
-                &:nth-child(even) {
-                    background-color: rgb(12, 54, 89);
-                }
-                &:hover {
-                    background-color: rgb(1,103,175);
+                    color: white;
+                    opacity: 0.9;
                     transition: all 125ms ease-in-out;
+                    &:first-child {
+                        cursor: default;
+                        opacity: unset;
+                        &:hover {
+                            background-color: unset;
+                        }
+                    }
+                    &:nth-child(even) {
+                        background-color: rgb(12, 54, 89);
+                    }
+                    th {
+                        font-size: 16px;
+                        text-align: start;
+                        height: 40px;
+                        color: rgb(5, 251, 251);
+                        &:first-child {
+                            padding-left: 20px;
+                        }
+                    }
+                    td {
+                        height: 60px;
+                        &:first-child {
+                            padding-left: 20px;
+                            display: flex;
+                            align-items: center;
+                        }
+                        img {
+                            width: 25px;
+                            cursor: pointer;
+                            margin-right: 20px;
+                        }
+                    }
+                    &:hover {
+                        background-color: rgb(1,103,175);
+                        transition: all 125ms ease-in-out;
+                    }
                 }
             }
         }

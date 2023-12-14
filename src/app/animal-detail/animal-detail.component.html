@@ -1,1 +1,48 @@
-<p>animal detail</p>
+<mat-icon (click)="goBack()" class="arrow-back">arrow_back</mat-icon>
+
+<div class="user-info-wrapper">
+    <mat-card class="user-subinfo-container">
+        <mat-card-header class="user-subinfo-header">
+            <button mat-icon-button [matMenuTriggerFor]="userMenu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #userMenu="matMenu" xPosition="before">
+                <button mat-menu-item>Edit</button>
+            </mat-menu>
+            <mat-card-title>
+                
+                {{ selectedAnimal.name }}
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="user-info-sub-content">
+
+        </mat-card-content>
+    </mat-card>
+    <mat-card class="user-subinfo-container">
+        <mat-card-header class="user-subinfo-header">
+            <button mat-icon-button [matMenuTriggerFor]="adressMenu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #adressMenu="matMenu" xPosition="before">
+                <button mat-menu-item>Edit</button>
+            </mat-menu>
+        </mat-card-header>
+        <mat-card-content class="user-info-sub-content">
+            <p>
+                <span>Species: </span>
+                {{ selectedAnimal.species }}
+            </p>
+            <p>
+                <span>Birthdate: </span>
+                {{ selectedAnimal.birthDate | date: 'dd.MM.yyyy' }}
+            </p>
+            <p>
+                <span>Gender: </span>
+                {{ selectedAnimal.gender}}
+            </p>
+            <p>
+                <span>Microchip-ID: </span>
+                {{ selectedAnimal.microchipID }}
+            </p>
+        </mat-card-content>
+    </mat-card>

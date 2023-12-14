@@ -1,0 +1,33 @@
+.arrow-back {
+    cursor: pointer;
+}
+
+.user-info-wrapper {
+    margin-top: 32px;
+    display: flex;
+    gap: 30px;
+    .user-subinfo-container {
+        background-color: rgb(3, 33, 56);
+        box-shadow: 0 0 10px rgb(1,103,175);
+        width: 100%;
+        padding-bottom: 16px;
+        .user-info-sub-content {
+            padding-right: 40px;
+        }
+        .user-subinfo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            mat-icon {
+                cursor: pointer;
+            }
+        }
+        p {
+            display: flex;
+            justify-content: space-between;
+            span {
+                opacity: 0.6;
+            }
+        }
+    }
+}

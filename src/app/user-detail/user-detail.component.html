@@ -78,7 +78,7 @@
 
  
 <div class="user-info-wrapper">
-    <mat-card class="user-subinfo-container" style="width: 48%;">
+    <mat-card class="user-subinfo-container">
         <mat-card-header class="user-subinfo-header">
             <button mat-icon-button [matMenuTriggerFor]="addAnimalMenu">
                 <mat-icon>add</mat-icon>
@@ -89,14 +89,23 @@
             <mat-card-title class="user-info-title">Animals</mat-card-title>
         </mat-card-header>
 
-        <mat-card-content class="animals-list" *ngFor="let animal of getAnimals()">
-            <div [routerLink]="['/patients/', user.id, animal.name]" class="single-animal">
-                <img [src]="'./assets/img/' + animal.species">
-                <p>{{ animal.name }}</p>
-            </div>
+        <mat-card-content class="animals-list-container" *ngIf="getAnimals().length > 0">
+            <table class="animals-list">
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Last Visit</th>
+                </tr>
+                <tr *ngFor="let animal of getAnimals()" [routerLink]="['/patients/', user.id, animal.name]" class="single-animal">
+                    <td>
+                        <img [src]="'./assets/img/' + animal.species + '.png'">
+                        {{ animal.name }}
+                    </td>
+                    <td>{{ getAge(animal.birthDate)}}</td>
+                    <td>Last Visit</td>
+                </tr>
+            </table>
         </mat-card-content>
     </mat-card> 
    
 </div>
-
-

@@ -23,10 +23,9 @@ export class UserDetailComponent {
     userID: any;
     userList;
 
-
     constructor(private router: Router, private route: ActivatedRoute, public dialog: MatDialog) {
         this.userID = this.route.snapshot.paramMap.get('id');
-        this.userList = this.getUserIDfromFirebase();
+        this.userList = this.getUserfromFirebase();
     }
  
     ngOnDestroy(){
@@ -37,7 +36,7 @@ export class UserDetailComponent {
         return doc(collection(this.firestore, 'users'), this.userID);
     }
 
-    getUserIDfromFirebase() {
+    getUserfromFirebase() {
         return onSnapshot(this.getUserID(), (element) => {
             this.user = new User(element.data());
             this.user.id = this.userID;
@@ -73,5 +72,23 @@ export class UserDetailComponent {
 
     getAnimals(): Animals[] {
             return Array.isArray(this.user.animals) ? this.user.animals : [this.user.animals];
+    }
+
+    getAge(birthday: number) {
+        const today = new Date();
+        const birthDate = new Date(birthday);
+        const years = today.getFullYear() - birthDate.getFullYear();
+        const months = today.getMonth() - birthDate.getMonth();
+        const days = today.getDate() - birthDate.getDate();
+    
+        if (years === 0) {
+            if (months === 0) {
+                return `${days} Days`;
+            } else {
+                return `${months} Month`;
+            }
+        } else {
+            return `${years} Years`;
+        }
     }
 }
