@@ -9,8 +9,15 @@
             <mat-menu #userMenu="matMenu" xPosition="before">
                 <button mat-menu-item>Edit</button>
             </mat-menu>
-            <mat-card-title>
-                
+            <mat-card-title class="animal-detail-title">
+            <div class="upload-image">
+                <form action="image_uploader.php" method="post" enctype="multipart/form-data">
+                    <input type="file" name="fileToUpload" id="fileToUpload">
+                    <input type="submit" value="Upload Image" name="submit">
+                </form>
+            </div>
+
+
                 {{ selectedAnimal.name }}
             </mat-card-title>
         </mat-card-header>

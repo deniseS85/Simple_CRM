@@ -19,6 +19,7 @@ export class AnimalDetailComponent {
     animalList: Animals[] = [];
     unsubAnimalList;
     selectedAnimal:any = '';
+    imageSrc: string = '';
 
     constructor(private route: ActivatedRoute, private router: Router) {
         this.userID = this.route.snapshot.paramMap.get('id');
@@ -56,5 +57,6 @@ export class AnimalDetailComponent {
     goBack() {
         const userId = this.route.snapshot.paramMap.get('id');
         this.router.navigate(['/patients', userId]);
-      }
+    }
+    
 }

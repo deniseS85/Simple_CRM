@@ -11,6 +11,7 @@
         box-shadow: 0 0 10px rgb(1,103,175);
         width: 100%;
         padding-bottom: 16px;
+        position: relative;
         .user-info-sub-content {
             padding-right: 40px;
         }
@@ -21,6 +22,32 @@
             mat-icon {
                 cursor: pointer;
             }
+        }
+        .upload-image {
+            background-color: red;
+            width: 115px;
+            height: 115px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            form {
+                width: 115px;
+                input:nth-child(1) {
+                    width: 115px;
+                    background-color: red;
+                    border: none;
+                }
+                input:nth-child(2) {
+                    display: none;
+                }
+            }
+        }
+        .animal-detail-title {
+            img {
+                width: 30px;
+            }
+            
         }
         p {
             display: flex;
