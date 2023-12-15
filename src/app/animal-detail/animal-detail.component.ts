@@ -3,6 +3,8 @@ import { Firestore, collection, doc, onSnapshot, updateDoc } from '@angular/fire
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogEditAnimalComponent } from '../dialog-edit-animal/dialog-edit-animal.component';
 
 
 @Component({
@@ -14,6 +16,7 @@ export class AnimalDetailComponent {
 
     firestore: Firestore = inject(Firestore);
     user = new User();
+    animal = new Animals();
     userID: any;
     animalNameUrl: any;
     animalList: Animals[] = [];
@@ -22,7 +25,7 @@ export class AnimalDetailComponent {
     imageSrc: string = '';
 
 
-    constructor(private route: ActivatedRoute, private router: Router) {
+    constructor(private route: ActivatedRoute, private router: Router, public dialog: MatDialog) {
         this.userID = this.route.snapshot.paramMap.get('id');
         this.animalNameUrl = this.route.snapshot.paramMap.get('animal');
         this.unsubAnimalList = this.getAnimalfromUser();
@@ -73,6 +76,11 @@ export class AnimalDetailComponent {
 
     navigateToUser() {
         this.router.navigate(['patients/' + this.userID]);
+    }
+
+    editAnimal() {
+       /*  const dialogRef = this.dialog.open(DialogEditAnimalComponent);
+        dialogRef.componentInstance.animal = animal; */
     }
 }
 

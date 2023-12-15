@@ -5,10 +5,21 @@
                 <div class="left-right">
                     <mat-icon (click)="goBack()" class="arrow-back">arrow_back</mat-icon>
                 </div>
+
                 <form action="image_uploader.php" method="post" enctype="multipart/form-data" class="img-upload">
+                    <label for="fileToUpload" class="custom-file-upload">
+                        <img src="./assets/img/img-upload.png" class="upload-icon">
+                        Choose a Image
+                    </label>
+                    <input type="file" name="fileToUpload" id="fileToUpload" style="display: none;">
+                    <input type="submit" value="Upload Image" name="submit" style="display: none;">
+                </form>
+
+
+               <!--  <form action="image_uploader.php" method="post" enctype="multipart/form-data" class="img-upload">
                     <input type="file" name="fileToUpload" id="fileToUpload">
                     <input type="submit" value="Upload Image" name="submit">
-                </form>
+                </form> -->
                 <div class="left-right">
                     <button mat-icon-button [matMenuTriggerFor]="deleteMenu">
                         <mat-icon>delete_forever</mat-icon>
@@ -45,7 +56,7 @@
                         <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #userMenu="matMenu" xPosition="before">
-                        <button mat-menu-item>Edit</button>
+                        <button (click)="editAnimal()" mat-menu-item>Edit</button>
                     </mat-menu>
                 </div>
                 <p>

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Firestore, collection, doc, onSnapshot, updateDoc} from '@angular/fire/firestore';
+import { Firestore, collection, doc, updateDoc} from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
 import { MatDialogRef } from '@angular/material/dialog';

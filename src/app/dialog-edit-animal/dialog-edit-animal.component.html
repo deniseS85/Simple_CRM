@@ -1,1 +1,50 @@
-<p>dialog-edit-animal works!</p>
+<div class="dialog-container">
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+    <h1 mat-dialog-title>Edit Animal</h1>
+    <div mat-dialog-content class="dialog-edit-content">
+        <div>
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Name</mat-label>
+                <input [disabled]="loading" [(ngModel)]="animal.name" matInput placeholder="Placeholder"> 
+            </mat-form-field>
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Species</mat-label>
+                <mat-select [disabled]="loading" [(ngModel)]="selectedAnimal" name="selectedAnimal" placeholder="Select the Species" required>
+                    @for (animal of animals; track animal) {
+                      <mat-option [value]="animal.value" class="select-field" >{{ animal.viewValue }}</mat-option> 
+                    }
+                  </mat-select>            
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field class="input-full-width" appearance="outline">
+                <mat-label>Gender</mat-label>
+                <mat-radio-group [disabled]="loading" [(ngModel)]="selectedGender" name="selectedGender" class="radio-group" required>
+                    @for (gender of genders; track gender) {
+                        <mat-radio-button [value]="gender">{{ gender }}</mat-radio-button> 
+                      }
+                </mat-radio-group>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field class="input-full-width" appearance="outline">
+                <mat-label>Birth Date</mat-label>
+                <input [disabled]="loading" [(ngModel)]="animal.birthDate" name="birthdate" matInput placeholder="Birth Date" [matDatepicker]="picker1" required>
+                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field class="input-full-width" appearance="outline">
+                <mat-label>Microchip-ID</mat-label>
+                <input [disabled]="loading" [(ngModel)]="animal.microchipID" type="number" (input)="limitLength($event)" name="microchipID" matInput placeholder="Microchip-ID" required>
+            </mat-form-field>
+        </div>
+    </div>
+    <div mat-dialog-actions class="dialog-button">
+        <button [disabled]="loading" mat-dialog-close mat-button>Cancel</button>
+        <button [disabled]="loading" (click)="saveAnimalChange()" mat-button cdkFocusInitial>Save</button>
+    </div>
+</div>
+

@@ -38,7 +38,6 @@ import { MatRadioModule } from '@angular/material/radio';
 import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
 import { DialogEditAnimalComponent } from './dialog-edit-animal/dialog-edit-animal.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
