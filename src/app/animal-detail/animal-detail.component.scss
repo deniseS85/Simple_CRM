@@ -1,60 +1,78 @@
-.arrow-back {
-    cursor: pointer;
-}
-
-.user-info-wrapper {
-    margin-top: 32px;
+.animal-info-container {
     display: flex;
     gap: 30px;
-    .user-subinfo-container {
+    mat-card {
         background-color: rgb(3, 33, 56);
         box-shadow: 0 0 10px rgb(1,103,175);
         width: 100%;
-        padding-bottom: 16px;
+    }
+    .animal-profile-container {
+        width: 50%;
         position: relative;
-        .user-info-sub-content {
-            padding-right: 40px;
-        }
-        .user-subinfo-header {
+        .animal-info-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            mat-icon {
-                cursor: pointer;
-            }
         }
-        .upload-image {
-            background-color: red;
-            width: 115px;
-            height: 115px;
-            border-radius: 50%;
+        .left-right {
+            height: 140px;
+        }
+        .arrow-back {
             display: flex;
             justify-content: center;
             align-items: center;
-            form {
-                width: 115px;
-                input:nth-child(1) {
-                    width: 115px;
-                    background-color: red;
-                    border: none;
-                }
-                input:nth-child(2) {
-                    display: none;
-                }
+            cursor: pointer;
+            width: 48px;
+            height: 48px;
+        }
+        .img-upload {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%2305FBFBFF' stroke-width='6' stroke-dasharray='6 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+        .animal-info-content {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            .animal-title {
+                color: rgb(5, 251, 251);
             }
         }
-        .animal-detail-title {
-            img {
-                width: 30px;
+        .animal-info-visits {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            .last-visit, .next-visit {
+                text-align: center;
             }
-            
+        }  
+    }  
+    .animal-info {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        gap: 30px;
+        .animal-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .animal-title {
+                color: rgb(5, 251, 251);
+            }
         }
         p {
             display: flex;
             justify-content: space-between;
+            padding-right: 23px;
             span {
                 opacity: 0.6;
             }
         }
     }
 }
+ 

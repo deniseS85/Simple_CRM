@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,6 +20,7 @@ export class AnimalDetailComponent {
     unsubAnimalList;
     selectedAnimal:any = '';
     imageSrc: string = '';
+
 
     constructor(private route: ActivatedRoute, private router: Router) {
         this.userID = this.route.snapshot.paramMap.get('id');
@@ -58,5 +59,21 @@ export class AnimalDetailComponent {
         const userId = this.route.snapshot.paramMap.get('id');
         this.router.navigate(['/patients', userId]);
     }
-    
+
+    async deleteAnimal() {
+        if (this.selectedAnimal) {
+            this.animalList = this.user.animals.filter(animal => animal.name !== this.selectedAnimal.name);
+        
+            await updateDoc(this.getUserID(), {
+                animals: this.animalList.map(animal => animal.toJsonAnimals())
+            });
+            this.navigateToUser();
+        }
+    }
+
+    navigateToUser() {
+        this.router.navigate(['patients/' + this.userID]);
+    }
 }
+
+

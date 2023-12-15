@@ -36,6 +36,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
+import { DialogEditAnimalComponent } from './dialog-edit-animal/dialog-edit-animal.component';
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
     CalendarComponent,
     WorkflowComponent,
     DialogAddAnimalComponent,
-    AnimalDetailComponent
+    AnimalDetailComponent,
+    DialogEditAnimalComponent
   ],
   imports: [
     BrowserModule,

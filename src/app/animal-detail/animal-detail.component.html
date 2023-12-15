@@ -1,55 +1,74 @@
-<mat-icon (click)="goBack()" class="arrow-back">arrow_back</mat-icon>
-
-<div class="user-info-wrapper">
-    <mat-card class="user-subinfo-container">
-        <mat-card-header class="user-subinfo-header">
-            <button mat-icon-button [matMenuTriggerFor]="userMenu">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #userMenu="matMenu" xPosition="before">
-                <button mat-menu-item>Edit</button>
-            </mat-menu>
-            <mat-card-title class="animal-detail-title">
-            <div class="upload-image">
-                <form action="image_uploader.php" method="post" enctype="multipart/form-data">
+<div class="animal-info-container">
+    <mat-card class="animal-profile-container">
+        <mat-card-content>
+            <div class="animal-info-header">
+                <div class="left-right">
+                    <mat-icon (click)="goBack()" class="arrow-back">arrow_back</mat-icon>
+                </div>
+                <form action="image_uploader.php" method="post" enctype="multipart/form-data" class="img-upload">
                     <input type="file" name="fileToUpload" id="fileToUpload">
                     <input type="submit" value="Upload Image" name="submit">
                 </form>
+                <div class="left-right">
+                    <button mat-icon-button [matMenuTriggerFor]="deleteMenu">
+                        <mat-icon>delete_forever</mat-icon>
+                    </button>
+                    <mat-menu #deleteMenu="matMenu" xPosition="before">
+                        <button (click)="deleteAnimal()" mat-menu-item>Delete Animal</button>
+                    </mat-menu>
+                </div>
             </div>
-
-
-                {{ selectedAnimal.name }}
-            </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="user-info-sub-content">
-
+            <div class="animal-info-content">
+                <mat-card-title class="animal-title">
+                    {{ selectedAnimal.name }}
+                </mat-card-title> 
+            </div>
+            <div class="animal-info-visits">
+                <div class="last-visit">
+                    <strong>Last appointment</strong>
+                    <div>12.09.2023</div>
+                </div>
+                <div class="next-visit">
+                    <strong>Next appointment</strong>
+                    <div>12.09.2024</div>
+                </div>
+            </div>
         </mat-card-content>
     </mat-card>
-    <mat-card class="user-subinfo-container">
-        <mat-card-header class="user-subinfo-header">
-            <button mat-icon-button [matMenuTriggerFor]="adressMenu">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #adressMenu="matMenu" xPosition="before">
-                <button mat-menu-item>Edit</button>
-            </mat-menu>
-        </mat-card-header>
-        <mat-card-content class="user-info-sub-content">
-            <p>
-                <span>Species: </span>
-                {{ selectedAnimal.species }}
-            </p>
-            <p>
-                <span>Birthdate: </span>
-                {{ selectedAnimal.birthDate | date: 'dd.MM.yyyy' }}
-            </p>
-            <p>
-                <span>Gender: </span>
-                {{ selectedAnimal.gender}}
-            </p>
-            <p>
-                <span>Microchip-ID: </span>
-                {{ selectedAnimal.microchipID }}
-            </p>
-        </mat-card-content>
-    </mat-card>
+
+    <div class="animal-info">
+        <mat-card>
+            <mat-card-content>
+                <div class="animal-info-header">
+                    <mat-card-title class="animal-title">Info</mat-card-title>
+                    <button mat-icon-button [matMenuTriggerFor]="userMenu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #userMenu="matMenu" xPosition="before">
+                        <button mat-menu-item>Edit</button>
+                    </mat-menu>
+                </div>
+                <p>
+                    <span>Name: </span>
+                    {{ selectedAnimal.name }}
+                </p>
+                <p>
+                    <span>Species: </span>
+                    {{ selectedAnimal.species }}
+                </p>
+                <p>
+                    <span>Birthdate: </span>
+                    {{ selectedAnimal.birthDate | date: 'dd.MM.yyyy' }}
+                </p>
+                <p>
+                    <span>Gender: </span>
+                    {{ selectedAnimal.gender}}
+                </p>
+                <p>
+                    <span>Microchip-ID: </span>
+                    {{ selectedAnimal.microchipID }}
+                </p>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
