@@ -1,1 +1,113 @@
-<p>workflow works!</p>
+<div class="kanban-container">
+    <div class="rows">
+        <mat-card class="kanban" > <!-- (cdkDropListDropped)="drop($event)" -->
+            <mat-card-content class="kanban-topic">
+                <mat-card-title class="title-row">Todo</mat-card-title>
+            </mat-card-content>
+        </mat-card>
+
+        <div
+            cdkDropList
+            #todoList="cdkDropList"
+            [cdkDropListData]="todo"
+            [cdkDropListConnectedTo]="[todoList]"
+            
+            (cdkDropListDropped)="drop($event)">
+            @for (item of todo; track item) {
+            <div class="list" cdkDrag>{{item}}</div>
+            }
+        </div>
+    </div>
+
+    <div class="rows">
+        <mat-card class="kanban">
+            <mat-card-content>
+                <mat-card-title class="title-row">Waiting</mat-card-title>
+            </mat-card-content>
+        </mat-card>
+
+        <div
+            cdkDropList
+            #waitingList="cdkDropList"
+            [cdkDropListData]="waiting"
+            [cdkDropListConnectedTo]="[waitingList]"
+            
+            (cdkDropListDropped)="drop($event)">
+            @for (item of waiting; track item) {
+            <div class="list" cdkDrag>{{item}}</div>
+            }
+        </div>
+    </div>
+
+    <div class="rows">
+        <mat-card class="kanban" >
+            <mat-card-content>
+                <mat-card-title class="title-row">Treatment</mat-card-title>
+            </mat-card-content>
+        </mat-card>
+
+        <div
+            cdkDropList
+            #treatmentList="cdkDropList"
+            [cdkDropListData]="treatment"
+            [cdkDropListConnectedTo]="[treatmentList]"
+            
+            (cdkDropListDropped)="drop($event)">
+            @for (item of treatment; track item) {
+            <div class="list" cdkDrag>{{item}}</div>
+            }
+        </div>
+    </div>
+
+    <div class="rows">
+        <mat-card class="kanban" >
+            <mat-card-content>
+                <mat-card-title class="title-row">Done</mat-card-title>
+            </mat-card-content>
+        </mat-card>
+        <div
+            cdkDropList
+            #doneList="cdkDropList"
+            [cdkDropListData]="done"
+            [cdkDropListConnectedTo]="[doneList]"
+            
+            (cdkDropListDropped)="drop($event)">
+            @for (item of done; track item) {
+            <div class="list" cdkDrag>{{item}}</div>
+            }
+        </div>
+    </div>
+</div> 
+
+
+<div class="search-container">
+    <input class="input-search" placeholder="Search" type="text"> <!--   [(ngModel)]="inputValue"(ngModelChange)="filterUser()"  -->
+    <button  class="search-btn"> <!-- (click)="filterUser()" -->
+        <img src="./assets/img/search.png">
+    </button>
+</div>
+
+
+<!-- 
+            <div cdkDropList #pendingList="cdkDropList" [cdkDropListData]="pendingArray"
+                [cdkDropListConnectedTo]="[doneList, inProgressList]" (cdkDropListDropped)="drop($event)" id="pending">
+
+                <div class="kanban-topic-lists">
+
+                    <div class="product" cdkDrag *ngFor="let purchase of pendingArray">
+
+                        <mat-icon (click)="openStateDialog(purchase, doneList, inProgressList)"
+                            class="swap-state">swap_vert</mat-icon>
+
+                        <div class="purchase-container">
+                            <p>{{ purchase.title }}</p> <br>
+                            <p>{{ purchase.value | currency:'$ ':'code' }}</p>
+                        </div>
+
+                        <p><mat-icon>person</mat-icon>{{ getUserById(purchase.purchaseUser) }} </p>
+
+                    </div>
+                </div>
+
+                <div class="empty-list" *ngIf="pendingArray.length === 0">No purchases pending</div>
+            </div>-->

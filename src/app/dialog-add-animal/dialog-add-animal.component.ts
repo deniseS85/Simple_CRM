@@ -23,7 +23,7 @@ export class DialogAddAnimalComponent {
     { value: 'Rabbit', viewValue: 'Rabbit' },
     { value: 'Guinea pig', viewValue: 'Guinea pig' },
     { value: 'Ferret', viewValue: 'Ferret' },
-    { value: 'Mouse/Rat', viewValue: 'Mouse/Rat' },
+    { value: 'Rat', viewValue: 'Rat' },
   ];
   genders: string[] = ['Female', 'Male'];
 
@@ -33,26 +33,30 @@ export class DialogAddAnimalComponent {
   loading = false;
   hideRequired = 'true';
   birthDate!: Date;
-  selectedAnimal!: string;
+  selectedSpecies!: string;
   selectedGender!: string;
   userId: any = '';
  
   constructor(public dialogRef: MatDialogRef<DialogAddAnimalComponent>) {}
 
-
-  async saveAnimal() {
+  
+  async addAnimal() {
       this.animal.birthDate = this.birthDate.getTime();
       this.animal.gender = this.selectedGender;
-      this.animal.species = this.selectedAnimal;
+      this.animal.species = this.selectedSpecies;
       this.loading = true;
       
-      this.user.animals.push(new Animals(this.animal.toJsonAnimals()));
+      const newAnimal = new Animals(this.animal.toJsonAnimals());
+      newAnimal.generateUniqueId(); 
+
+      this.user.animals.push(newAnimal);
       
       await updateDoc(this.getUserID(), this.user.toJson()).then(() => {
           this.loading = false; 
           this.dialogRef.close();
       }); 
   }
+  
 
   getUserID() {
       return doc(collection(this.firestore, 'users'), this.user.id);

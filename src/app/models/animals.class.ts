@@ -1,4 +1,5 @@
 export class Animals {
+    id: string;
     name: string;
     species: string;
     gender: string;
@@ -6,6 +7,7 @@ export class Animals {
     microchipID: number;
 
     constructor(obj?: any) {
+        this.id = obj && obj.id ? obj.id : '';
         this.name = obj && obj.name ? obj.name : '';
         this.species = obj && obj.species ? obj.species : '';
         this.gender = obj && obj.gender ? obj.gender : '';
@@ -15,6 +17,7 @@ export class Animals {
 
     public toJsonAnimals() {
         return {
+            id: this.id,
             name: this.name,
             species: this.species,
             gender: this.gender,
@@ -33,4 +36,9 @@ export class Animals {
             microchipID: obj?.microchipID || ""
         });
     } 
+
+    generateUniqueId() {
+        this.id = new Date().getTime().toString();
+    }
+
 }

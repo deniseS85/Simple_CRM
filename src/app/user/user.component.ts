@@ -21,7 +21,7 @@ export class UserComponent {
   
   
     constructor(public dialog: MatDialog) {
-        this.unsubList = this.subUsersList();
+        this.unsubList = this.subUsersList(); 
     }
 
     subUsersList() {
@@ -42,7 +42,7 @@ export class UserComponent {
         return collection(this.firestore, 'users');
     }
 
-    openDialog() {
+    addUser() {
         this.dialog.open(DialogAddUserComponent);
     }
 

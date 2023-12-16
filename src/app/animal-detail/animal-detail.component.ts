@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogEditAnimalComponent } from '../dialog-edit-animal/dialog-edit-animal.component';
 
 
+
 @Component({
     selector: 'app-animal-detail',
     templateUrl: './animal-detail.component.html',
@@ -65,8 +66,8 @@ export class AnimalDetailComponent {
 
     async deleteAnimal() {
         if (this.selectedAnimal) {
-            this.animalList = this.user.animals.filter(animal => animal.name !== this.selectedAnimal.name);
-        
+            this.animalList = this.user.animals.filter(animal => animal.id !== this.selectedAnimal.id);
+    
             await updateDoc(this.getUserID(), {
                 animals: this.animalList.map(animal => animal.toJsonAnimals())
             });
@@ -79,8 +80,11 @@ export class AnimalDetailComponent {
     }
 
     editAnimal() {
-       /*  const dialogRef = this.dialog.open(DialogEditAnimalComponent);
-        dialogRef.componentInstance.animal = animal; */
+        const dialog = this.dialog.open(DialogEditAnimalComponent, {
+            data: { animal: this.selectedAnimal }
+        });
+        dialog.componentInstance.user = new User(this.user.toJson());
+        
     }
 }
 

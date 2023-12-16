@@ -37,6 +37,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
 import { DialogEditAnimalComponent } from './dialog-edit-animal/dialog-edit-animal.component';
+import { DragDropModule } from '@angular/cdk/drag-drop'
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { DialogEditAnimalComponent } from './dialog-edit-animal/dialog-edit-anim
     MatSelectModule,
     MatCheckboxModule,
     MatRadioModule,
+    DragDropModule,
    
     provideFirebaseApp(() => initializeApp({"projectId":"simple-crm-81f85","appId":"1:42929532343:web:114f439e3a4c9d10d00c32","storageBucket":"simple-crm-81f85.appspot.com","apiKey":"AIzaSyAmh3k8XdBQM1L7PkZCNwV12ToCmptF0rk","authDomain":"simple-crm-81f85.firebaseapp.com","messagingSenderId":"42929532343"})),
     provideAuth(() => getAuth()),
