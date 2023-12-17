@@ -7,7 +7,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogEditAnimalComponent } from '../dialog-edit-animal/dialog-edit-animal.component';
 
 
-
 @Component({
     selector: 'app-animal-detail',
     templateUrl: './animal-detail.component.html',

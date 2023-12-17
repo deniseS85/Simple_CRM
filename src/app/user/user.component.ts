@@ -14,7 +14,6 @@ import { collection, onSnapshot } from 'firebase/firestore';
 export class UserComponent {
     firestore: Firestore = inject(Firestore);
     unsubList;
-    isUser = false;
     userList:any = [];
     @Input() inputValue!: string;
     filteredUser!: any[];

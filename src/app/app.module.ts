@@ -39,6 +39,7 @@ import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
 import { DialogEditAnimalComponent } from './dialog-edit-animal/dialog-edit-animal.component';
 import { DragDropModule } from '@angular/cdk/drag-drop'
 
+
 @NgModule({
   declarations: [
     AppComponent,

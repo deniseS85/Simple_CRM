@@ -69,11 +69,11 @@ export class DialogEditAnimalComponent implements OnInit  {
 }
 
   getUserID() {
-    return doc(collection(this.firestore, 'users'), this.user.id);
-}
+      return doc(collection(this.firestore, 'users'), this.user.id);
+  }
   
   limitLength(event: any) {
-    const maxLength = 15;
+      const maxLength = 15;
       if (event.target.value.length > maxLength) {
           event.target.value = event.target.value.slice(0, maxLength);
       }

@@ -112,6 +112,8 @@ export class NavigationComponent implements OnInit {
             this.currentUserId = foundUser.id;
             this.userName = foundUser.firstName + ' ' + foundUser.lastName;
             localStorage.setItem('userName', this.userName);
+        } else {
+            localStorage.removeItem('userName');
         }
     }
 

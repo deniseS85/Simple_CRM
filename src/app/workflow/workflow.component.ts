@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import { Component, Input, inject } from '@angular/core';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Firestore } from '@angular/fire/firestore';
 import { User } from '../models/user.class';
 import { Animals } from '../models/animals.class';
@@ -14,13 +14,26 @@ export class WorkflowComponent {
   user = new User();
   animal = new Animals();
   firestore: Firestore = inject(Firestore);
+  @Input() inputValue!: string;
+  todo: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [
+    { img: './assets/img/Cat.png', animalName: 'Lotta', userName: 'Kleister', treatment: 'Impfung', time: '09.00'},
+  ];
+  todoFilter = [];
+  waiting: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [
+    { img: './assets/img/Cat.png', animalName: 'Lotta', userName: 'Kleister', treatment: 'Impfung', time: '09.00'},
+  ];
+  waitingFilter = [];
+  treatment : { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [
+    { img: './assets/img/Cat.png', animalName: 'Lotta', userName: 'Kleister', treatment: 'Impfung', time: '09.00'},
+  ];
+  treatmentFilter = [];
+  done: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [
+    { img: './assets/img/Cat.png', animalName: 'Lotta', userName: 'Kleister', treatment: 'Impfung', time: '09.00'},
+  ];
+  doneFilter = [];
 
-  todo = ['Get to work', 'Pick up groceries', 'Go home', 'Fall asleep'];
-  waiting = ['spielen', 'steichen', 'fahren'];
-  treatment = ['schlafen', 'putzen'];
-  done = ['Get up', 'Brush teeth', 'Take a shower', 'Check e-mail', 'Walk dog'];
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<{ img: string; animalName: string; userName: string; treatment: string; time: string }[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -32,6 +45,10 @@ export class WorkflowComponent {
       );
     }
   }
+
+  
+
+  filterTasks() {}
 
  
 }
