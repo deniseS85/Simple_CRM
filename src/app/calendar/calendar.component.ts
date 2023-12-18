@@ -1,19 +1,22 @@
-import { Component, OnInit} from '@angular/core';
-import { Pipe, PipeTransform } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
+import { DialogAddEventComponent } from '../dialog-add-event/dialog-add-event.component';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrl: './calendar.component.scss'
+  styleUrls: ['./calendar.component.scss'],
 })
-
 
 export class CalendarComponent implements OnInit {
   currentWeek: { start: Date, end: Date } = { start: new Date(), end: new Date() };
   daysOfWeek: Date[] = [];
   hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+  currentDay: Date = new Date();
+
+
+  constructor(public dialog: MatDialog) {}
 
   ngOnInit(): void {
       this.currentWeek = this.getcurrentWeek();
@@ -37,7 +40,7 @@ export class CalendarComponent implements OnInit {
       startPreviousWeek.setDate(startPreviousWeek.getDate() - 7);
 
       while (startPreviousWeek.getDay() !== 1) {
-          startPreviousWeek.setDate(startPreviousWeek.getDate() - 1);
+        startPreviousWeek.setDate(startPreviousWeek.getDate() - 1);
       }
 
       const endOfPreviousWeek = new Date(startPreviousWeek);
@@ -71,5 +74,24 @@ export class CalendarComponent implements OnInit {
       }
 
       this.daysOfWeek = days;
+      this.currentDay = days[0];
   }
+
+  today() {
+      this.currentWeek = this.getcurrentWeek();
+      this.generateDaysOfWeek();
+  }
+
+  isToday(date: Date): boolean {
+      const today = new Date();
+      return date.getDate() === today.getDate() &&
+          date.getMonth() === today.getMonth() &&
+          date.getFullYear() === today.getFullYear();
+  }
+
+  openEventDialog(day: Date, hour: string): void {
+      this.dialog.open(DialogAddEventComponent, {
+          data: { day, hour },
+      });
+    }
 }

@@ -9,6 +9,7 @@
         border-radius: 5px;
         padding: 20px;
         position: relative;
+       /*  user-select: none; */
         button {
             position: absolute;
             left: 21px;
@@ -63,11 +64,20 @@
         }
         .day-column {
             width: 110px;
+            cursor: pointer;
         }
-         td {
+        td {
             border: 1px solid rgb(1, 103, 175);
+            &:hover {
+                background-color: rgba(1, 103, 175, 0.8);
+            }
         }
     }
 }
+
+.today {
+    background-color: rgb(12, 54, 89);
+}
+
 
 

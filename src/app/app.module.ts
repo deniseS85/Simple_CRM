@@ -38,7 +38,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
 import { DialogEditAnimalComponent } from './dialog-edit-animal/dialog-edit-animal.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-
+import { DialogAddEventComponent } from './dialog-add-event/dialog-add-event.component';
 
 
 @NgModule({
@@ -56,7 +56,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     WorkflowComponent,
     DialogAddAnimalComponent,
     AnimalDetailComponent,
-    DialogEditAnimalComponent
+    DialogEditAnimalComponent,
+    DialogAddEventComponent
   ],
   imports: [ 
     BrowserModule,

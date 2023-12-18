@@ -1,6 +1,6 @@
 <div class="calendar">
     <div class="calendar-header">
-        <button class="today-button">Today</button>
+        <button (click)="today()" class="today-button">Today</button>
         <div class="calendar-title">
             <mat-icon (click)="previousWeek()">arrow_forward_ios</mat-icon>
             <h2>{{ currentWeek.start | date:'dd.MM.yyyy' }} - {{ currentWeek.end | date:'dd.MM.yyyy' }}</h2>
@@ -19,7 +19,9 @@
             <tr>
                 <td class="time-column">{{ hour }}</td>
                 <ng-container *ngFor="let day of daysOfWeek">
-                    <td class="day-column"></td>
+                    <td class="day-column" [class.today]="isToday(day)" (click)="openEventDialog(day, hour)">
+                       
+                    </td>
                 </ng-container>
             </tr>
         </ng-container>
