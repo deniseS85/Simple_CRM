@@ -46,11 +46,7 @@ export class UserComponent {
     }
 
     filterUser() {
-        if (this.inputValue) {
-            this.filteredUser = this.userList.filter((item: any) => this.compareInputUser(item));
-        } else {
-            this.filteredUser = this.userList;
-        }
+        this.filteredUser = this.inputValue ? this.userList.filter((item: any) => this.compareInputUser(item)) : this.userList;
     }
 
     compareInputUser(item: any) {

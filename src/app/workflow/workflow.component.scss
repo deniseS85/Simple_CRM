@@ -61,7 +61,6 @@
 
 .empty {
     border: none !important;
-
 }
 
 .kanban-item {
@@ -81,6 +80,7 @@
         display: flex;
         img {
             width: 20px;
+            height: 20px;
             margin-right: 10px
         }
     }
@@ -110,11 +110,6 @@
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-/* .kanban-item:last-child {
-    border: none;
-} */
-
 .kanban-list.cdk-drop-list-dragging .kanban-item:not(.cdk-drag-placeholder) {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-    
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);   
 }

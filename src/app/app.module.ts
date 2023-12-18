@@ -37,7 +37,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
 import { DialogEditAnimalComponent } from './dialog-edit-animal/dialog-edit-animal.component';
-import { DragDropModule } from '@angular/cdk/drag-drop'
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 
 
 @NgModule({
@@ -57,7 +58,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
     AnimalDetailComponent,
     DialogEditAnimalComponent
   ],
-  imports: [
+  imports: [ 
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

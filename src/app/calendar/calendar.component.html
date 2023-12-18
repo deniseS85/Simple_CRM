@@ -1,0 +1,33 @@
+<div class="calendar">
+    <div class="calendar-header">
+        <button class="today-button">Today</button>
+        <div class="calendar-title">
+            <mat-icon (click)="previousWeek()">arrow_forward_ios</mat-icon>
+            <h2>{{ currentWeek.start | date:'dd.MM.yyyy' }} - {{ currentWeek.end | date:'dd.MM.yyyy' }}</h2>
+            <mat-icon (click)="nextWeek()">arrow_forward_ios</mat-icon>
+        </div>
+    </div>
+
+    <table class="calendar-table">
+        <tr class="table-header">
+            <th></th>
+            <th *ngFor="let day of daysOfWeek">
+                {{ day | date:'E, dd.MM' }}
+            </th>
+        </tr>
+        <ng-container *ngFor="let hour of hours">
+            <tr>
+                <td class="time-column">{{ hour }}</td>
+                <ng-container *ngFor="let day of daysOfWeek">
+                    <td class="day-column"></td>
+                </ng-container>
+            </tr>
+        </ng-container>
+    </table>
+
+
+   
+    
+
+
+   
