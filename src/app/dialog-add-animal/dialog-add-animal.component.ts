@@ -21,7 +21,7 @@ export class DialogAddAnimalComponent {
     { value: 'Dog', viewValue: 'Dog' },
     { value: 'Hamster', viewValue: 'Hamster' },
     { value: 'Rabbit', viewValue: 'Rabbit' },
-    { value: 'Guinea pig', viewValue: 'Guinea pig' },
+    { value: 'Guinea pig', viewValue: 'Guinea pig'},
     { value: 'Ferret', viewValue: 'Ferret' },
     { value: 'Rat', viewValue: 'Rat' },
   ];

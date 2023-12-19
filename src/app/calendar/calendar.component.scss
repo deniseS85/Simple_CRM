@@ -48,6 +48,9 @@
         color: white;
         box-sizing: border-box;
         border-style: hidden;
+        &:hover {
+            border-style: unset;
+        }
         .table-header {
             height: 60px;
             font-size: 16px;
@@ -68,8 +71,9 @@
         }
         td {
             border: 1px solid rgb(1, 103, 175);
-            &:hover {
-                background-color: rgba(1, 103, 175, 0.8);
+            &:hover:not(tr td:first-child) {
+               /*  background-color: rgba(1, 103, 175, 0.8); */
+                border: 1.5px solid rgb(5, 251, 251);
             }
         }
     }
@@ -78,6 +82,9 @@
 .today {
     background-color: rgb(12, 54, 89);
 }
+
+
+
 
 
 

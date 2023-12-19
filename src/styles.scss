@@ -3,3 +3,34 @@
 html, body { height: 100%; cursor: default;}
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+
+.categoryColor {
+    color: rgb(3, 33, 56);
+    padding: 0 5px;
+    height: 44px;
+}
+
+.medical-check-up {
+background-color: #c9f7f9;
+}
+
+.dental-care {
+background-color: #fbd1d1;
+}
+
+.vaccination {
+background-color: #eec3fd;
+}
+
+.castration {
+background-color: #d4f9c6;
+}
+
+.laboratory-test {
+background-color: #f9f6c3;
+}
+
+.operation {
+background-color: #DBDBDB;
+}
+  
