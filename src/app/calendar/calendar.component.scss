@@ -9,7 +9,6 @@
         border-radius: 5px;
         padding: 20px;
         position: relative;
-       /*  user-select: none; */
         button {
             position: absolute;
             left: 21px;
@@ -71,9 +70,10 @@
         }
         td {
             border: 1px solid rgb(1, 103, 175);
+            /* height: 47px; */
             &:hover:not(tr td:first-child) {
-               /*  background-color: rgba(1, 103, 175, 0.8); */
                 border: 1.5px solid rgb(5, 251, 251);
+                box-sizing: border-box;
             }
         }
     }

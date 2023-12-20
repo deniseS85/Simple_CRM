@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Treatment } from '../models/treatments.class';
 
 
+
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
@@ -19,6 +20,7 @@ export class CalendarComponent implements OnInit {
   isEventVisible: boolean = false;
   eventData: { day: Date | null, hour: string, name: string, treatment: Treatment } = { day: null, hour: '', name: '', treatment: { name: '', categoryColor: '', duration: 0 } };
   @ViewChild('calendarContainer') calendarContainer!: ElementRef;
+ 
 
   constructor(public dialog: MatDialog) {}
 
@@ -26,6 +28,7 @@ export class CalendarComponent implements OnInit {
       this.currentWeek = this.getcurrentWeek();
       this.generateDaysOfWeek();
   }
+
 
   getcurrentWeek(): { start: Date, end: Date } { 
       const today = new Date();
@@ -105,12 +108,6 @@ export class CalendarComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-        /*   const targetCell = event.target as HTMLElement;
-          const targetCellRect = targetCell.getBoundingClientRect();
-          const top = targetCellRect.top + window.scrollY;
-          const left = targetCellRect.left + window.scrollX;
-
-          this.eventPosition = { top, left }; */
           this.isEventVisible = true;
           this.eventData = result;
         }
@@ -158,7 +155,10 @@ export class CalendarComponent implements OnInit {
   getRowspan(treatment: Treatment): number {
       return treatment ? treatment.duration : 1;
   }
-
   
+  getTopPosition(rowIndex: number): string {
+    const cellHeight = 47;
+    return `${rowIndex * cellHeight}px`;
+  }
 
 }

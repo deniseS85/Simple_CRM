@@ -63,10 +63,10 @@ export class DialogAddAnimalComponent {
   }
 
   limitLength(event: any) {
-    const maxLength = 15;
-      if (event.target.value.length > maxLength) {
-          event.target.value = event.target.value.slice(0, maxLength);
+      const maxLength = 15;
+        if (event.target.value.length > maxLength) {
+            event.target.value = event.target.value.slice(0, maxLength);
+        }
       }
-    }
 
 }
