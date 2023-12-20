@@ -3,6 +3,7 @@ import { User } from '../models/user.class';
 import { Firestore, updateDoc } from '@angular/fire/firestore';
 import { collection, doc } from 'firebase/firestore';
 import { MatDialogRef } from '@angular/material/dialog';
+import { DataUpdateService } from '../data-update.service';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class DialogEditUserComponent implements OnInit {
   birthDate: any;
   
 
-  constructor(public dialogRef: MatDialogRef<DialogEditUserComponent>) {}
+  constructor(public dialogRef: MatDialogRef<DialogEditUserComponent>, private dataUpdate: DataUpdateService) {}
 
   ngOnInit(): void {
       this.birthDate = new Date(this.user.birthDate);
@@ -27,10 +28,12 @@ export class DialogEditUserComponent implements OnInit {
   
   async saveUserChange() {
       this.loading = true;
+      const updatedData = this.user.toJson();
       await updateDoc(this.getUserID(), this.user.toJson()).then(() => {
           this.loading = false;
-          this.updateUserNameInLocalStorage();
           this.dialogRef.close();
+          this.dataUpdate.setUserData(updatedData);
+          this.updateUserNameInLocalStorage();
       }); 
   }
 

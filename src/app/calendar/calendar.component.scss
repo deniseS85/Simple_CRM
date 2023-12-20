@@ -7,7 +7,7 @@
         align-items: center;
         justify-content: center;
         border-radius: 5px;
-        padding: 20px;
+        padding: 20px 20px 0 20px;
         position: relative;
         button {
             position: absolute;
@@ -47,9 +47,6 @@
         color: white;
         box-sizing: border-box;
         border-style: hidden;
-        &:hover {
-            border-style: unset;
-        }
         .table-header {
             height: 60px;
             font-size: 16px;
@@ -70,10 +67,9 @@
         }
         td {
             border: 1px solid rgb(1, 103, 175);
-            /* height: 47px; */
+            height: 32px;
             &:hover:not(tr td:first-child) {
                 border: 1.5px solid rgb(5, 251, 251);
-                box-sizing: border-box;
             }
         }
     }

@@ -22,8 +22,8 @@
               <td class="day-column" [class.today]="isToday(day)" (click)="openEventDialog(day, hour, $event)" [attr.rowspan]="isEventVisible && day.toDateString() === eventData.day?.toDateString() && hour === eventData.hour ? getRowspan(eventData.treatment) : 1">
                 <div *ngIf="isEventVisible && day.toDateString() === eventData.day?.toDateString() && hour === eventData.hour" 
                   [ngClass]="['categoryColor', getTreatmentCategoryClass(eventData.treatment)]" 
-                  [style.height.px]="getRowspan(eventData.treatment) * 47">
-                  {{ eventData.hour }} - {{ calculateEndTime(eventData.hour, eventData.treatment.duration) }}<br>{{ eventData.name }} {{ eventData.treatment.name }}
+                  [style.height.px]="getRowspan(eventData.treatment) * 59">
+                  {{ eventData.hour }} - {{ calculateEndTime(eventData.hour, eventData.treatment.duration) }}<br>{{ eventData.name }}<br>{{ eventData.treatment.name }}
                 </div> 
               </td>
             </ng-container>

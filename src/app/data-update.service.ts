@@ -1,16 +1,35 @@
 // In DataUpdateService
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Animals } from './models/animals.class'; // Stelle sicher, dass der Import korrekt ist
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataUpdateService {
-  private selectedAnimalSource = new BehaviorSubject<Animals | null>(null);
-  selectedAnimal$ = this.selectedAnimalSource.asObservable();
+    private userDataSubject = new BehaviorSubject<any>({});
+    private animalDataSubject = new BehaviorSubject<any>({});
+    userData$ = this.userDataSubject.asObservable();
+    animalData$ = this.animalDataSubject.asObservable();
 
-  updateSelectedAnimal(animal: Animals) {
-    this.selectedAnimalSource.next(animal);
-  }
+    setUserData(updatedData: any): void {
+        const currentData = this.userDataSubject.value;
+        const newData = { ...currentData, ...updatedData };
+        this.userDataSubject.next(newData);
+    }
+
+    getUserData() {
+      return this.userDataSubject.value;
+    }
+
+    setAnimalData(updatedData: any): void {
+        const currentData = this.animalDataSubject.value;
+        const newData = { ...currentData, ...updatedData };
+        this.animalDataSubject.next(newData);
+    }
+  
+    getAnimalData() {
+        return this.animalDataSubject.value;
+    }
 }
+

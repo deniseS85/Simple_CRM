@@ -1,9 +1,13 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DialogAddEventComponent } from '../dialog-add-event/dialog-add-event.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Treatment } from '../models/treatments.class';
+/* import { Treatment } from '../models/treatments.class'; */
 
-
+export interface Treatment {
+  name: string;
+  categoryColor: string;
+  duration: number;   
+}
 
 @Component({
   selector: 'app-calendar',

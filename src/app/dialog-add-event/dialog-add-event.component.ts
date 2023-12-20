@@ -1,6 +1,17 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Treatment } from '../models/treatments.class';
+import { Animals } from '../models/animals.class';
+import { collection, doc, getDocs, onSnapshot } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
+import { User } from '../models/user.class';
+
+/* import { Treatment } from '../models/treatments.class'; */
+
+export interface Treatment {
+  name: string;
+  categoryColor: string;
+  duration: number;   
+}
 
 @Component({
   selector: 'app-dialog-add-event',
@@ -26,6 +37,10 @@ export class DialogAddEventComponent {
   loading = false;
   hideRequired = 'true';
   hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+  
+  firestore: Firestore = inject(Firestore);
+/*   animalList:any = []; */
+  user = new User();
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { day: Date, hour: string }, private dialogRef: MatDialogRef<DialogAddEventComponent>) {
     this.eventData.day = data.day || new Date();
@@ -39,6 +54,7 @@ export class DialogAddEventComponent {
         name: this.eventData.name, 
         treatment: this.eventData.treatment
       };
+
       this.dialogRef.close(eventData);
   }
 

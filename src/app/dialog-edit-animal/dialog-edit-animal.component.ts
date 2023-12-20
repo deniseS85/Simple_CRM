@@ -4,8 +4,7 @@ import { Animals } from '../models/animals.class';
 import { Firestore, updateDoc } from '@angular/fire/firestore';
 import { collection, doc } from '@angular/fire/firestore';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-
-
+import { DataUpdateService } from '../data-update.service';
 
 interface Species {
   value: string;
@@ -39,7 +38,7 @@ export class DialogEditAnimalComponent implements OnInit  {
   changeAnimal: Animals[] = []
 
 
-  constructor(public dialogRef: MatDialogRef<DialogEditAnimalComponent>,@Inject(MAT_DIALOG_DATA) public data: {animal: Animals}) {
+  constructor(public dialogRef: MatDialogRef<DialogEditAnimalComponent>,@Inject(MAT_DIALOG_DATA) public data: {animal: Animals}, private dataUpdate: DataUpdateService) {
       this.selectedAnimal = { ...data.animal };
   }
 
@@ -56,12 +55,13 @@ export class DialogEditAnimalComponent implements OnInit  {
           const isAnimal = this.user.animals.find(animal => animal.id === this.selectedAnimal.id);
 
           if (isAnimal) {
+            this.dataUpdate.setAnimalData({ ...this.selectedAnimal });
+            
             await updateDoc(this.getUserID(), {
                 animals: this.user.animals.map(animal =>
                     (animal.id === isAnimal.id) ? { ...this.selectedAnimal } : animal.toJsonAnimals()
                 )
-            });
-
+            }); 
               this.loading = false;
               this.dialogRef.close();
           }
