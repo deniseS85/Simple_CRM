@@ -42,7 +42,10 @@ export class NavigationComponent implements OnInit {
      * UserName wird vom LocalStorage geladen, wenn Seite neugeladen wird
      */
     ngOnInit() {
+
+        this.getUpdateDate();
         this.userName = localStorage.getItem('userName') || ''; 
+        
         this.router.events.pipe(
             filter((event): event is NavigationEnd => event instanceof NavigationEnd)
             ).subscribe((event: NavigationEnd) => {
@@ -54,6 +57,12 @@ export class NavigationComponent implements OnInit {
                         document.getElementById('drawer')?.classList.add('d-none');
                         document.getElementById('menu')?.classList.add('d-none');
                     }
+        });
+    }
+
+    getUpdateDate() {
+        this.dataUpdate.userData$.subscribe(userData => {
+            this.userName = `${userData.firstName} ${userData.lastName}`;
         });
     }
 
@@ -104,20 +113,15 @@ export class NavigationComponent implements OnInit {
 
     /**
      * durchsucht das Array userList auf die Nutzer mit der aktuellen ID
-     * und sucht den dazugehörigen Vor- und Nachnamen und erhält Änderungen vom Servie
+     * und sucht den dazugehörigen Vor- und Nachnamen
      */
     getUserFromId() {
         const foundUser = this.userList.find((user: any) => this.currentUrl === "/patients/" + user.id);
       
         if (foundUser) {
             this.currentUserId = foundUser.id;
-        
-             this.dataUpdate.userData$.subscribe(userData => {
-                let firstName = userData.firstName || foundUser.firstName;
-                let lastName = userData.lastName || foundUser.lastName;
-                this.userName = `${firstName} ${lastName}`;
-                localStorage.setItem('userName', this.userName);
-            });
+            this.userName = foundUser.firstName + ' ' + foundUser.lastName;
+            localStorage.setItem('userName', this.userName);
         } 
     }
     
