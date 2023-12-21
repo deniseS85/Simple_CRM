@@ -45,7 +45,7 @@ export class NavigationComponent implements OnInit {
 
         this.getUpdateDate();
         this.userName = localStorage.getItem('userName') || ''; 
-        
+
         this.router.events.pipe(
             filter((event): event is NavigationEnd => event instanceof NavigationEnd)
             ).subscribe((event: NavigationEnd) => {
@@ -125,7 +125,6 @@ export class NavigationComponent implements OnInit {
         } 
     }
     
-
     getAnimals(): Animals[] {
         return Array.isArray(this.user.animals) ? this.user.animals : [this.user.animals];
     }

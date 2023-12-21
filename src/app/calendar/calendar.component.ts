@@ -1,6 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DialogAddEventComponent } from '../dialog-add-event/dialog-add-event.component';
 import { MatDialog } from '@angular/material/dialog';
+import { DataUpdateService } from '../data-update.service';
+import { MatSnackBar,} from '@angular/material/snack-bar';
+import { refFromURL } from '@angular/fire/database';
+
 /* import { Treatment } from '../models/treatments.class'; */
 
 export interface Treatment {
@@ -8,6 +12,7 @@ export interface Treatment {
   categoryColor: string;
   duration: number;   
 }
+
 
 @Component({
   selector: 'app-calendar',
@@ -21,65 +26,68 @@ export class CalendarComponent implements OnInit {
   hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
   currentDay: Date = new Date();
   eventPosition: { top: number, left: number } = { top: 0, left: 0 };
-  isEventVisible: boolean = false;
   eventData: { day: Date | null, hour: string, name: string, treatment: Treatment } = { day: null, hour: '', name: '', treatment: { name: '', categoryColor: '', duration: 0 } };
-  @ViewChild('calendarContainer') calendarContainer!: ElementRef;
- 
+  events: any[] = [];
+  eventIdCounter: number = 1;
 
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialog: MatDialog, private dataUpdate: DataUpdateService, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
       this.currentWeek = this.getcurrentWeek();
       this.generateDaysOfWeek();
+     /*  this.events = this.dataUpdate.getEvents(); */
+      this.events.forEach(event => {
+        this.toHiddenCell(event.row, event.column);
+      });
   }
 
 
   getcurrentWeek(): { start: Date, end: Date } { 
-      const today = new Date();
-      const currentDay = today.getDay();
-      const startDay = new Date(today);
+      let today = new Date();
+      let currentDay = today.getDay();
+      let startDay = new Date(today);
 
       startDay.setDate(today.getDate() - currentDay + (currentDay === 0 ? -5 : 1));
-      const endOfWeek = new Date(startDay);
+      let endOfWeek = new Date(startDay);
 
       endOfWeek.setDate(startDay.getDate() + 4);
       return { start: startDay, end: endOfWeek };
   }
 
   previousWeek(): void {
-      const startPreviousWeek = new Date(this.currentWeek.start);
+      let startPreviousWeek = new Date(this.currentWeek.start);
       startPreviousWeek.setDate(startPreviousWeek.getDate() - 7);
 
       while (startPreviousWeek.getDay() !== 1) {
         startPreviousWeek.setDate(startPreviousWeek.getDate() - 1);
       }
 
-      const endOfPreviousWeek = new Date(startPreviousWeek);
+      let endOfPreviousWeek = new Date(startPreviousWeek);
       endOfPreviousWeek.setDate(endOfPreviousWeek.getDate() + 4);
       this.currentWeek = { start: startPreviousWeek, end: endOfPreviousWeek };
       this.generateDaysOfWeek();
   }
 
   nextWeek(): void {
-      const startNextWeek = new Date(this.currentWeek.end);
+      let startNextWeek = new Date(this.currentWeek.end);
       startNextWeek.setDate(startNextWeek.getDate() + 1);
 
       while (startNextWeek.getDay() !== 1) {
         startNextWeek.setDate(startNextWeek.getDate() + 1);
       }
 
-      const endOfNextWeek = new Date(startNextWeek);
+      let endOfNextWeek = new Date(startNextWeek);
       endOfNextWeek.setDate(endOfNextWeek.getDate() + 4);
       this.currentWeek = { start: startNextWeek, end: endOfNextWeek };
       this.generateDaysOfWeek();
   }
 
   generateDaysOfWeek(): void {
-      const days: Date[] = [];
-      const startDay = new Date(this.currentWeek.start);
+      let days: Date[] = [];
+      let startDay = new Date(this.currentWeek.start);
 
       for (let i = 0; i < 5; i++) {
-        const day = new Date(startDay);
+        let day = new Date(startDay);
         day.setDate(startDay.getDate() + i);
         days.push(day);
       }
@@ -94,45 +102,89 @@ export class CalendarComponent implements OnInit {
   }
 
   isToday(date: Date): boolean {
-      const today = new Date();
+      let today = new Date();
       return date.getDate() === today.getDate() &&
           date.getMonth() === today.getMonth() &&
           date.getFullYear() === today.getFullYear();
   }
 
-  openEventDialog(day: Date, hour: string, event: MouseEvent): void {
-      const dialogRef = this.dialog.open(DialogAddEventComponent, {
-        data: {
-          day: day,
-          hour: hour,
-          name: '',
-          treatment: { name: '', categoryColor: '', duration: 0 }
-        }
-      });
+  openEventDialog(day: Date, hour: string, event: MouseEvent, row:number, column:number): void {
+      const isCellOccupied = this.isCellOccupied(day, hour);
+    
+      if (isCellOccupied) {
+            this.snackBar.open('Time is already reserved.', 'OK', {
+                duration: 3000,
+            });
+        return;
+      }
+    
+      let dialogRef = this.dialog.open(DialogAddEventComponent, {
+          data: {
+            day: day,
+            hour: hour,
+            name: '',
+            treatment: { name: '', categoryColor: '', duration: 0 },
+            id: 1
+          }
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              this.closeEventDialog(result, day, hour, row, column, event);
+            }
+        });
+  }
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.isEventVisible = true;
+  closeEventDialog(result:any, day:Date, hour:string, row:number, column:number, event:any) {
+      let isCellOccupiedAfterDialog = this.isCellOccupied(day, hour);
+
+      if (!isCellOccupiedAfterDialog) {
+          this.events.push({ ...result, id: this.eventIdCounter++ });
           this.eventData = result;
-        }
+          this.toHiddenCell(row, column);
+          console.log(this.events);
+      } 
+  }
+
+
+  toHiddenCell(row: number, column: number) {
+      const duration = this.eventData.treatment.duration;
+    
+      if (duration > 1) {
+          for (let i = 1; i < duration; i++) {
+            const nextRow = row + i;
+            const nextCell = `${nextRow} ${column}`;
+            const hiddenCellElement = document.getElementById(nextCell);
+      
+            if (hiddenCellElement && hiddenCellElement.style.display !== 'none') {
+                hiddenCellElement.style.display = 'none';
+            }
+          }
+      }
+  }
+
+  isCellOccupied(day: Date, hour: string): boolean {
+      return this.events.some(event => {
+          const eventDay = new Date(event.day);
+          return eventDay.toDateString() === day.toDateString() && event.hour === hour;
       });
   }
 
   convertDateFormat(dateString: string): string {
-      const date = new Date(dateString);
-      const dayOfMonth = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
+      let date = new Date(dateString);
+      let dayOfMonth = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
     
-      const formattedDay = (dayOfMonth < 10) ? `0${dayOfMonth}` : `${dayOfMonth}`;
-      const formattedMonth = (month < 10) ? `0${month}` : `${month}`;
+      let formattedDay = (dayOfMonth < 10) ? `0${dayOfMonth}` : `${dayOfMonth}`;
+      let formattedMonth = (month < 10) ? `0${month}` : `${month}`;
     
       return `${formattedDay}.${formattedMonth}.${year}`;
   }
 
   calculateEndTime(startTime: string, duration: number): string {
-      const startHour = parseInt(startTime.split(':')[0], 10);
-      const endHour = startHour + duration;
+      let startHour = parseInt(startTime.split(':')[0], 10);
+      let endHour = startHour + duration;
     
       return `${endHour.toString().padStart(2, '0')}:00`;
   }
@@ -159,10 +211,35 @@ export class CalendarComponent implements OnInit {
   getRowspan(treatment: Treatment): number {
       return treatment ? treatment.duration : 1;
   }
-  
-  getTopPosition(rowIndex: number): string {
-    const cellHeight = 47;
-    return `${rowIndex * cellHeight}px`;
+
+
+  /**
+   * gibt ein Array von Ereignissen zurück
+   * @param day an einem bestimmten Tag
+   * @param hour zu einer bestimmten Stunde
+   * @returns 
+   */
+  getVisibleEvents(day: Date, hour: string): any[] {
+      return this.events.filter(event => {
+        const eventDay = new Date(event.day);
+        return eventDay.toDateString() === day.toDateString() && event.hour === hour;
+      });
   }
 
+
+  getMaxRowspan(day: Date, hour: string): number {
+    let rowspan = 1;
+  
+    const eventsForCell = this.events.filter(event => {
+      const eventDay = new Date(event.day);
+      return eventDay.toDateString() === day.toDateString() && event.hour === hour;
+    });
+  
+    if (eventsForCell.length > 0) {
+      const maxDuration = Math.max(...eventsForCell.map(event => event.treatment.duration));
+      rowspan = maxDuration;
+    }
+  
+    return rowspan;
+  }
 }

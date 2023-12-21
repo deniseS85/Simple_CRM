@@ -11,6 +11,8 @@ export class DataUpdateService {
     private animalDataSubject = new BehaviorSubject<any>({});
     userData$ = this.userDataSubject.asObservable();
     animalData$ = this.animalDataSubject.asObservable();
+    private events: any[] = [];
+    private eventIdCounter: number = 1;
 
     setUserData(updatedData: any): void {
         const currentData = this.userDataSubject.value;
@@ -30,6 +32,15 @@ export class DataUpdateService {
   
     getAnimalData() {
         return this.animalDataSubject.value;
+    }
+
+    addEvent(event: any) {
+        event.id = this.eventIdCounter++;
+        this.events.push(event);
+    }
+
+    getEvents() {
+        return this.events;
     }
 }
 

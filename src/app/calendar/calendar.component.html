@@ -1,4 +1,4 @@
-<div class="calendar" #calendarContainer>
+<div class="calendar">
     <div class="calendar-header">
         <button (click)="today()" class="today-button">Today</button>
         <div class="calendar-title">
@@ -15,16 +15,19 @@
             {{ day | date:'E, dd.MM' }}
           </th>
         </tr>
-        <ng-container *ngFor="let hour of hours">
+        <ng-container *ngFor="let hour of hours; let row = index">
           <tr>
             <td class="time-column">{{ hour }}</td>
-            <ng-container *ngFor="let day of daysOfWeek; let i = index">
-              <td class="day-column" [class.today]="isToday(day)" (click)="openEventDialog(day, hour, $event)" [attr.rowspan]="isEventVisible && day.toDateString() === eventData.day?.toDateString() && hour === eventData.hour ? getRowspan(eventData.treatment) : 1">
-                <div *ngIf="isEventVisible && day.toDateString() === eventData.day?.toDateString() && hour === eventData.hour" 
-                  [ngClass]="['categoryColor', getTreatmentCategoryClass(eventData.treatment)]" 
-                  [style.height.px]="getRowspan(eventData.treatment) * 59">
-                  {{ eventData.hour }} - {{ calculateEndTime(eventData.hour, eventData.treatment.duration) }}<br>{{ eventData.name }}<br>{{ eventData.treatment.name }}
-                </div> 
+            <ng-container *ngFor="let day of daysOfWeek; let column = index">
+              <td id="{{row}} {{column}}"
+                class="day-column" [class.today]="isToday(day)" 
+                (click)="openEventDialog(day, hour, $event, row, column)" 
+                [attr.rowspan]="getMaxRowspan(day, hour)">
+                <div *ngFor="let event of getVisibleEvents(day, hour)"
+                  [ngClass]="['categoryColor', getTreatmentCategoryClass(event.treatment)]" 
+                  [style.height.px]="getRowspan(event.treatment) * 58">
+                 {{ event.hour }} - {{ calculateEndTime(event.hour, event.treatment.duration) }}<br>{{ event.name }}<br>{{ event.treatment.name }}
+                </div>
               </td>
             </ng-container>
           </tr>

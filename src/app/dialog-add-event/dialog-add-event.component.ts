@@ -28,11 +28,12 @@ export class DialogAddEventComponent {
     { name: 'Operation', categoryColor: '#DBDBDB', duration: 3 },
   ];
 
-  eventData: { day: Date | null, hour: string, name: string, treatment: Treatment } = {
+  eventData: { day: Date | null, hour: string, name: string, treatment: Treatment, id:number } = {
     day: null,
     hour: '',
     name: '',
-    treatment: { name: '', categoryColor: '', duration: 0 }
+    treatment: { name: '', categoryColor: '', duration: 0 },
+    id: 1
   };
   loading = false;
   hideRequired = 'true';
@@ -52,7 +53,8 @@ export class DialogAddEventComponent {
         day: this.eventData.day,
         hour: this.eventData.hour,
         name: this.eventData.name, 
-        treatment: this.eventData.treatment
+        treatment: this.eventData.treatment,
+        id: this.eventData.id
       };
 
       this.dialogRef.close(eventData);
