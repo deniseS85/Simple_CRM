@@ -1,9 +1,9 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DialogAddEventComponent } from '../dialog-add-event/dialog-add-event.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
 import { MatSnackBar,} from '@angular/material/snack-bar';
-import { refFromURL } from '@angular/fire/database';
+
 
 /* import { Treatment } from '../models/treatments.class'; */
 
@@ -26,7 +26,14 @@ export class CalendarComponent implements OnInit {
   hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
   currentDay: Date = new Date();
   eventPosition: { top: number, left: number } = { top: 0, left: 0 };
-  eventData: { day: Date | null, hour: string, name: string, treatment: Treatment } = { day: null, hour: '', name: '', treatment: { name: '', categoryColor: '', duration: 0 } };
+  eventData: { day: Date | null, hour: string, name: string, treatment: Treatment, id: number; animalID: number } = 
+    { day: null, 
+      hour: '', 
+      name: '', 
+      treatment: { name: '', categoryColor: '', duration: 0 },
+      id: 0, 
+      animalID: 0 
+    };
   events: any[] = [];
   eventIdCounter: number = 1;
 
@@ -40,7 +47,6 @@ export class CalendarComponent implements OnInit {
         this.toHiddenCell(event.row, event.column);
       });
   }
-
 
   getcurrentWeek(): { start: Date, end: Date } { 
       let today = new Date();
@@ -124,7 +130,8 @@ export class CalendarComponent implements OnInit {
             hour: hour,
             name: '',
             treatment: { name: '', categoryColor: '', duration: 0 },
-            id: 1
+            id: 0,
+            animalID: 0
           }
         });
     
@@ -139,13 +146,11 @@ export class CalendarComponent implements OnInit {
       let isCellOccupiedAfterDialog = this.isCellOccupied(day, hour);
 
       if (!isCellOccupiedAfterDialog) {
-          this.events.push({ ...result, id: this.eventIdCounter++ });
+          this.events.push(result);
           this.eventData = result;
           this.toHiddenCell(row, column);
-          console.log(this.events);
       } 
   }
-
 
   toHiddenCell(row: number, column: number) {
       const duration = this.eventData.treatment.duration;
@@ -212,7 +217,6 @@ export class CalendarComponent implements OnInit {
       return treatment ? treatment.duration : 1;
   }
 
-
   /**
    * gibt ein Array von Ereignissen zurück
    * @param day an einem bestimmten Tag
@@ -225,7 +229,6 @@ export class CalendarComponent implements OnInit {
         return eventDay.toDateString() === day.toDateString() && event.hour === hour;
       });
   }
-
 
   getMaxRowspan(day: Date, hour: string): number {
     let rowspan = 1;

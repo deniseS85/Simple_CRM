@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { User } from '../models/user.class';
-import { Firestore } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 import { collection, addDoc } from "firebase/firestore"; 
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -19,18 +19,18 @@ export class DialogAddUserComponent {
 
   constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>) {}
   
-   async saveUser() {
+  async saveUser() {
       this.user.birthDate = this.birthDate.getTime();
       this.loading = true;
-
-      await addDoc(this.getUserRef(), this.user.toJson()).catch(
-        (err) => {
-          console.error(err)
-        }
-      ).then(() => { 
-        this.loading = false; 
-        this.dialogRef.close();
-      })
+    
+      try {
+        const docRef = await addDoc(this.getUserRef(), this.user.toJson());
+        await updateDoc(doc(this.getUserRef(), docRef.id), {id: docRef.id});
+        this.loading = false;
+        this.dialogRef.close({ ...this.user.toJson(), id: docRef.id });
+      } catch (error) {
+        console.error('Error adding user: ', error);
+      }
   }
 
   getUserRef() {

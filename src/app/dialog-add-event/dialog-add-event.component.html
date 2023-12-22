@@ -17,8 +17,12 @@
         </div>
         <div>
           <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
-            <mat-label>Name</mat-label>
-            <input [disabled]="loading" name="name" type="text" [(ngModel)]="eventData.name" matInput placeholder="Name" required>
+            <mat-label>Select the Name</mat-label>
+            <mat-select [disabled]="loading" [(ngModel)]="eventData.name" name="selectedAnimal" placeholder="Select the Name" required>
+              <mat-option class="select-field" *ngFor="let animal of animalList" [value]="animal.name">
+                {{ animal.name }}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
         </div>
           <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">

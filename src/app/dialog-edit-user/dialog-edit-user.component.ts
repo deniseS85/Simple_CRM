@@ -29,13 +29,17 @@ export class DialogEditUserComponent implements OnInit {
   async saveUserChange() {
       this.loading = true;
       const updatedData = this.user.toJson();
-      await updateDoc(this.getUserID(), this.user.toJson()).then(() => {
+
+      try {
+          await updateDoc(this.getUserID(), updatedData);
           this.loading = false;
           this.dialogRef.close();
           this.dataUpdate.setUserData(updatedData);
           this.updateUserNameInLocalStorage();
-      }); 
-  }
+      } catch (error) {
+          console.error('Error updating user: ', error);
+      }
+}
 
   updateUserNameInLocalStorage() {
         let userName = this.user.firstName + ' ' + this.user.lastName;
