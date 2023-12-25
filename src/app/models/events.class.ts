@@ -36,7 +36,7 @@ export class Events {
   setEventsObject(obj: any, id: string) {
     return new Events({
       animalID: obj.animalID || "",
-      day: obj.day || "",
+      day: obj.day ? new Date(obj.day.seconds * 1000) : null,
       hour: obj.hour || "",
       id: id || "",
       name: obj.name || '',

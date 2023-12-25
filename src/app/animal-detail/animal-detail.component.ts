@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Firestore, collection, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, doc, onSnapshot, updateDoc, Timestamp } from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditAnimalComponent } from '../dialog-edit-animal/dialog-edit-animal.component';
 import { DataUpdateService } from '../data-update.service';
+import { Events } from '../models/events.class';
 
 @Component({
     selector: 'app-animal-detail',
@@ -22,7 +23,10 @@ export class AnimalDetailComponent implements OnInit{
     unsubAnimalList;
     selectedAnimal:any = '';
     imageSrc: string = '';
-
+    lastAppointment: string = '';
+    nextAppointment: string = '';
+    animalIds: any[] = [];
+    treatments: any[] = [];
 
     constructor(private route: ActivatedRoute, private router: Router, public dialog: MatDialog, private dataUpdate: DataUpdateService) {
         this.userID = this.route.snapshot.paramMap.get('id');
@@ -31,12 +35,20 @@ export class AnimalDetailComponent implements OnInit{
     }
 
     ngOnInit(): void {
-        const storedAnimalData = localStorage.getItem('selectedAnimal');
+        let storedAnimalData = localStorage.getItem('selectedAnimal');
         if (storedAnimalData) {
             this.selectedAnimal = JSON.parse(storedAnimalData);
+            console.log('Selected Animal:', this.selectedAnimal);
         } else {
             this.getSelectedAnimalFromUser();
         }
+        this.dataUpdate.getAllAnimalIds();
+
+        this.dataUpdate.allAnimalIds$.subscribe((animalIds) => {
+          this.animalIds = animalIds;
+        });
+    
+        this.loadAppointments();
     }
 
     ngOnDestroy(){
@@ -73,6 +85,43 @@ export class AnimalDetailComponent implements OnInit{
         }
     }
 
+    loadAppointments() {
+        const eventsRef = collection(this.firestore, 'events');
+        
+        onSnapshot(eventsRef, (querySnapshot) => {
+          const animalEventsList: Events[] = [];
+      
+          querySnapshot.forEach((doc) => {
+            const event = doc.data();
+            animalEventsList.push(new Events().setEventsObject(event, doc.id));
+          });
+    
+          this.updateAppointmentDates(animalEventsList);
+          this.treatments = animalEventsList
+          .filter((event) => event.animalID === this.selectedAnimal.id)
+          .map((event) => ({ date: this.formatDate(event.day), treatment: event.treatmentName }));
+        });
+    }   
+
+    updateAppointmentDates(animalEventsList: Events[]) {
+        let validEvents = animalEventsList.filter(event => event.day instanceof Date && event.animalID === this.selectedAnimal.id);
+        let sortedEvents = validEvents.sort((a, b) => a.day.getTime() - b.day.getTime());
+        let lastAppointmentEvent = sortedEvents.find(event => event.day < new Date());
+        let nextAppointmentEvent = sortedEvents.find(event => event.day >= new Date());
+    
+        this.lastAppointment = lastAppointmentEvent ? this.formatDate(lastAppointmentEvent.day) : '---';
+        this.nextAppointment = nextAppointmentEvent ? this.formatDate(nextAppointmentEvent.day) : '---';
+    }
+    
+    formatDate(date: Date): string {
+        return date.toLocaleDateString();
+    }
+    
+    toEventDate(timestamp: any): Date | null {
+        return timestamp instanceof Timestamp ? new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6) : null;
+    }
+    
+    
     goBack() {
         const userId = this.route.snapshot.paramMap.get('id');
         this.router.navigate(['/patients', userId]);

@@ -81,22 +81,79 @@
         flex-direction: column;
         width: 50%;
         gap: 30px;
-        .animal-info-header {
+        .info-card {
+            height: 284px;
+            .animal-info-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                .animal-title {
+                    color: rgb(5, 251, 251);
+                }
+            }
+            p {
+                display: flex;
+                justify-content: space-between;
+                padding-right: 23px;
+                span {
+                    opacity: 0.6;
+                }
+            }
+        }
+        
+    }
+}
+
+
+.animal-info-wrapper {
+    margin-top: 32px;
+    display: flex;
+    gap: 30px;
+    .animal-subinfo-container {
+        background-color: rgb(3, 33, 56);
+        box-shadow: 0 0 10px rgb(1,103,175);
+        width: 100%;
+        padding-bottom: 16px;
+        .animal-subinfo-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            .animal-title {
+            height: 64px;
+            .animal-info-title {
                 color: rgb(5, 251, 251);
             }
         }
-        p {
-            display: flex;
-            justify-content: space-between;
-            padding-right: 23px;
-            span {
-                opacity: 0.6;
+        .animals-list-container {
+            background-color: rgb(3, 33, 56);
+            border-radius: 20px;
+            padding-bottom: 0;
+            .animals-list {
+                width: 100%;
+                border-collapse: collapse;
+                tr {
+                    color: white;
+                    opacity: 0.9;
+                    th {
+                        font-size: 16px;
+                        text-align: start;
+                        height: 40px;
+                        color: rgb(5, 251, 251);
+                        &:first-child {
+                            padding-left: 20px;
+                        }
+                    }
+                    td {
+                        height: 40px;
+                        &:first-child {
+                            padding-left: 20px;
+                            display: flex;
+                            align-items: center;
+                        }
+                    }
+                }
             }
         }
     }
 }
+
  

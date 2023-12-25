@@ -61,6 +61,7 @@ export class CalendarComponent implements OnInit {
         this.generateDaysOfWeek();
     }
 
+
     nextWeek(): void {
         let startNextWeek = new Date(this.currentWeek.end);
         startNextWeek.setDate(startNextWeek.getDate() + 1);
@@ -77,14 +78,14 @@ export class CalendarComponent implements OnInit {
 
     generateDaysOfWeek(): void {
         let days: Date[] = [];
-        let startDay = this.currentDay;
-
+        let startDay = new Date(this.currentWeek.start);
+    
         for (let i = 0; i < 5; i++) {
             let day = new Date(startDay);
             day.setDate(startDay.getDate() + i);
             days.push(day);
         }
-
+    
         this.daysOfWeek = days;
         this.currentDay = days[0];
     }
@@ -138,7 +139,6 @@ export class CalendarComponent implements OnInit {
     }
 
     closeEventDialog(result: any, day: Date, hour: string) {
-        console.log('event dialog ist zu');
         let isCellOccupiedAfterDialog = this.isCellOccupied(day, hour);
     
 
@@ -177,9 +177,18 @@ export class CalendarComponent implements OnInit {
     }
 
    
-   isCellOccupied(day: Date, hour: string): boolean {
+    isCellOccupied(day: Date, hour: string): boolean {
         return this.dataUpdate.eventsList.some((event) => {
-            let eventDay = (event.day as any).toDate();
+            let eventDay: Date;
+    
+            if (event.day instanceof Date) {
+                eventDay = event.day;
+            } else if (event.day && typeof event.day === 'object' && 'seconds' in event.day) {
+                eventDay = new Date((event.day as any).seconds * 1000);
+            } else {
+                return false; // Wenn weder Date noch Timestamp vorhanden ist, ist die Zelle nicht belegt.
+            }
+    
             return eventDay.toDateString() === day.toDateString() && event.hour === hour;
         });
     }
@@ -234,9 +243,18 @@ export class CalendarComponent implements OnInit {
      */
     getVisibleEvents(day: Date, hour: string): any[] {
         return this.dataUpdate.eventsList.filter((event) => {
-            const eventDay = (event.day as any).toDate();
-            const eventHour = event.hour;
+            const eventDay: Date | undefined =
+                event.day instanceof Date
+                    ? event.day
+                    : event.day && typeof event.day === 'object' && 'seconds' in event.day
+                    ? new Date((event.day as any).seconds * 1000)
+                    : undefined;
     
+            if (!eventDay) {
+                return false; // Wenn weder Date noch Timestamp vorhanden ist, schließe das Event aus.
+            }
+    
+            const eventHour = event.hour;
             const isSameDay = eventDay.toDateString() === day.toDateString();
             const isSameHour = eventHour === hour;
     
@@ -247,17 +265,24 @@ export class CalendarComponent implements OnInit {
 
     getMaxRowspan(day: Date, hour: string): number {
         let rowspan = 1;
-      
+    
         const eventsForCell = this.dataUpdate.eventsList.filter((event) => {
-          const eventDay = (event.day as any).toDate();
-          return eventDay.toDateString() === day.toDateString() && event.hour === hour;
+            const eventDay: Date | undefined =
+                event.day instanceof Date
+                    ? event.day
+                    : event.day && typeof event.day === 'object' && 'seconds' in event.day
+                    ? new Date((event.day as any).seconds * 1000)
+                    : undefined;
+    
+            return eventDay && eventDay.toDateString() === day.toDateString() && event.hour === hour;
         });
-      
+    
         if (eventsForCell.length > 0) {
-          const maxDuration = Math.max(...eventsForCell.map((event) => event.duration));
-          rowspan = maxDuration;
+            const maxDuration = Math.max(...eventsForCell.map((event) => event.duration));
+            rowspan = maxDuration;
         }
-      
+    
         return rowspan;
     }
+    
 }

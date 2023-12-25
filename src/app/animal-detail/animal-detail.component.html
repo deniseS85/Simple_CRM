@@ -37,18 +37,18 @@
             <div class="animal-info-visits">
                 <div class="last-visit">
                     <strong>Last appointment</strong>
-                    <div>12.09.2023</div>
+                    <div>{{ lastAppointment }}</div> <!--  -->
                 </div>
                 <div class="next-visit">
                     <strong>Next appointment</strong>
-                    <div>12.09.2024</div>
+                    <div>{{ nextAppointment }}</div>
                 </div>
             </div>
         </mat-card-content>
     </mat-card>
 
     <div class="animal-info">
-        <mat-card>
+        <mat-card class="info-card">
             <mat-card-content>
                 <div class="animal-info-header">
                     <mat-card-title class="animal-title">Info</mat-card-title>
@@ -82,4 +82,25 @@
             </mat-card-content>
         </mat-card>
     </div>
+</div>
+
+
+<div class="animal-info-wrapper">
+    <mat-card class="animal-subinfo-container">
+        <mat-card-header class="animal-subinfo-header">
+            <mat-card-title class="animal-info-title">Medical History</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="animals-list-container">
+            <table class="animals-list">
+                <tr>
+                    <th>Date</th>
+                    <th>Treatment</th>
+                </tr>
+                <tr *ngFor="let treatment of treatments">
+                    <td>{{ treatment.date }}</td>
+                    <td>{{ treatment.treatment }}</td>
+                </tr>
+            </table>
+        </mat-card-content>
+    </mat-card> 
 </div>
