@@ -1,0 +1,85 @@
+<div class="animal-info-container">
+    <mat-card class="animal-profile-container">
+        <mat-card-content>
+            <div class="animal-info-header">
+                <div class="left-right">
+                    <mat-icon (click)="goBack()" class="arrow-back">arrow_back</mat-icon>
+                </div>
+
+                <form action="image_uploader.php" method="post" enctype="multipart/form-data" class="img-upload">
+                    <label for="fileToUpload" class="custom-file-upload">
+                        <img src="./assets/img/img-upload.png" class="upload-icon">
+                        Choose a Image
+                    </label>
+                    <input type="file" name="fileToUpload" id="fileToUpload" style="display: none;">
+                    <input type="submit" value="Upload Image" name="submit" style="display: none;">
+                </form>
+
+
+               <!--  <form action="image_uploader.php" method="post" enctype="multipart/form-data" class="img-upload">
+                    <input type="file" name="fileToUpload" id="fileToUpload">
+                    <input type="submit" value="Upload Image" name="submit">
+                </form> -->
+                <div class="left-right">
+                    <button mat-icon-button [matMenuTriggerFor]="deleteMenu">
+                        <mat-icon>delete_forever</mat-icon>
+                    </button>
+                    <mat-menu #deleteMenu="matMenu" xPosition="before">
+                        <button (click)="deleteAnimal()" mat-menu-item>Delete Animal</button>
+                    </mat-menu>
+                </div>
+            </div>
+            <div class="animal-info-content">
+                <mat-card-title class="animal-title">
+                    {{ selectedAnimal.name }}
+                </mat-card-title> 
+            </div>
+            <div class="animal-info-visits">
+                <div class="last-visit">
+                    <strong>Last appointment</strong>
+                    <div>12.09.2023</div>
+                </div>
+                <div class="next-visit">
+                    <strong>Next appointment</strong>
+                    <div>12.09.2024</div>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <div class="animal-info">
+        <mat-card>
+            <mat-card-content>
+                <div class="animal-info-header">
+                    <mat-card-title class="animal-title">Info</mat-card-title>
+                    <button mat-icon-button [matMenuTriggerFor]="userMenu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #userMenu="matMenu" xPosition="before">
+                        <button (click)="editAnimal()" mat-menu-item>Edit</button>
+                    </mat-menu>
+                </div>
+                <p>
+                    <span>Name: </span>
+                    {{ selectedAnimal.name }}
+                </p>
+                <p>
+                    <span>Species: </span>
+                    {{ selectedAnimal.species }}
+                </p>
+                <p>
+                    <span>Birthdate: </span>
+                    {{ selectedAnimal.birthDate | date: 'dd.MM.yyyy' }}
+                </p>
+                <p>
+                    <span>Gender: </span>
+                    {{ selectedAnimal.gender}}
+                </p>
+                <p>
+                    <span>Microchip-ID: </span>
+                    {{ selectedAnimal.microchipID }}
+                </p>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

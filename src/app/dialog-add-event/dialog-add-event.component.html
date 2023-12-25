@@ -1,0 +1,42 @@
+<div class="dialog-container">
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <h1 mat-dialog-title>Add Appointment</h1>
+  <form #addEventForm="ngForm">
+    <div mat-dialog-content class="add-event-content">
+      <div>
+        <mat-form-field class="input-field" appearance="outline">
+          <mat-label for="dayInput">Day</mat-label>
+          <input [disabled]="loading" matInput type="text" id="dayInput" [value]="convertDateFormat(eventData.day)" name="day" readonly>
+        </mat-form-field>
+
+        <mat-form-field class="input-field" appearance="outline">
+          <mat-label for="hourInput">Hour</mat-label>
+          <input [disabled]="loading" matInput type="text" id="hourInput" [(ngModel)]="eventData.hour" name="hour" readonly>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
+          <mat-label>Select the Name</mat-label>
+          <mat-select [disabled]="loading" [(ngModel)]="eventData.name" name="selectedAnimal" placeholder="Select the Name" required>
+            <mat-option class="select-field" *ngFor="let animal of animalList" [value]="animal.name">
+              {{ animal.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+        <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
+            <mat-label>Select the Treatment</mat-label>
+            <mat-select [disabled]="loading" [(ngModel)]="selectedTreatment" name="selectedTreatment" placeholder="Select Treatment" required>
+              @for (treatment of treatments; track treatment) {
+                <mat-option class="select-field" [value]="treatment">{{ treatment.name }}</mat-option>
+              }
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions class="dialog-button">
+      <button [disabled]="loading" mat-dialog-close mat-button>Cancel</button>
+      <button [disabled]="loading || addEventForm.invalid" (click)="saveEvent()" mat-button>Save</button>
+    </div>
+  </form>
+</div>

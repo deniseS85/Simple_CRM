@@ -1,0 +1,102 @@
+.animal-info-container {
+    display: flex;
+    gap: 30px;
+    mat-card {
+        background-color: rgb(3, 33, 56);
+        box-shadow: 0 0 10px rgb(1,103,175);
+        width: 100%;
+    }
+    .animal-profile-container {
+        width: 50%;
+        position: relative;
+        .animal-info-header {
+            display: flex;
+            justify-content: space-between;
+            .img-upload {
+                box-sizing: border-box;
+                width: 140px;
+                height: 140px;
+                border-radius: 50%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: all 225ms linear;
+                cursor: pointer;
+                background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%2305FBFBFF' stroke-width='6' stroke-dasharray='6 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+                .custom-file-upload {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    gap: 10px;
+                    cursor: pointer;
+                    .upload-icon {
+                        width: 30px;
+                        height: 30px;
+                        transition: all 225ms linear;
+                        &:hover {
+                            transform: scale(1.3);
+                            transition: all 225ms linear;
+                        }
+                    }
+                }
+                &:hover {
+                    transition: all 225ms linear;
+                    background-color: rgb(1,103,175);
+                }
+            }
+        }
+        .left-right {
+            height: 140px;
+        }
+        .arrow-back {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            width: 48px;
+            height: 48px;
+        }
+        .animal-info-content {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            .animal-title {
+                color: rgb(5, 251, 251);
+            }
+        }
+        .animal-info-visits {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            .last-visit, .next-visit {
+                text-align: center;
+            }
+        }  
+    }  
+    .animal-info {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        gap: 30px;
+        .animal-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .animal-title {
+                color: rgb(5, 251, 251);
+            }
+        }
+        p {
+            display: flex;
+            justify-content: space-between;
+            padding-right: 23px;
+            span {
+                opacity: 0.6;
+            }
+        }
+    }
+}
+ 
