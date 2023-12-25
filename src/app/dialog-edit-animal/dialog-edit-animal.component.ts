@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { User } from '../models/user.class';
 import { Animals } from '../models/animals.class';
-import { Firestore, updateDoc } from '@angular/fire/firestore';
+import { Firestore, getDocs, query, updateDoc, where } from '@angular/fire/firestore';
 import { collection, doc } from '@angular/fire/firestore';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
@@ -62,11 +62,25 @@ export class DialogEditAnimalComponent implements OnInit  {
                     (animal.id === isAnimal.id) ? { ...this.selectedAnimal } : animal.toJsonAnimals()
                 )
             }); 
-              this.loading = false;
-              this.dialogRef.close();
+            let events = await this.getAllEventsForAnimal(this.selectedAnimal.id);
+
+            await Promise.all(events.map(event => 
+                updateDoc(doc(collection(this.firestore, 'events'), event.id), {
+                    name: this.selectedAnimal.name
+                })
+            ));
+            this.loading = false;
+            this.dialogRef.close();
           }
       }
-}
+  }
+
+  async getAllEventsForAnimal(animalID: string) {
+      const eventsRef = collection(this.firestore, 'events');
+      const querySnapshot = await getDocs(query(eventsRef, where('animalID', '==', animalID)));
+
+      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  }
 
   getUserID() {
       return doc(collection(this.firestore, 'users'), this.user.id);
@@ -79,3 +93,5 @@ export class DialogEditAnimalComponent implements OnInit  {
       }
     }
 }
+
+
