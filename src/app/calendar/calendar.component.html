@@ -23,10 +23,10 @@
               class="day-column" [class.today]="isToday(day)" 
               (click)="openEventDialog(day, hour, $event)"
               [class.past-day]="isPastDay(day)" 
-              [attr.rowspan]="getMaxRowspan(day, hour)">
+              [attr.rowspan]="getMaxRowspan(day, hour)"
+              > <!-- *ngIf="isDurationOneHour(getVisibleEvents(day, hour), row, column)" -->
               <div *ngFor="let event of getVisibleEvents(day, hour)"
-                  [ngClass]="['categoryColor', getTreatmentCategoryClass(event.categoryColor)]" 
-                  [style.height.px]="getRowspan(event.duration * 58)">
+                  [ngClass]="['categoryColor', getTreatmentCategoryClass(event.categoryColor)]">
                   {{ event.hour }} - {{ calculateEndTime(event.hour, event.duration) }}<br>
                   {{ event.name }}<br>
                   {{ event.treatmentName }}
@@ -36,6 +36,25 @@
         </tr>
       </ng-container>
   </table> 
+
+  <table>
+    <td>
+      <tr>A1</tr>
+      <tr>A2</tr>
+      <tr>A3</tr>
+    </td>
+    <td>
+      <tr>B1</tr>
+      <tr>B2</tr>
+      <tr>B3</tr>
+    </td>
+    <td>
+      <tr>C1</tr>
+      <tr>C2</tr>
+      <tr>C3</tr>
+    </td>
+  </table>
+
 </div>
 
 

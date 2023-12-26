@@ -11,12 +11,12 @@ interface Species {
   viewValue: string;
 }
 
-
 @Component({
   selector: 'app-dialog-edit-animal',
   templateUrl: './dialog-edit-animal.component.html',
   styleUrl: './dialog-edit-animal.component.scss'
 })
+
 export class DialogEditAnimalComponent implements OnInit  {
   animals: Species[] = [
     { value: 'Cat', viewValue: 'Cat' },
@@ -35,7 +35,6 @@ export class DialogEditAnimalComponent implements OnInit  {
   hideRequired = 'true';
   birthDate: any;
   selectedAnimal;
-  changeAnimal: Animals[] = []
 
 
   constructor(public dialogRef: MatDialogRef<DialogEditAnimalComponent>,@Inject(MAT_DIALOG_DATA) public data: {animal: Animals}, private dataUpdate: DataUpdateService) {

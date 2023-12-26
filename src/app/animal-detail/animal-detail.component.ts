@@ -38,7 +38,6 @@ export class AnimalDetailComponent implements OnInit{
         let storedAnimalData = localStorage.getItem('selectedAnimal');
         if (storedAnimalData) {
             this.selectedAnimal = JSON.parse(storedAnimalData);
-            console.log('Selected Animal:', this.selectedAnimal);
         } else {
             this.getSelectedAnimalFromUser();
         }

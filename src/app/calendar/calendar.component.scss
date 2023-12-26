@@ -46,10 +46,11 @@
         border-collapse: collapse;
         color: white;
         box-sizing: border-box;
-        border-style: hidden;
+       /*  border-style: hidden; */
         .table-header {
             height: 60px;
             font-size: 16px;
+            border-bottom: 1.5px solid rgb(1, 103, 175);
             .table-header th:first-child {
                 width: 50px;
             }
@@ -71,6 +72,9 @@
             &:hover:not(tr td:first-child):empty {
                 border: 1.5px solid rgb(5, 251, 251);
             }
+        }
+        td > div {
+            height: 100%;
         }
         td.past-day { 
           /*   pointer-events: none;  */

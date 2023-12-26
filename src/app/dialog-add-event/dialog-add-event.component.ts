@@ -11,6 +11,7 @@ interface TreatmentsSelection {
     name: string;
     categoryColor: string;
     duration: number;
+    cost?: number;
 }
 
 @Component({
@@ -21,12 +22,12 @@ interface TreatmentsSelection {
 export class DialogAddEventComponent {
 
     treatments: TreatmentsSelection[] = [ 
-        { name: 'Medical Check-Up ', categoryColor: '#c9f7f9', duration: 2 },
-        { name: 'Dental Care', categoryColor: '#fbd1d1', duration: 1 },
-        { name: 'Vaccination', categoryColor: '#eec3fd', duration: 1 },
-        { name: 'Castration', categoryColor: '#d4f9c6', duration: 2 },
-        { name: 'Laboratory Test', categoryColor: '#f9f6c3', duration: 1 },
-        { name: 'Operation', categoryColor: '#DBDBDB', duration: 3 },
+        { name: 'Medical Check-Up ', categoryColor: '#c9f7f9', duration: 2, cost: 140 },
+        { name: 'Dental Care', categoryColor: '#fbd1d1', duration: 1, cost: 80 },
+        { name: 'Vaccination', categoryColor: '#eec3fd', duration: 1, cost: 50 },
+        { name: 'Castration', categoryColor: '#d4f9c6', duration: 2, cost: 150 },
+        { name: 'Laboratory Test', categoryColor: '#f9f6c3', duration: 1, cost: 120 },
+        { name: 'Operation', categoryColor: '#DBDBDB', duration: 3, cost: 300 },
     ];
 
 

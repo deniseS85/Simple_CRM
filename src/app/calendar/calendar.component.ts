@@ -17,6 +17,9 @@ export class CalendarComponent implements OnInit {
     hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
     currentDay: Date = new Date();
     eventPosition: { top: number, left: number } = { top: 0, left: 0 };
+    lastAppointmentDuration: number = 0;
+    lastAppointmentDay!: Date;
+    calendarArray: number[][] = [];
 
 
     constructor(public dialog: MatDialog, public dataUpdate: DataUpdateService, private snackBar: MatSnackBar) {
@@ -31,30 +34,32 @@ export class CalendarComponent implements OnInit {
 
     getcurrentWeek(): { start: Date, end: Date } { 
         let today = new Date();
-        let currentDay = today.getDay();
         let startDay = new Date(today);
-
-        startDay.setDate(today.getDate() - currentDay + (currentDay === 0 ? -5 : 1));
+        
+        if (today.getDay() !== 0 && today.getDay() !== 6) {
+            startDay.setDate(today.getDate());
+        } else {
+            while (startDay.getDay() !== 1) {
+                startDay.setDate(startDay.getDate() + 1);
+            }
+        }
+    
         let endOfWeek = new Date(startDay);
+        endOfWeek.setDate(startDay.getDate() + 6);
 
-        endOfWeek.setDate(startDay.getDate() + 4);
         return { start: startDay, end: endOfWeek };
     }
-
+    
     addDays(date: Date, days: number): Date {
         const result = new Date(date);
         result.setDate(result.getDate() + days);
         return result;
-      }
+    }
 
     previousWeek(): void {
         let startPreviousWeek = new Date(this.currentWeek.start);
         startPreviousWeek.setDate(startPreviousWeek.getDate() - 7);
-
-        while (startPreviousWeek.getDay() !== 1) {
-            startPreviousWeek.setDate(startPreviousWeek.getDate() - 1);
-        }
-
+    
         let endOfPreviousWeek = new Date(startPreviousWeek);
         endOfPreviousWeek.setDate(endOfPreviousWeek.getDate() + 4);
         this.currentWeek = { start: startPreviousWeek, end: endOfPreviousWeek };
@@ -63,13 +68,9 @@ export class CalendarComponent implements OnInit {
 
 
     nextWeek(): void {
-        let startNextWeek = new Date(this.currentWeek.end);
-        startNextWeek.setDate(startNextWeek.getDate() + 1);
-
-        while (startNextWeek.getDay() !== 1) {
-            startNextWeek.setDate(startNextWeek.getDate() + 1);
-        }
-
+        let startNextWeek = new Date(this.currentWeek.start);
+        startNextWeek.setDate(startNextWeek.getDate() + 7);
+    
         let endOfNextWeek = new Date(startNextWeek);
         endOfNextWeek.setDate(endOfNextWeek.getDate() + 4);
         this.currentWeek = { start: startNextWeek, end: endOfNextWeek };
@@ -80,16 +81,20 @@ export class CalendarComponent implements OnInit {
         let days: Date[] = [];
         let startDay = new Date(this.currentWeek.start);
     
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; days.length < 5; i++) {
             let day = new Date(startDay);
             day.setDate(startDay.getDate() + i);
-            days.push(day);
+    
+            // Überspringe Samstag (6) und Sonntag (0)
+            if (day.getDay() !== 0 && day.getDay() !== 6) {
+                days.push(day);
+            }
         }
     
         this.daysOfWeek = days;
         this.currentDay = days[0];
     }
-
+    
     today() {
         this.currentWeek = this.getcurrentWeek();
         this.generateDaysOfWeek();
@@ -140,12 +145,114 @@ export class CalendarComponent implements OnInit {
 
     closeEventDialog(result: any, day: Date, hour: string) {
         let isCellOccupiedAfterDialog = this.isCellOccupied(day, hour);
-    
 
-        /* hier schauen, er geht nicht in den if-bereich!!!! */
         if (!isCellOccupiedAfterDialog) {
-            console.log('ist nicht belegt');
             this.toHiddenCell(day, hour, result.duration);
+        }
+    } 
+
+   /*  lastAppointmentDuration:number = 0;
+    lastAppointmentDay!:Date;
+    calendarArray: number[][] = []; */
+
+   /*  isDurationOneHour(event:any, row:number, column:number) {
+        return true;
+        if (event.length > 0) {
+            console.log(event);
+            // Wenn ein Termin existiert
+            if (event[0].duration > 1) {
+                // Wenn es ein mehrstündiger Termin ist
+                this.calendarArray[row][column] = 0;
+                this.lastAppointmentDuration = event[0].duration;
+                this.lastAppointmentDay = event[0].day;
+
+                // td-Zelle nur einmal anzeigen, für die nachfolgenden Stunden nicht
+                return true;
+            } else {
+                // Wenn es ein einstündiger Termin ist
+                this.lastAppointmentDuration = 0;
+                // td-Zelle immer anzeigen
+                return true;
+            }
+        } else {
+            // Wenn keine Termine existieren
+            if (this.lastAppointmentDuration > 1) {
+                // Wenn in der vorherigen Stunde ein Termin existiert
+                this.lastAppointmentDuration--;
+                this.calendarArray[row][column] = 0;
+                // td-Zelle nicht anzeigen, weil in der vorherigen Stunde bereits die td-Zelle angezeigt wird
+                return false;
+            } else {
+                // Wenn in der vorherigen Stunde kein Termin existierte
+                this.lastAppointmentDuration = 0;
+                this.calendarArray[row][column] = 0;
+                return true;
+            }
+            
+        }
+    } */
+    isDurationOneHour(event: any, row: number, column: number) {
+        const rows = 24;  
+        const columns = 7; 
+
+        this.calendarArray = new Array(rows);
+            for (let i = 0; i < rows; i++) {
+                this.calendarArray[i] = new Array(columns).fill(0);
+            }
+        if (event.length > 0) {
+          /*   console.log(event); */
+   
+            if (event[0].duration > 1) {
+                // Wenn es ein mehrstündiger Termin ist
+                if (this.calendarArray[row][column] === 0) {
+                    // Wenn die Zelle noch nicht belegt ist
+                    this.calendarArray[row][column] = event[0].duration;
+
+                    // Setze die Werte für die nachfolgenden Zellen auf -1, um sie zu überspringen
+                    for (let i = 1; i < event[0].duration; i++) {
+                        this.calendarArray[row][column + i] = -1;
+                    }
+
+                    this.lastAppointmentDuration = event[0].duration;
+                    this.lastAppointmentDay = event[0].day;
+
+                    // td-Zelle nur einmal anzeigen, für die nachfolgenden Stunden nicht
+                    return true;
+                } else {
+                    // Wenn die Zelle bereits belegt ist, überspringe sie
+                    return false;
+                }
+            } else {
+                // Wenn es ein einstündiger Termin ist
+                this.lastAppointmentDuration = 0;
+                // td-Zelle immer anzeigen
+                return true;
+            }
+        } else {
+            // Wenn keine Termine existieren
+            if (this.lastAppointmentDuration > 1) {
+                // Wenn in der vorherigen Stunde ein Termin existiert
+                this.lastAppointmentDuration--;
+
+                // Überspringe die Zellen, die bereits für den mehrstündigen Termin belegt sind
+                if (this.calendarArray[row][column] === -1) {
+                    return false;
+                 }
+
+                // Setze den Wert im 2D-Array entsprechend
+                this.calendarArray[row][column] = 0;
+
+                // td-Zelle nicht anzeigen, weil in der vorherigen Stunde bereits die td-Zelle angezeigt wird
+                return false;
+            } else {
+                // Wenn in der vorherigen Stunde kein Termin existierte
+                this.lastAppointmentDuration = 0;
+
+                // Setze den Wert im 2D-Array entsprechend
+                this.calendarArray[row][column] = 0;
+
+                return true;
+            }
         }
     }
       
@@ -229,10 +336,6 @@ export class CalendarComponent implements OnInit {
             default:
                 return '';
         }
-    }
-
-    getRowspan(duration: number) {
-        return duration ? duration : 1;
     }
 
     /**
