@@ -1,0 +1,121 @@
+.user-info-container {
+    min-height: 150px;
+    background-color: rgb(1, 103, 175);
+    display: flex;
+    justify-content: center;
+    position: relative;
+    box-shadow: 1px 1px 20px 1px black;
+    .menu-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+    .user-info-content {
+        display: flex;
+        align-items: center;
+        color: white;
+        padding: 0 30px;
+        .profile-img {
+            width: 90px;
+            object-fit: cover;
+            border: 2px solid white;
+            border-radius: 50%;
+            padding: 8px;
+            background-color: white;
+        }
+        .user-info {
+            margin-left: 32px;
+            h2 {
+                font-size: 24px;
+            }
+            .mail-img {
+                width: 25px;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.user-info-wrapper {
+    margin-top: 32px;
+    display: flex;
+    gap: 30px;
+    .user-subinfo-container {
+        background-color: rgb(3, 33, 56);
+        box-shadow: 0 0 10px rgb(1,103,175);
+        width: 100%;
+        padding-bottom: 16px;
+        .user-info-sub-content {
+            padding-right: 40px;
+        }
+        .user-subinfo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            mat-icon {
+                cursor: pointer;
+            }
+            .user-info-title {
+                color: rgb(5, 251, 251);
+            }
+        }
+        p {
+            display: flex;
+            justify-content: space-between;
+            span {
+                opacity: 0.6;
+            }
+        }
+        .animals-list-container {
+            background-color: rgb(3, 33, 56);
+            border-radius: 20px;
+            padding-bottom: 0;
+            .animals-list {
+                width: 100%;
+                border-collapse: collapse;
+                tr {
+                    cursor: pointer;
+                    color: white;
+                    opacity: 0.9;
+                    transition: all 125ms ease-in-out;
+                    &:first-child {
+                        cursor: default;
+                        opacity: unset;
+                        &:hover {
+                            background-color: unset;
+                        }
+                    }
+                    &:nth-child(even) {
+                        background-color: rgb(12, 54, 89);
+                    }
+                    th {
+                        font-size: 16px;
+                        text-align: start;
+                        height: 40px;
+                        color: rgb(5, 251, 251);
+                        &:first-child {
+                            padding-left: 20px;
+                        }
+                    }
+                    td {
+                        height: 60px;
+                        &:first-child {
+                            padding-left: 20px;
+                            display: flex;
+                            align-items: center;
+                        }
+                        img {
+                            width: 25px;
+                            cursor: pointer;
+                            margin-right: 20px;
+                        }
+                    }
+                    &:hover {
+                        background-color: rgb(1,103,175);
+                        transition: all 125ms ease-in-out;
+                    }
+                }
+            }
+        }
+    }
+}
