@@ -17,14 +17,13 @@ export class CalendarComponent implements OnInit {
     hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
     currentDay: Date = new Date();
     eventPosition: { top: number, left: number } = { top: 0, left: 0 };
-    lastAppointmentDuration: number = 0;
+    /* lastAppointmentDuration: number = 0;
     lastAppointmentDay!: Date;
-    calendarArray: number[][] = [];
+    calendarArray: number[][] = []; */
 
 
     constructor(public dialog: MatDialog, public dataUpdate: DataUpdateService, private snackBar: MatSnackBar) {
         this.dataUpdate.getAllEvents();
-
     }
 
     ngOnInit(): void {
@@ -65,7 +64,6 @@ export class CalendarComponent implements OnInit {
         this.currentWeek = { start: startPreviousWeek, end: endOfPreviousWeek };
         this.generateDaysOfWeek();
     }
-
 
     nextWeek(): void {
         let startNextWeek = new Date(this.currentWeek.start);
@@ -151,47 +149,51 @@ export class CalendarComponent implements OnInit {
         }
     } 
 
-   /*  lastAppointmentDuration:number = 0;
-    lastAppointmentDay!:Date;
-    calendarArray: number[][] = []; */
+    calendarArray: boolean[][] = new Array(20)
+    .fill(true)
+    .map(() => 
+      new Array(5).fill(true)
+    ); 
 
-   /*  isDurationOneHour(event:any, row:number, column:number) {
-        return true;
+    isDurationOneHour(event:any, row:number, column:number) {
+        //Standardmäßig die aktuelle td-Zelle immer erstellen
+        //Falls in der nachfolgenden If-Abfrage festgestellt wird,
+        //dass z.B. ein merhstündiger Termin existiert,
+        //dann wird der Wert durch false ersetzt, damit die td-Zelle doch nicht erstellt wird
+        
+        //if (this.calendarArray[row].length < row-1) {
+        //    this.calendarArray[row] = [];
+        //}
+        this.calendarArray[row][column] = true;
+
         if (event.length > 0) {
-            console.log(event);
             // Wenn ein Termin existiert
             if (event[0].duration > 1) {
-                // Wenn es ein mehrstündiger Termin ist
-                this.calendarArray[row][column] = 0;
-                this.lastAppointmentDuration = event[0].duration;
-                this.lastAppointmentDay = event[0].day;
-
+                //debugger;
+                for (let dID = 1; dID < event[0].duration; dID++) {
+                    this.calendarArray[row+dID][column] = false;
+                }
                 // td-Zelle nur einmal anzeigen, für die nachfolgenden Stunden nicht
                 return true;
             } else {
-                // Wenn es ein einstündiger Termin ist
-                this.lastAppointmentDuration = 0;
                 // td-Zelle immer anzeigen
                 return true;
             }
         } else {
-            // Wenn keine Termine existieren
-            if (this.lastAppointmentDuration > 1) {
-                // Wenn in der vorherigen Stunde ein Termin existiert
-                this.lastAppointmentDuration--;
-                this.calendarArray[row][column] = 0;
-                // td-Zelle nicht anzeigen, weil in der vorherigen Stunde bereits die td-Zelle angezeigt wird
-                return false;
-            } else {
-                // Wenn in der vorherigen Stunde kein Termin existierte
-                this.lastAppointmentDuration = 0;
-                this.calendarArray[row][column] = 0;
+            if (column == 0 && row == 4) {
+                //debugger;
+                console.log("aaaa");
+            }
+            if (this.calendarArray[row][column]) {
                 return true;
+            } else {
+                return false;
             }
             
         }
-    } */
-    isDurationOneHour(event: any, row: number, column: number) {
+    }
+
+    /* isDurationOneHour(event: any, row: number, column: number) {
         const rows = 24;  
         const columns = 7; 
 
@@ -200,15 +202,15 @@ export class CalendarComponent implements OnInit {
                 this.calendarArray[i] = new Array(columns).fill(0);
             }
         if (event.length > 0) {
-          /*   console.log(event); */
+         
    
             if (event[0].duration > 1) {
-                // Wenn es ein mehrstündiger Termin ist
+              
                 if (this.calendarArray[row][column] === 0) {
-                    // Wenn die Zelle noch nicht belegt ist
+                  
                     this.calendarArray[row][column] = event[0].duration;
 
-                    // Setze die Werte für die nachfolgenden Zellen auf -1, um sie zu überspringen
+                  
                     for (let i = 1; i < event[0].duration; i++) {
                         this.calendarArray[row][column + i] = -1;
                     }
@@ -216,45 +218,45 @@ export class CalendarComponent implements OnInit {
                     this.lastAppointmentDuration = event[0].duration;
                     this.lastAppointmentDay = event[0].day;
 
-                    // td-Zelle nur einmal anzeigen, für die nachfolgenden Stunden nicht
+                   
                     return true;
                 } else {
-                    // Wenn die Zelle bereits belegt ist, überspringe sie
+                   
                     return false;
                 }
             } else {
-                // Wenn es ein einstündiger Termin ist
+               
                 this.lastAppointmentDuration = 0;
-                // td-Zelle immer anzeigen
+               
                 return true;
             }
         } else {
-            // Wenn keine Termine existieren
+            
             if (this.lastAppointmentDuration > 1) {
-                // Wenn in der vorherigen Stunde ein Termin existiert
+               
                 this.lastAppointmentDuration--;
 
-                // Überspringe die Zellen, die bereits für den mehrstündigen Termin belegt sind
+               
                 if (this.calendarArray[row][column] === -1) {
                     return false;
                  }
 
-                // Setze den Wert im 2D-Array entsprechend
+              
                 this.calendarArray[row][column] = 0;
 
-                // td-Zelle nicht anzeigen, weil in der vorherigen Stunde bereits die td-Zelle angezeigt wird
+              
                 return false;
             } else {
-                // Wenn in der vorherigen Stunde kein Termin existierte
+               
                 this.lastAppointmentDuration = 0;
 
-                // Setze den Wert im 2D-Array entsprechend
+                
                 this.calendarArray[row][column] = 0;
 
                 return true;
             }
         }
-    }
+    } */
       
     toHiddenCell(day: Date, hour: string, duration: number) {
         let column = this.calculateColumn(day);
@@ -274,8 +276,8 @@ export class CalendarComponent implements OnInit {
 
     calculateColumn(day: Date): number {
         let dayIndex = day.getDay();
-        return dayIndex >= 1 && dayIndex <= 5 ? dayIndex - 1 : -1;
-    }
+        return dayIndex >= 1 && dayIndex <= 5 ? dayIndex : -1;
+      }
     
     calculateRow(hour: string): number {
         let startHour = 10;
@@ -293,7 +295,7 @@ export class CalendarComponent implements OnInit {
             } else if (event.day && typeof event.day === 'object' && 'seconds' in event.day) {
                 eventDay = new Date((event.day as any).seconds * 1000);
             } else {
-                return false; // Wenn weder Date noch Timestamp vorhanden ist, ist die Zelle nicht belegt.
+                return false;
             }
     
             return eventDay.toDateString() === day.toDateString() && event.hour === hour;
@@ -384,7 +386,6 @@ export class CalendarComponent implements OnInit {
             const maxDuration = Math.max(...eventsForCell.map((event) => event.duration));
             rowspan = maxDuration;
         }
-    
         return rowspan;
     }
     

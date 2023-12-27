@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Events } from './models/events.class';
 import { Firestore, collection, onSnapshot, query, where } from '@angular/fire/firestore';
-
+import { User } from './models/user.class';
 
 
 @Injectable({
@@ -74,20 +74,39 @@ export class DataUpdateService {
     }
 
     getAllAnimalIds(): void {
-      const eventsRef = collection(this.firestore, 'events');
+        const eventsRef = collection(this.firestore, 'events');
 
-      onSnapshot(eventsRef, (list) => {
-          const uniqueAnimalIds = new Set<string>();
+        onSnapshot(eventsRef, (list) => {
+            const uniqueAnimalIds = new Set<string>();
 
-          list.forEach((element) => {
-              const event: Events = new Events().setEventsObject(element.data(), element.id);
-              uniqueAnimalIds.add(event.animalID);
-          });
+            list.forEach((element) => {
+                const event: Events = new Events().setEventsObject(element.data(), element.id);
+                uniqueAnimalIds.add(event.animalID);
+            });
 
-          const animalIdsArray = Array.from(uniqueAnimalIds);
-          this.allAnimalIdsSubject.next(animalIdsArray);
+            const animalIdsArray = Array.from(uniqueAnimalIds);
+            this.allAnimalIdsSubject.next(animalIdsArray);
+        });
+    }
+
+
+    getUserDataByAnimalId(animalId: string): Promise<void> {
+      console.log('getUserDataByAnimalId called with animalId:', animalId);
+    
+      const usersRef = collection(this.firestore, 'users');
+      const userQuery = query(usersRef, where('animals', 'array-contains', { id: animalId }));
+      
+      return new Promise<void>((resolve) => {
+        onSnapshot(userQuery, (snapshot) => {
+          console.log('Snapshot:', snapshot.docs); // Überprüfen, ob Daten vorhanden sind
+          const userData = snapshot.docs.map((doc) => doc.data());
+          console.log('UserData:', userData); // Überprüfen, ob userData korrekt ist
+          this.setUserData(userData);
+          resolve();
       });
-  }
+      });
+    }
+
 
   
 }
