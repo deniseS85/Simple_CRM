@@ -1,11 +1,11 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Firestore, collection, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
 import { User } from '../models/user.class';
 import { Animals } from '../models/animals.class';
 import { DataUpdateService } from '../data-update.service';
 import { WorkflowItem } from '../models/workflow.class';
-import { elementAt } from 'rxjs';
+
 
 @Component({
   selector: 'app-workflow',
@@ -15,6 +15,7 @@ import { elementAt } from 'rxjs';
 export class WorkflowComponent implements OnInit{
   user = new User();
   animal = new Animals();
+  workflow: WorkflowItem[] = [];
   firestore: Firestore = inject(Firestore);
   @Input() inputValue!: string;
   todo: WorkflowItem[] = [];
@@ -31,63 +32,46 @@ export class WorkflowComponent implements OnInit{
   unsubUser;
 
 
-
- /*  todo: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [
-    { img: './assets/img/Cat.png', animalName: 'Lotta', userName: 'Kleister', treatment: 'Impfung', time: '09.00'},
-    { img: './assets/img/Dog.png', animalName: 'Buddy', userName: 'John', treatment: 'Checkup', time: '10.30'},
-    { img: './assets/img/Rabbit.png', animalName: 'Fluffy', userName: 'Alice', treatment: 'Vaccination', time: '12.15'},
-    { img: './assets/img/Hamster.png', animalName: 'Tweety', userName: 'Bob', treatment: 'Feeding', time: '14.45'},
-  ];
-  
-  todoFilter: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [...this.todo];
-  waiting: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [
-    { img: './assets/img/Cat.png', animalName: 'Lucie', userName: 'Michael', treatment: 'Impfung', time: '09.00'},
-    { img: './assets/img/Dog.png', animalName: 'Klaus', userName: 'Peter', treatment: 'Checkup', time: '10.30'},
-  ];
-  waitingFilter: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [...this.waiting];
-  treatment : { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [
-    { img: './assets/img/Cat.png', animalName: 'Luna', userName: 'Kleister', treatment: 'Impfung', time: '09.00'},
-    { img: './assets/img/Rabbit.png', animalName: 'Ray', userName: 'Sophie', treatment: 'Vaccination', time: '12.15'},
-    { img: './assets/img/Hamster.png', animalName: 'Denise', userName: 'Richard', treatment: 'Feeding', time: '14.45'},
-  ];
-  treatmentFilter: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [...this.waiting];
-  done: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [
-    { img: './assets/img/Cat.png', animalName: 'Lotta', userName: 'Kleister', treatment: 'Impfung', time: '09.00'},
-  ];
-  doneFilter: { img: string; animalName: string; userName: string; treatment: string; time: string }[] = [...this.done];
-
- */
   constructor(public dataUpdate: DataUpdateService) {
       this.dataUpdate.getAllEvents();
       this.unsubUser = this.subUsersList();
   }
 
   ngOnInit(): void {
-      this.loadTodayEvents();
+      this.loadTodayEvents().then(() => {
+          for (const event of this.todayEvents) {
+              this.addWorkflowItemDatabase(event);
+          }
+      });
+    
   }
 
   ngOnDestroy() {
       this.unsubUser();
   }
 
-  loadTodayEvents() {
-      let today = new Date();
-      today.setHours(0, 0, 0, 0);
+  async loadTodayEvents(): Promise<void> {
+      return new Promise<void>((resolve) => {
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-      this.todayEvents = this.dataUpdate.eventsList.filter((event) => {
+        this.todayEvents = this.dataUpdate.eventsList.filter((event) => {
           let eventDay: Date | undefined =
-              event.day instanceof Date ? event.day : event.day && typeof event.day === 'object' && 'seconds' in event.day ? new Date((event.day as any).seconds * 1000) : undefined;
+            event.day instanceof Date ? event.day : event.day && typeof event.day === 'object' && 'seconds' in event.day ? new Date((event.day as any).seconds * 1000) : undefined;
 
           if (!eventDay) {
-              return false; 
+            return false;
           }
           return eventDay.toDateString() === today.toDateString();
+        });
+          resolve();
       });
-  }
+    }
 
   drop(event: CdkDragDrop<WorkflowItem[]>) {
       if (event.previousContainer === event.container) {
           moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+          this.updatePositionsInDatabase(event.container.data);
       } else {
           transferArrayItem(
               event.previousContainer.data,
@@ -95,7 +79,45 @@ export class WorkflowComponent implements OnInit{
               event.previousIndex,
               event.currentIndex,
         );
+        this.updatePositionsInDatabase(event.container.data);
       }
+  }
+
+  async addWorkflowItemDatabase(item: WorkflowItem): Promise<void> {
+    const workflowCollection = collection(this.firestore, 'workflow');
+
+    try {
+      let collectionRef = collection(this.firestore, 'workflow');
+      let collectionQuery = query(collectionRef, where('id', '==', item.id));
+      let querySnapshot = await getDocs(collectionQuery);
+
+        if (querySnapshot.size === 0) {
+            await addDoc(workflowCollection, {
+                id: item.id,
+                img: item.img || '',
+                name: item.name,
+                lastName: item.lastName || '',
+                treatmentName: item.treatmentName,
+                hour: item.hour,
+                day: item.day,
+                position: item.position !== undefined ? item.position : 0,
+            });
+        }
+    } catch (error) {
+        console.error('Error saving workflow item: ', error);
+    }
+}
+
+  updatePositionsInDatabase(items: WorkflowItem[]) {
+      items.forEach((item, index) => {
+          item.position = index;
+          this.updateWorkflowItem(item);
+      });
+  }
+
+  updateWorkflowItem(workflowItem: WorkflowItem) {
+      let workflowDoc = doc(this.firestore, 'workflow', workflowItem.id);
+      return updateDoc(workflowDoc, { position: workflowItem.position });
   }
 
   filterTasks() {
@@ -148,6 +170,7 @@ export class WorkflowComponent implements OnInit{
 
   innerJoin() {
     this.animalIdsToday = this.todayEvents.map(event => event.animalID);
+    this.workflow = [];
   
     this.usersList.forEach((user: User) => {
         user.animals.forEach(animal => {
@@ -156,13 +179,14 @@ export class WorkflowComponent implements OnInit{
                 
                 if (matchingEvent) {
                     let imgPath = `./assets/img/${animal.species}.png`;
-                    let eventWithLastName = {...matchingEvent, 
+                    let eventWithLastNameImg = {...matchingEvent, 
                       lastName: user.lastName,
                       img: imgPath 
                     };
 
-                    this.todo.push(eventWithLastName);
-                    this.todoFilter.push(eventWithLastName);
+                    this.workflow.push(eventWithLastNameImg);
+                    this.todo.push(eventWithLastNameImg);
+                    this.todoFilter.push(eventWithLastNameImg);
                 }
             }
         });
