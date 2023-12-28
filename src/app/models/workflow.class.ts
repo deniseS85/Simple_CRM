@@ -1,7 +1,7 @@
 export class WorkflowItem {
     img: string; //species abhängig
     name: string;
-    lastName: string; //id animal mit id animal from user
+    lastName: string;
     treatmentName: string;
     hour: string;
     day: string;

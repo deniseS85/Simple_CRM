@@ -57,7 +57,6 @@ export class DataUpdateService {
         let eventsRef = collection(this.firestore, 'events');
         let animalEventsQuery = query(eventsRef, where('animalID', '==', animalId));
 
-  
         onSnapshot(animalEventsQuery, (list) => {
 
           let animalEventsList: Events[] = [];

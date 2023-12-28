@@ -15,8 +15,8 @@
             (cdkDropListDropped)="drop($event)">
             <div *ngFor="let item of todoFilter" cdkDrag class="kanban-item">
                 <div class="info-animal">
-                    <img > <!-- [src]="item.img" -->
-                    <div>{{ item.name }} </div>  <!-- ({{ item.lastName }}) -->
+                    <img [src]="item.img">
+                    <div>{{ item.name }} ({{ item.lastName }}) </div>
                 </div>
                 <div class="info-treatment">
                     <div>{{ item.treatmentName }}, {{ item.hour }}</div>
@@ -33,8 +33,8 @@
             (cdkDropListDropped)="drop($event)">
             <div *ngFor="let item of waitingFilter" cdkDrag class="kanban-item">
                 <div class="info-animal">
-                    <img > <!--  [src]="item.img"-->
-                    <div>{{ item.name }} </div>  <!--({{ item.lastName }})  -->
+                    <img [src]="item.img">
+                    <div>{{ item.name }} ({{ item.lastName }})</div> 
                 </div>
                 <div class="info-treatment">
                     <div>{{ item.treatmentName }}, {{ item.hour }}</div>
@@ -51,8 +51,8 @@
             (cdkDropListDropped)="drop($event)">
             <div *ngFor="let item of treatmentFilter" cdkDrag class="kanban-item">
                 <div class="info-animal">
-                    <img > <!--[src]="item.img"  -->
-                    <div>{{ item.name }} </div>  <!--({{ item.lastName }})  -->
+                    <img [src]="item.img">
+                    <div>{{ item.name }} ({{ item.lastName }})</div>
                 </div>
                 <div class="info-treatment">
                     <div>{{ item.treatmentName }}, {{ item.hour }}</div>
@@ -69,8 +69,8 @@
             (cdkDropListDropped)="drop($event)">
             <div *ngFor="let item of doneFilter" cdkDrag class="kanban-item">
                 <div class="info-animal">
-                    <img > <!-- [src]="item.img" -->
-                    <div>{{ item.name }} </div> <!--({{ item.lastName }})  -->
+                    <img [src]="item.img">
+                    <div>{{ item.name }} ({{ item.lastName }})</div> 
                 </div>
                 <div class="info-treatment">
                     <div>{{ item.treatmentName }}, {{ item.hour }}</div>

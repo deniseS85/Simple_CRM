@@ -22,7 +22,6 @@ export class AnimalDetailComponent implements OnInit{
     animalList: Animals[] = [];
     unsubAnimalList;
     selectedAnimal:any = '';
-    /* imageSrc: string = ''; */
     lastAppointment: string = '';
     nextAppointment: string = '';
     animalIds: any[] = [];

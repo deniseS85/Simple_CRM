@@ -75,11 +75,11 @@ export class UserDetailComponent {
     }
 
     getAge(birthday: number) {
-        const today = new Date();
-        const birthDate = new Date(birthday);
-        const years = today.getFullYear() - birthDate.getFullYear();
-        const months = today.getMonth() - birthDate.getMonth();
-        const days = today.getDate() - birthDate.getDate();
+        let today = new Date();
+        let birthDate = new Date(birthday);
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
     
         if (years === 0) {
             if (months === 0) {
