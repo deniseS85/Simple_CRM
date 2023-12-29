@@ -13,11 +13,14 @@ export class DataUpdateService {
     private animalDataSubject = new BehaviorSubject<any>({});
     private animalEventsListSubject = new BehaviorSubject<Events[]>([]);
     private allAnimalIdsSubject = new BehaviorSubject<string[]>([]);
+    private eventsListSubject = new BehaviorSubject<Events[]>([]);
     userData$ = this.userDataSubject.asObservable();
     animalData$ = this.animalDataSubject.asObservable();
     animalEventsList$ = this.animalEventsListSubject.asObservable();
     allAnimalIds$ = this.allAnimalIdsSubject.asObservable();
-    eventsList: Events[] = [];
+   /*  eventsList: Events[] = []; */
+    eventsList$ = this.eventsListSubject.asObservable();
+
 
 
     setUserData(updatedData: any): void {
@@ -42,10 +45,11 @@ export class DataUpdateService {
 
     getAllEvents(): void {
         onSnapshot(collection(this.firestore, 'events'), (list) => {
-          this.eventsList = [];
+          const eventsList: Events[] = [];
             list.forEach((element) => {
-              this.eventsList.push(new Events().setEventsObject(element.data(), element.id));
+              eventsList.push(new Events().setEventsObject(element.data(), element.id));
             });
+            this.eventsListSubject.next(eventsList);
         });
     }
 

@@ -119,11 +119,11 @@ export class DialogAddEventComponent {
         if (!date) {
             return '';
         }
-        const dayOfMonth = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const formattedDay = (dayOfMonth < 10) ? `0${dayOfMonth}` : `${dayOfMonth}`;
-        const formattedMonth = (month < 10) ? `0${month}` : `${month}`;
+        let dayOfMonth = date.getDate();
+        let month = date.getMonth() + 1;
+        let year = date.getFullYear();
+        let formattedDay = (dayOfMonth < 10) ? `0${dayOfMonth}` : `${dayOfMonth}`;
+        let formattedMonth = (month < 10) ? `0${month}` : `${month}`;
 
         return `${formattedDay}.${formattedMonth}.${year}`;
     }

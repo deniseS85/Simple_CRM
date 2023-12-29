@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DialogAddEventComponent } from '../dialog-add-event/dialog-add-event.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
 import { MatSnackBar,} from '@angular/material/snack-bar';
+import { Events } from '../models/events.class';
+import { Subject, takeUntil } from 'rxjs';
+import { DialogEditEventComponent } from '../dialog-edit-event/dialog-edit-event.component';
 
 
 @Component({
@@ -11,14 +14,14 @@ import { MatSnackBar,} from '@angular/material/snack-bar';
   styleUrls: ['./calendar.component.scss'],
 })
 
-export class CalendarComponent implements OnInit {
+export class CalendarComponent implements OnInit, OnDestroy  {
     currentWeek: { start: Date, end: Date } = { start: new Date(), end: new Date() };
     daysOfWeek: Date[] = [];
     hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
     currentDay: Date = new Date();
     eventPosition: { top: number, left: number } = { top: 0, left: 0 };
     calendarArray: boolean[][] = new Array(9).fill(true).map(() => new Array(5).fill(true)); 
-
+    private unsubscribe$: Subject<void> = new Subject<void>();
 
     constructor(public dialog: MatDialog, public dataUpdate: DataUpdateService, private snackBar: MatSnackBar) {
         this.dataUpdate.getAllEvents();
@@ -27,9 +30,14 @@ export class CalendarComponent implements OnInit {
     ngOnInit(): void {
         this.currentWeek = this.getcurrentWeek();
         this.generateDaysOfWeek();
-
-        this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true) ); 
+        this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true));
+        this.dataUpdate.eventsList$.pipe(takeUntil(this.unsubscribe$)).subscribe((eventsList) => {});
     }
+
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
+      }
 
     getcurrentWeek(): { start: Date, end: Date } { 
         let today = new Date();
@@ -121,9 +129,7 @@ export class CalendarComponent implements OnInit {
         let isCellOccupied = this.isCellOccupied(day, hour);
 
         if (isCellOccupied) {
-                this.snackBar.open('Time is already reserved.', 'OK', {
-                    duration: 3000,
-                });
+            this.editEvent(day, hour);
             return;
         }
         
@@ -140,6 +146,27 @@ export class CalendarComponent implements OnInit {
             }
         });
     }
+
+    editEvent(day:Date, hour: string) {
+        let visibleEvents = this.getVisibleEvents(day, hour);
+
+        if (visibleEvents.length > 0) {
+            let firstEvent = visibleEvents[0];
+
+            const dialog = this.dialog.open(DialogEditEventComponent, {
+                data: {
+                    id: firstEvent.id,
+                    day: day,
+                    hour: hour,
+                    name: firstEvent.name,
+                    treatmentName: firstEvent.treatmentName
+                }
+            });
+            dialog.afterClosed().subscribe(result => {
+                this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true));
+            });
+        }
+    } 
 
     isDurationOneHour(event:any, row:number, column:number) {
         if (event.length > 0) {
@@ -163,24 +190,29 @@ export class CalendarComponent implements OnInit {
                 //Wenn in der vorherigen Stunde ein mehrstündiger Termin gab, dann wurde die td-Zelle mit rowspan verlängert. Deshalb keine weitere td-Zelle erstellen. 
                 return false;
             }
-            
         }
     }
 
     isCellOccupied(day: Date, hour: string): boolean {
-        return this.dataUpdate.eventsList.some((event) => {
-            let eventDay: Date;
+        let isOccupied = false;
     
-            if (event.day instanceof Date) {
-                eventDay = event.day;
-            } else if (event.day && typeof event.day === 'object' && 'seconds' in event.day) {
-                eventDay = new Date((event.day as any).seconds * 1000);
-            } else {
-                return false;
-            }
+        this.dataUpdate.eventsList$.subscribe((eventsList) => {
+            isOccupied = eventsList.some((event) => {
+                let eventDay: Date;
     
-            return eventDay.toDateString() === day.toDateString() && event.hour === hour;
+                if (event.day instanceof Date) {
+                    eventDay = event.day;
+                } else if (event.day && typeof event.day === 'object' && 'seconds' in event.day) {
+                    eventDay = new Date((event.day as any).seconds * 1000);
+                } else {
+                    return false;
+                }
+    
+                return eventDay.toDateString() === day.toDateString() && event.hour === hour;
+            });
         });
+    
+        return isOccupied;
     }
 
     convertDateFormat(dateString: string): string {
@@ -228,44 +260,53 @@ export class CalendarComponent implements OnInit {
      * @returns 
      */
     getVisibleEvents(day: Date, hour: string): any[] {
-        return this.dataUpdate.eventsList.filter((event) => {
-            const eventDay: Date | undefined =
-                event.day instanceof Date
-                    ? event.day
-                    : event.day && typeof event.day === 'object' && 'seconds' in event.day
-                    ? new Date((event.day as any).seconds * 1000)
-                    : undefined;
+        let visibleEvents: Events[] = [];
+        
+        this.dataUpdate.eventsList$.subscribe((eventsList) => {
+            visibleEvents = eventsList.filter((event) => {
+                const eventDay: Date | undefined =
+                    event.day instanceof Date
+                        ? event.day
+                        : event.day && typeof event.day === 'object' && 'seconds' in event.day
+                        ? new Date((event.day as any).seconds * 1000)
+                        : undefined;
     
-            if (!eventDay) {
-                return false; // Wenn weder Date noch Timestamp vorhanden ist, schließe das Event aus.
-            }
+                if (!eventDay) {
+                    return false; // Wenn weder Date noch Timestamp vorhanden ist, schließe das Event aus.
+                }
     
-            const eventHour = event.hour;
-            const isSameDay = eventDay.toDateString() === day.toDateString();
-            const isSameHour = eventHour === hour;
+                const eventHour = event.hour;
+                const isSameDay = eventDay.toDateString() === day.toDateString();
+                const isSameHour = eventHour === hour;
     
-            return isSameDay && isSameHour;
+                return isSameDay && isSameHour;
+            });
         });
+    
+        return visibleEvents;
     }
   
     getMaxRowspan(day: Date, hour: string): number {
         let rowspan = 1;
+        
+        this.dataUpdate.eventsList$.subscribe((eventsList) => {
+            const eventsForCell = eventsList.filter((event) => {
+                const eventDay: Date | undefined =
+                    event.day instanceof Date
+                        ? event.day
+                        : event.day && typeof event.day === 'object' && 'seconds' in event.day
+                        ? new Date((event.day as any).seconds * 1000)
+                        : undefined;
     
-        const eventsForCell = this.dataUpdate.eventsList.filter((event) => {
-            const eventDay: Date | undefined =
-                event.day instanceof Date
-                    ? event.day
-                    : event.day && typeof event.day === 'object' && 'seconds' in event.day
-                    ? new Date((event.day as any).seconds * 1000)
-                    : undefined;
+                return eventDay && eventDay.toDateString() === day.toDateString() && event.hour === hour;
+            });
     
-            return eventDay && eventDay.toDateString() === day.toDateString() && event.hour === hour;
+            if (eventsForCell.length > 0) {
+                const maxDuration = Math.max(...eventsForCell.map((event) => event.duration));
+                rowspan = maxDuration;
+            }
         });
     
-        if (eventsForCell.length > 0) {
-            const maxDuration = Math.max(...eventsForCell.map((event) => event.duration));
-            rowspan = maxDuration;
-        }
         return rowspan;
     }
     

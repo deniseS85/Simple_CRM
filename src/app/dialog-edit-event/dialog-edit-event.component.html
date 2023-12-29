@@ -1,0 +1,56 @@
+<div class="dialog-container">
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+  
+    <h1 mat-dialog-title>Edit Appointment</h1>
+    <div mat-dialog-content class="add-event-content">
+        <div>
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label for="dayInput">Day</mat-label>
+                <input [disabled]="loading" matInput type="text" id="dayInput" [value]="convertDateFormat(event.day)" name="day" [matDatepicker]="picker1" [(ngModel)]="selectedDate">
+                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label for="hourSelect">Hour</mat-label>
+                <mat-select [disabled]="loading" [(ngModel)]="selectedHour" name="hour" id="hourSelect">
+                    <mat-option *ngFor="let hourOption of hours" [value]="hourOption">{{ hourOption }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
+                <mat-label>Select the Name</mat-label>
+                <mat-select [disabled]="loading" [(ngModel)]="event.name" name="selectedAnimal" placeholder="Select the Name" required> 
+                    <mat-option class="select-field" *ngFor="let animal of animalList" [value]="animal.name">
+                    {{ animal.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <mat-form-field class="input-full-width" appearance="outline" [hideRequiredMarker]="hideRequired">
+            <mat-label>Select the Treatment</mat-label>
+            <mat-select [disabled]="loading" [(ngModel)]="event.treatmentName" name="selectedTreatment" placeholder="Select Treatment" required>
+                <ng-container *ngFor="let treatment of treatments">
+                    <mat-option class="select-field" [value]="treatment.name">{{ treatment.name }}</mat-option>
+                </ng-container>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions class="dialog-button">
+        <button [disabled]="loading" mat-dialog-close mat-button>Cancel</button>
+        <button [disabled]="loading" (click)="saveChangeEvent()" mat-button>Save</button>
+    </div>
+    <img (click)="openDeleteConfirmationDialog()" class="delete-icon" src="./assets/img/delete.png">
+
+</div>
+
+<div class="delete-container" *ngIf="isConfirmationVisible" (click)="closeDeleteConfirmationDialog()">
+    <div class="delete-confirmation" (click)="doNotClose($event)">
+        <h2>Do you want to delete this event?</h2>
+        <div class="dialog-button">
+          <button mat-button (click)="closeDeleteConfirmationDialog()">Cancel</button>
+          <button mat-button (click)="confirmDeletion()">Delete</button>
+        </div>
+    </div>
+</div>

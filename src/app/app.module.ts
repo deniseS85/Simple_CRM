@@ -40,6 +40,7 @@ import { DialogEditAnimalComponent } from './dialog-edit-animal/dialog-edit-anim
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DialogAddEventComponent } from './dialog-add-event/dialog-add-event.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { DialogEditEventComponent } from './dialog-edit-event/dialog-edit-event.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     DialogAddAnimalComponent,
     AnimalDetailComponent,
     DialogEditAnimalComponent,
-    DialogAddEventComponent
+    DialogAddEventComponent,
+    DialogEditEventComponent
   ],
   imports: [ 
     BrowserModule,

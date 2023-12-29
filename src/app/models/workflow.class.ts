@@ -30,7 +30,7 @@ export class WorkflowItem {
         treatmentName: this.treatmentName,
         hour: this.hour,
         day: this.day,
-        position: this.position,
+        position: this.position
       };
     }
   
@@ -43,7 +43,7 @@ export class WorkflowItem {
         treatmentName: obj.treatmentName || '',
         hour: obj.hour || '',
         day: obj.day || '',
-        position: obj.position || 0
+        position: obj.position !== undefined ? obj.position : 0
       });
     }
   }
