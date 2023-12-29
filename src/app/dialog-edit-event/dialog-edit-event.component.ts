@@ -1,8 +1,9 @@
 import { Component, Inject, inject } from '@angular/core';
 import { Animals } from '../models/animals.class';
-import { Firestore, collection, deleteDoc, doc, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, deleteDoc, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface TreatmentsSelection {
   name: string;
@@ -34,8 +35,9 @@ export class DialogEditEventComponent {
   animalList:any = [];
   unsubList;
   isConfirmationVisible = false;
+  selectedTreatment!:any;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public event: any, private dataUpdate: DataUpdateService, public dialogRef: MatDialogRef<DialogEditEventComponent>) {
+  constructor(@Inject(MAT_DIALOG_DATA) public event: any, private dataUpdate: DataUpdateService, public dialogRef: MatDialogRef<DialogEditEventComponent>, private snackBar: MatSnackBar) {
       this.unsubList = this.subAnimalList();
       this.selectedDate = event.day;
       this.selectedHour = event.hour;
@@ -47,7 +49,54 @@ export class DialogEditEventComponent {
   }
 
   saveChangeEvent() {
-  
+      if (this.event.id && this.event.day && this.event.hour && this.event.name && this.event.treatmentName) {
+          let selectedTreatment = this.treatments.find(treatment => treatment.name === this.event.treatmentName);
+
+          if (selectedTreatment) {
+              let { name, categoryColor, duration } = selectedTreatment;
+              const updatedEventData = {
+                name: this.event.name,
+                treatmentName: name,
+                categoryColor: categoryColor,
+                day: this.selectedDate,
+                hour: this.selectedHour,
+                duration: duration,
+            };
+
+                if (this.isEventAfterClosingTime(duration, this.selectedHour)) {
+                      this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
+                          duration: 3000,
+                          
+                      });
+                } else {
+                    updateDoc(this.getEventID(), updatedEventData).then(() => {
+                        this.reloadEventData();
+                        this.dialogRef.close();
+                    }).catch((error) => {
+                        console.error('Error updating event in Firebase: ', error);
+                    });
+                }
+          } else {
+              console.error('Selected treatment not found.');
+          }
+      }
+  }
+
+  isEventAfterClosingTime(duration:number, hour:string): boolean {
+      let endHour = this.calculateEndTime(hour, duration);
+      return endHour > '19:00';
+  }
+
+  calculateEndTime(startTime: string, duration: number): string {
+      let startHour = parseInt(startTime.split(':')[0], 10);
+      let endHour = startHour + duration;
+      
+      return `${endHour.toString().padStart(2, '0')}:00`;
+  }
+
+  getEventID() {
+      let eventId = this.event.id;
+      return doc(this.firestore, 'events', eventId);
   }
 
   openDeleteConfirmationDialog() {
@@ -62,28 +111,20 @@ export class DialogEditEventComponent {
       event.stopPropagation();
   }
 
-  confirmDeletion(): void {
-      let eventId = this.event.id;
-      this.deleteEventFromFirebase(eventId);
-      this.isConfirmationVisible = false;
-  }
-
-  deleteEventFromFirebase(eventId: string): void {
-      let eventDocRef = doc(this.firestore, 'events', eventId);
-    
-      deleteDoc(eventDocRef).then(() => {
+  deleteEvent(): void {
+      deleteDoc(this.getEventID()).then(() => {
           this.reloadEventData();
           this.dialogRef.close();
       }).catch((error) => {
           console.error('Error deleting event from Firebase: ', error);
       });
+      this.isConfirmationVisible = false;
   }
 
   reloadEventData() {
       this.dataUpdate.getAllEvents();
   }
   
-
   subAnimalList() {
       return onSnapshot(this.getUserRef(), (usersSnapshot) => {
           this.animalList = [];

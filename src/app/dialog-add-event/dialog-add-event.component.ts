@@ -4,7 +4,6 @@ import { Animals } from '../models/animals.class';
 import { addDoc, collection, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import { Firestore } from '@angular/fire/firestore';
 import { Events } from '../models/events.class';
-import { DataUpdateService } from '../data-update.service';
 import { MatSnackBar,} from '@angular/material/snack-bar';
 
 interface TreatmentsSelection {
@@ -52,7 +51,7 @@ export class DialogAddEventComponent {
     selectedTreatment!:any;
   
 
-    constructor(@Inject(MAT_DIALOG_DATA) public data: { day: Date, hour: string, row: number, column: number  }, private dialogRef: MatDialogRef<DialogAddEventComponent>, private dataUpdate: DataUpdateService, private snackBar: MatSnackBar) {
+    constructor(@Inject(MAT_DIALOG_DATA) public data: { day: Date, hour: string, row: number, column: number  }, private dialogRef: MatDialogRef<DialogAddEventComponent>, private snackBar: MatSnackBar) {
         this.eventData.day = data.day || new Date();
         this.eventData.hour = data.hour;
         this.unsubList = this.subAnimalList();

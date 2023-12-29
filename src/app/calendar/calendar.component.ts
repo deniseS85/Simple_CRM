@@ -163,10 +163,12 @@ export class CalendarComponent implements OnInit, OnDestroy  {
                 }
             });
             dialog.afterClosed().subscribe(result => {
+                this.dataUpdate.getAllEvents();
                 this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true));
             });
         }
     } 
+
 
     isDurationOneHour(event:any, row:number, column:number) {
         if (event.length > 0) {
