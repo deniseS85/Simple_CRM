@@ -23,6 +23,7 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     calendarArray: boolean[][] = new Array(9).fill(true).map(() => new Array(5).fill(true)); 
     private unsubscribe$: Subject<void> = new Subject<void>();
 
+
     constructor(public dialog: MatDialog, public dataUpdate: DataUpdateService, private snackBar: MatSnackBar) {
         this.dataUpdate.getAllEvents();
     }
@@ -133,6 +134,7 @@ export class CalendarComponent implements OnInit, OnDestroy  {
             return;
         }
         
+        
         this.dialog.open(DialogAddEventComponent, {
             data: {
                 day: day,
@@ -209,14 +211,13 @@ export class CalendarComponent implements OnInit, OnDestroy  {
                 } else {
                     return false;
                 }
-    
                 return eventDay.toDateString() === day.toDateString() && event.hour === hour;
             });
         });
     
         return isOccupied;
-    }
-
+    } 
+    
     convertDateFormat(dateString: string): string {
         let date = new Date(dateString);
         let dayOfMonth = date.getDate();
@@ -277,9 +278,9 @@ export class CalendarComponent implements OnInit, OnDestroy  {
                     return false; // Wenn weder Date noch Timestamp vorhanden ist, schließe das Event aus.
                 }
     
-                const eventHour = event.hour;
-                const isSameDay = eventDay.toDateString() === day.toDateString();
-                const isSameHour = eventHour === hour;
+                let eventHour = event.hour;
+                let isSameDay = eventDay.toDateString() === day.toDateString();
+                let isSameHour = eventHour === hour;
     
                 return isSameDay && isSameHour;
             });
@@ -287,7 +288,7 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     
         return visibleEvents;
     }
-  
+
     getMaxRowspan(day: Date, hour: string): number {
         let rowspan = 1;
         
@@ -311,5 +312,5 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     
         return rowspan;
     }
-    
+   
 }

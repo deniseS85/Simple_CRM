@@ -5,6 +5,7 @@ import { addDoc, collection, doc, onSnapshot, updateDoc } from '@angular/fire/fi
 import { Firestore } from '@angular/fire/firestore';
 import { Events } from '../models/events.class';
 import { MatSnackBar,} from '@angular/material/snack-bar';
+import { DataUpdateService } from '../data-update.service';
 
 interface TreatmentsSelection {
     name: string;
@@ -28,8 +29,6 @@ export class DialogAddEventComponent {
         { name: 'Laboratory Test', categoryColor: '#f9f6c3', duration: 1, cost: 120 },
         { name: 'Operation', categoryColor: '#DBDBDB', duration: 3, cost: 300 },
     ];
-
-
     eventData: { day: Date, hour: string, name: string, treatmentName: string, duration: number, categoryColor: string, animalID:string, id:string } = {
       day: new Date(),
       hour: '',
@@ -43,15 +42,15 @@ export class DialogAddEventComponent {
     loading = false;
     hideRequired = 'true';
     hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
-    
     firestore: Firestore = inject(Firestore);
     animalList:any = [];
     unsubList;
     event = new Events();
     selectedTreatment!:any;
+
   
 
-    constructor(@Inject(MAT_DIALOG_DATA) public data: { day: Date, hour: string, row: number, column: number  }, private dialogRef: MatDialogRef<DialogAddEventComponent>, private snackBar: MatSnackBar) {
+    constructor(@Inject(MAT_DIALOG_DATA) public data: { day: Date, hour: string, row: number, column: number  }, private dialogRef: MatDialogRef<DialogAddEventComponent>, private snackBar: MatSnackBar, public dataUpdate: DataUpdateService) {
         this.eventData.day = data.day || new Date();
         this.eventData.hour = data.hour;
         this.unsubList = this.subAnimalList();
@@ -91,8 +90,9 @@ export class DialogAddEventComponent {
                 let eventsObject = new Events(eventData);
                 let docRef = await addDoc(this.getEventRef(), eventsObject.toEventJson());
                 await updateDoc(doc(this.getEventRef(), docRef.id), { id: docRef.id });
+                
                 this.dialogRef.close({ ...eventData, id: docRef.id });
-                this.loading = false;                         
+                this.loading = false;                      
             } 
         }
     }

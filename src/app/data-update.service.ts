@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Events } from './models/events.class';
 import { Firestore, collection, onSnapshot, query, where } from '@angular/fire/firestore';
 
@@ -18,7 +18,6 @@ export class DataUpdateService {
     animalData$ = this.animalDataSubject.asObservable();
     animalEventsList$ = this.animalEventsListSubject.asObservable();
     allAnimalIds$ = this.allAnimalIdsSubject.asObservable();
-   /*  eventsList: Events[] = []; */
     eventsList$ = this.eventsListSubject.asObservable();
 
 
@@ -88,6 +87,5 @@ export class DataUpdateService {
             this.allAnimalIdsSubject.next(animalIdsArray);
         });
     }
-    
 }
 
