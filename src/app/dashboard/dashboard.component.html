@@ -1,57 +1,34 @@
 <div class="dashboard-container">
-    <mat-card>
-        <mat-card-content routerLink="/patients">
-            <div class="title">
-                <mat-icon>pets</mat-icon>
-                <p>Total Patients</p>
-            </div>
-            <p class="statistic-number">{{ userList.length }}</p>
-        </mat-card-content>
-    </mat-card>
-    <mat-card>
-        <mat-card-content routerLink="/calendar">
-            <div class="title">
-                <mat-icon>trending_up</mat-icon>
-                <p>Patients last 30 days</p>
-            </div>
-            <p class="statistic-number">{{ eventsList.length }}</p>
-        </mat-card-content>
-    </mat-card>
+    <div class="dashboard-info">
+        <mat-card>
+            <mat-card-content routerLink="/patients">
+                <div class="title">
+                    <mat-icon>pets</mat-icon>
+                    <p>Total Patients</p>
+                </div>
+                <p class="statistic-number">{{ userList.length }}</p>
+            </mat-card-content>
+        </mat-card>
+        <mat-card>
+            <mat-card-content routerLink="/calendar">
+                <div class="title">
+                    <mat-icon>trending_up</mat-icon>
+                    <p>Patients last 30 days</p>
+                </div>
+                <p class="statistic-number">{{ eventsList.length }}</p>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <div class="chart-container">
+        <h3>Patients Overview</h3>
+        <div class="chart-year">
+            <mat-icon>arrow_back_ios_new</mat-icon>
+            <p>{{eventYear}}</p>
+            <mat-icon>arrow_forward_ios</mat-icon>
+        </div>
+        <canvas #barCanvas></canvas>
+    </div>
 </div>
 
-<!-- <div [ngStyle]="{'max-width': '1000px'}">
-    <div class="overview" #overView>
-
-        <mat-card [ngStyle]="{'cursor': 'pointer'}" routerLink="/user">
-            <mat-card-content>
-                <span><mat-icon>group</mat-icon> User</span>
-                <p>{{ usersList.length }}</p>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card [ngStyle]="{'cursor': 'pointer'}" routerLink="/products">
-            <mat-card-content>
-                <span><mat-icon>inventory_2</mat-icon> Products</span>
-                <p>{{ products.length }}</p>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-            <mat-card-content>
-                <span><mat-icon>bar_chart_4_bars</mat-icon> Revenue</span>
-                <p>{{ totalRevenue | currency:'$ ':'code' }}</p>
-            </mat-card-content>
-        </mat-card>
-
-    </div>
-
-    <app-chart-user-residence></app-chart-user-residence>
-
-
-    <div class="middle-part">
-        <app-chart-products-sold></app-chart-products-sold>
-    </div>
-
-
-</div> -->
 

@@ -1,38 +1,83 @@
 .dashboard-container {
     display: flex;
-    gap: 30px;
     margin-top: 25px;
-    mat-card {
-        height: 90px;
-        width: 200px;
-        cursor: pointer;
-        background-color: rgb(12, 54, 89);
-        border-radius: 10px;
-        border:  2px solid rgb(1,103,175);
+    flex-direction: column;
+    gap: 80px;
+    max-height: 100vh;
+    .dashboard-info {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        mat-card-content {
-            padding: 10px;
-            font-weight: bold;
-            .title {
-                display: flex;
-                align-items: center;
-                height: 35px;
-                gap: 10px;
-                p {
-                    font-size: 14px;
-                    margin-bottom: 0;
+        gap: 30px;
+        mat-card {
+            height: 90px;
+            width: 200px;
+            cursor: pointer;
+            background-color: rgb(12, 54, 89);
+            border-radius: 10px;
+            border:  2px solid rgb(1,103,175);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            mat-card-content {
+                padding: 10px;
+                font-weight: bold;
+                .title {
+                    display: flex;
+                    align-items: center;
+                    height: 35px;
+                    gap: 10px;
+                    p {
+                        font-size: 14px;
+                        margin-bottom: 0;
+                    }
+                }
+                .statistic-number {
+                    text-align: center;
+                    font-size: 18px;
+                    color: rgb(5, 251, 251);
                 }
             }
-            .statistic-number {
-                text-align: center;
-                font-size: 18px;
-                color: rgb(5, 251, 251);
+            &:hover {
+                border: 2px solid rgb(5, 251, 251);
             }
         }
-        &:hover {
-            border: 2px solid rgb(5, 251, 251);
-        }
     }
+    .chart-container {
+        max-height: 300px;
+        max-width: 600px;
+        position: relative;
+        .chart-year {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            right: 20px;
+            top: 5px;
+            width: 97px;
+            color: rgb(5, 251, 251);
+            p {
+                margin-bottom: 4px;
+            }
+            mat-icon {
+                cursor: pointer;
+                vertical-align: middle;
+                font-size: 20px;
+            }
+        }
+        h3 {
+            text-align: center;
+        }
+       canvas {
+            height: 100% !important;
+            width: 100% !important;
+            background-color: rgb(3, 33, 56);
+            padding: 20px;
+            border-radius: 10px;
+            border:  2px solid rgb(1,103,175);
+
+        } 
+    }
+    
 }
+
+  
+  
