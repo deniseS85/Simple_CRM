@@ -4,6 +4,8 @@ import { Firestore, collection, onSnapshot } from '@angular/fire/firestore';
 import { Events } from '../models/events.class';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -18,15 +20,24 @@ export class DashboardComponent implements AfterViewInit {
   unsubEventList;
   eventsList:any[] = [];
   eventsByMonth: Record<string, number> = {};
-  @ViewChild('barCanvas') private barCanvas!: ElementRef;
-  private barChart: any;
-  eventYear:any;
+  @ViewChild('barCanvas') barCanvas!: ElementRef;
+  barChart: any;
+  eventYear: number = new Date().getFullYear();
+  allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  currentMonth: Date = new Date();
+  weekDays: string[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  weeks: Date[][] = [];
+  datePipe: DatePipe = new DatePipe('en-US');
+  formattedMonth: string | null = null;
 
-  constructor() {
+
+  constructor(private router: Router) {
       this.unsubUserList = this.subUsersList();
       this.unsubEventList = this.subEventsList();
+      this.generateCalendar();
   }
 
+  
   ngAfterViewInit() {
       this.createBarChart();
   }
@@ -65,45 +76,31 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   updateEventsByMonth() {
-      let allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      let currentDate = new Date();
-      let currentMonth = currentDate.getMonth();
-      let currentYear = currentDate.getFullYear();
-      let relevantMonths = [];
-
-      for (let i = 11; i >= 0; i--) {
-          let monthIndex = (currentMonth - i + 12) % 12;
-          relevantMonths.push(allMonths[monthIndex]);
-      }
+      let currentMonth = new Date().getMonth();
     
-      this.eventsByMonth = Object.fromEntries(relevantMonths.map(month => [`${month}-${currentYear}`, 0]));
-
+      this.eventsByMonth = Object.fromEntries(this.allMonths.map(month => [`${month}-${this.eventYear}`, 0]));
+    
       this.eventsList.forEach(event => {
           let eventDate = new Date(event.day);
           let eventMonth = eventDate.getMonth();
-          this.eventYear = eventDate.getFullYear();
+          let eventYear = eventDate.getFullYear();
       
-          if (this.eventYear === currentYear && eventMonth <= currentMonth) {
-              let month = allMonths[eventMonth];
+          if (eventYear === this.eventYear && eventMonth <= currentMonth) {
+              let month = this.allMonths[eventMonth];
               this.eventsByMonth[`${month}-${this.eventYear}`]++;
           }
       });
-      console.log('Statistik der Events nach Monat:', this.eventsByMonth);
   }
+  
 
   createBarChart() {
       let ctx = this.barCanvas.nativeElement.getContext('2d');
-      let allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      let currentDate = new Date();
-      let currentMonthIndex = currentDate.getMonth();
-      let dynamicLabels = allMonths.slice(currentMonthIndex + 1).concat(allMonths.slice(0, currentMonthIndex + 1));
-      
+  
       this.barChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: dynamicLabels,
+          labels: this.allMonths,
           datasets: [{
-            label: 'Patients Overview',
             data:  Object.values(this.eventsByMonth),
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
             borderColor: 'rgba(75, 192, 192, 1)',
@@ -118,12 +115,12 @@ export class DashboardComponent implements AfterViewInit {
                   beginAtZero: true,
                   ticks: {
                     color: 'lightgrey',
-                    stepSize: 1
+                    stepSize: 2
                   },
                   min: 0,
-                  max: 10,
+                  max: 8,
                   grid: {
-                    color: 'rgb(1,103,175)' // Farbe der Gitterlinien der Y-Achse
+                    color: 'rgb(1,103,175)'
                   },
               },
               x: {
@@ -151,17 +148,94 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   updateBarChart() {
-    if (this.barChart) {
-      this.barChart.data.labels = Object.keys(this.eventsByMonth).map(label => {
-        const [month, year] = label.split('-');
-        return `${month} ${year.slice(2)}`;
-      });
+      if (this.barChart) {
+          this.barChart.data.labels = Object.keys(this.eventsByMonth).map(label => {
+              let [month, year] = label.split('-');
+              return month;
+          });
+
+          this.barChart.data.datasets[0].data = Object.values(this.eventsByMonth);
+          this.barChart.update();
+      }
+  }
+
+  previousYear() {
+      this.eventYear--;
+      this.updateEventsByMonth();
+      this.updateBarChart();
+  }
+
+  nextYear() {
+      this.eventYear++;
+      this.updateEventsByMonth();
+      this.updateBarChart();  
+  }
+
+  generateCalendar() {
+      let firstDayOfMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), 1);
+      let lastDayOfMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 0);
+    
+      firstDayOfMonth.setDate(firstDayOfMonth.getDate() - firstDayOfMonth.getDay() + (firstDayOfMonth.getDay() === 0 ? -6 : 1));
+    
+      let currentDay = new Date(firstDayOfMonth);
+      this.weeks = [];
+    
+      while (currentDay <= lastDayOfMonth) {
+          let week: Date[] = [];
+      
+          for (let i = 0; i < 7; i++) {
+              if (currentDay >= firstDayOfMonth && currentDay <= lastDayOfMonth) {
+                  week.push(new Date(currentDay));
+              } 
+              currentDay.setDate(currentDay.getDate() + 1);
+          }
+          this.weeks.push(week);
+      }
+      this.setFormattedMonth();
+  }
+
+  setFormattedMonth() {
+      const datePipe: DatePipe = new DatePipe('en-US');
+      this.formattedMonth = datePipe.transform(this.currentMonth, 'MMMM yyyy');
+  }
   
-      this.barChart.data.datasets[0].data = Object.values(this.eventsByMonth);
-      this.barChart.update();
+
+  isToday(date: Date | null): boolean {
+    if (date) {
+      let today = new Date();
+      if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
+        // Hervorhebung für den heutigen Tag
+        return true;
+      }
+      if (date.getDay() === 6 && date.getDate() === today.getDate()) {
+        // Samstag und heute
+        return true;
+      }
+      if (date.getDay() === 0 && date.getDate() === today.getDate()) {
+        // Sonntag und heute
+        return true;
+      }
     }
+    return false; 
+  }
+  
+
+  previousMonth() {
+    this.currentMonth.setMonth(this.currentMonth.getMonth() - 1);
+    this.generateCalendar();
+  }
+
+  nextMonth() {
+    this.currentMonth.setMonth(this.currentMonth.getMonth() + 1);
+    this.generateCalendar();
+  }
+
+  navigateToDay(day: Date) {
+      let formattedDate = this.datePipe.transform(day, 'yyyy-MM-dd');
+      this.router.navigate(['/calendar'], { queryParams: { selectedDate: formattedDate } });
   }
 }
+
 
 
 

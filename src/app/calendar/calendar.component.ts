@@ -1,12 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DialogAddEventComponent } from '../dialog-add-event/dialog-add-event.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
-import { MatSnackBar,} from '@angular/material/snack-bar';
 import { Events } from '../models/events.class';
 import { Subject, takeUntil } from 'rxjs';
 import { DialogEditEventComponent } from '../dialog-edit-event/dialog-edit-event.component';
-
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-calendar',
@@ -22,9 +21,10 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     eventPosition: { top: number, left: number } = { top: 0, left: 0 };
     calendarArray: boolean[][] = new Array(9).fill(true).map(() => new Array(5).fill(true)); 
     private unsubscribe$: Subject<void> = new Subject<void>();
+    @ViewChild('calendarContainer', { read: ElementRef }) calendarContainer!: ElementRef;
+    selectedDate: Date | null = null;
 
-
-    constructor(public dialog: MatDialog, public dataUpdate: DataUpdateService, private snackBar: MatSnackBar) {
+    constructor(public dialog: MatDialog, public dataUpdate: DataUpdateService, private route: ActivatedRoute) {
         this.dataUpdate.getAllEvents();
     }
 
@@ -33,7 +33,34 @@ export class CalendarComponent implements OnInit, OnDestroy  {
         this.generateDaysOfWeek();
         this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true));
         this.dataUpdate.eventsList$.pipe(takeUntil(this.unsubscribe$)).subscribe((eventsList) => {});
+        this.route.queryParams.subscribe(params => {
+            let selectedDate = params['selectedDate'];
+            if (selectedDate) {
+              let dateToSetWeek = new Date(selectedDate);
+              this.setWeekForSelectedDate(dateToSetWeek);
+            }
+          });
     }
+
+
+    setWeekForSelectedDate(selectedDate: Date): void {
+        let weekStart = this.getWeekStartDate(selectedDate);
+      
+        this.currentWeek = {
+          start: weekStart,
+          end: new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 4),
+        };
+      
+        this.generateDaysOfWeek();
+    }
+      
+    getWeekStartDate(date: Date): Date {
+        let startDay = new Date(date);
+        startDay.setDate(date.getDate() - date.getDay() + (date.getDay() === 0 ? -6 : 1));
+        return startDay;
+    }
+
+
 
     ngOnDestroy(): void {
         this.unsubscribe$.next();

@@ -11,7 +11,7 @@
   <table class="calendar-table">
       <tr class="table-header">
         <th></th>
-        <th *ngFor="let day of daysOfWeek">
+        <th #calendarContainer *ngFor="let day of daysOfWeek" class="calendar-header-cell" [ngClass]="{'selected-date': selectedDate && day.toDateString() === selectedDate.toDateString()}">
           {{ day | date:'E, dd.MM' }}
         </th>
       </tr>

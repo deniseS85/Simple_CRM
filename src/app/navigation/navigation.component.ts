@@ -76,8 +76,12 @@ export class NavigationComponent implements OnInit {
     
         if (this.router.isActive(routerLink, true)) {
             this.currentLink = hasSubURL ? 'Patient File' : routerLink.charAt(0).toUpperCase() + routerLink.slice(1);
+            
+           
         }
-        return this.router.isActive(routerLink, true);
+
+        //hier weiterarbeiten
+        return this.router.isActive(routerLink, true) /* || this.router.url.includes(routerLink) */;
     }
 
     /**

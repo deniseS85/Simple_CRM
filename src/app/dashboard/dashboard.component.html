@@ -1,33 +1,61 @@
-<div class="dashboard-container">
-    <div class="dashboard-info">
-        <mat-card>
-            <mat-card-content routerLink="/patients">
-                <div class="title">
-                    <mat-icon>pets</mat-icon>
-                    <p>Total Patients</p>
-                </div>
-                <p class="statistic-number">{{ userList.length }}</p>
-            </mat-card-content>
-        </mat-card>
-        <mat-card>
-            <mat-card-content routerLink="/calendar">
-                <div class="title">
-                    <mat-icon>trending_up</mat-icon>
-                    <p>Patients last 30 days</p>
-                </div>
-                <p class="statistic-number">{{ eventsList.length }}</p>
-            </mat-card-content>
-        </mat-card>
+<div class="dashboad-wrapper">
+    <div class="dashboard-container">
+        <div class="dashboard-info">
+            <mat-card>
+                <mat-card-content routerLink="/patients">
+                    <div class="title">
+                        <mat-icon>pets</mat-icon>
+                        <p>Total Patients</p>
+                    </div>
+                    <p class="statistic-number">{{ userList.length }}</p>
+                </mat-card-content>
+            </mat-card>
+            <mat-card>
+                <mat-card-content routerLink="/calendar">
+                    <div class="title">
+                        <mat-icon>trending_up</mat-icon>
+                        <p>Patients last 30 days</p>
+                    </div>
+                    <p class="statistic-number">{{ eventsList.length }}</p>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <div class="chart-container">
+            <h3>Patients Overview</h3>
+            <div class="chart-year">
+                <mat-icon (click)="previousYear()">arrow_back_ios_new</mat-icon>
+                <p>{{ eventYear }}</p>
+                <mat-icon (click)="nextYear()">arrow_forward_ios</mat-icon>
+            </div>
+            <canvas #barCanvas></canvas>
+        </div>
     </div>
 
-    <div class="chart-container">
-        <h3>Patients Overview</h3>
-        <div class="chart-year">
-            <mat-icon>arrow_back_ios_new</mat-icon>
-            <p>{{eventYear}}</p>
-            <mat-icon>arrow_forward_ios</mat-icon>
+    <div class="calender">
+        <div class="calender-header">
+            <mat-icon (click)="previousMonth()">arrow_back_ios</mat-icon>
+            <h3>{{ formattedMonth }}</h3>
+            <mat-icon (click)="nextMonth()">arrow_forward_ios</mat-icon>
         </div>
-        <canvas #barCanvas></canvas>
+        <table>
+            <thead>
+                <tr>
+                    <th *ngFor="let day of weekDays">{{ day }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let week of weeks">
+                    <td *ngFor="let day of week">
+                    <div class="single-day" *ngIf="day.getMonth() === currentMonth.getMonth()" 
+                    [ngClass]="{'today': isToday(day), 'saturday': day && day.getDay() === 6, 'sunday': day && day.getDay() === 0}"
+                    (click)="navigateToDay(day)">
+                        {{ day | date: 'd' }}
+                    </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
