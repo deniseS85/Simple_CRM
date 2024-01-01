@@ -42,7 +42,6 @@ export class CalendarComponent implements OnInit, OnDestroy  {
           });
     }
 
-
     setWeekForSelectedDate(selectedDate: Date): void {
         let weekStart = this.getWeekStartDate(selectedDate);
       
@@ -60,12 +59,10 @@ export class CalendarComponent implements OnInit, OnDestroy  {
         return startDay;
     }
 
-
-
     ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
-      }
+    }
 
     getcurrentWeek(): { start: Date, end: Date } { 
         let today = new Date();

@@ -46,5 +46,5 @@ export class WorkflowItem {
         position: obj.position !== undefined ? obj.position : 0
       });
     }
-  }
+}
   

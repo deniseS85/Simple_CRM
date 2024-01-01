@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { User } from '../models/user.class';
 import { Animals } from '../models/animals.class';
 import { DataUpdateService } from '../data-update.service';
@@ -35,18 +35,12 @@ export class WorkflowComponent implements OnInit{
 
 
   constructor(public dataUpdate: DataUpdateService) {
-      this.dataUpdate.getAllEvents();
       this.unsubUser = this.subUsersList();
+      this.dataUpdate.getAllEvents();
   }
 
     ngOnInit(): void {
-        this.loadTodayEvents().then(() => {
-            for (let event of this.todayEvents) {
-            this.addWorkflowItemDatabase(event);
-            }
-
-            this.setNextDayStartInterval();
-        });
+        this.initializeWorkflow();
     }
 
     ngOnDestroy() {
@@ -55,25 +49,36 @@ export class WorkflowComponent implements OnInit{
         this.unsubscribe$.complete();
     }
 
+     initializeWorkflow():void {
+        this.loadTodayEvents().then(() => {
+            this.innerJoin();
+            this.setNextDayStartInterval();
+        });
+    }
+
+    async addWorkflowItemsToDatabase() {
+        for (let event of this.todayEvents) {
+          await this.addWorkflowItemDatabase(event);
+        }
+    }
+
     async loadTodayEvents(): Promise<void> {
         return new Promise<void>((resolve) => {
             let today = new Date();
             today.setHours(0, 0, 0, 0);
     
-            this.dataUpdate.eventsList$.pipe(takeUntil(this.unsubscribe$)).subscribe((eventsList) => {
-                this.todayEvents = eventsList.filter((event) => {
-                    let eventDay: Date | undefined =
-                        event.day instanceof Date ? event.day : event.day && typeof event.day === 'object' && 'seconds' in event.day ? new Date((event.day as any).seconds * 1000) : undefined;
-
-                    if (!eventDay) {
-                        return false;
-                    }
-                    return eventDay.toDateString() === today.toDateString();
+            let eventsRef = collection(this.firestore, 'events');
+            let queryToday = query(eventsRef, where('day', '>=', today), where('day', '<', new Date(today.getTime() + 24 * 60 * 60 * 1000)));
+    
+            onSnapshot(queryToday, (querySnapshot) => {
+                this.todayEvents = [];
+                querySnapshot.forEach((doc) => {
+                    let event = doc.data() as Event; 
+                    this.todayEvents.push(event);
                 });
-                
                 resolve();
-            });
-        });
+            })
+        })
     }
 
     drop(event: CdkDragDrop<WorkflowItem[]>) {
@@ -92,68 +97,44 @@ export class WorkflowComponent implements OnInit{
     }
 
     async addWorkflowItemDatabase(item: WorkflowItem): Promise<void> {
-        let workflowCollection = collection(this.firestore, 'workflow');
-        
         try {
             let collectionRef = collection(this.firestore, 'workflow');
             let collectionQuery = query(collectionRef, where('id', '==', item.id));
             let querySnapshot = await getDocs(collectionQuery);
            
-
                 if (querySnapshot.size === 0) {
                     let newItem = new WorkflowItem().setWorkflowItemObject(item);
-                    await addDoc(workflowCollection, newItem.toJson());
+                    await addDoc(collectionRef, newItem.toJson());
                 }
         } catch (error) {
             console.error('Error saving workflow item: ', error);
         }
     }
 
-    async isNotTodayThenRemove(): Promise<void> {
-        try {
-            let querySnapshot = await getDocs(this.getWorkflowRef());
-            let today = new Date();
-            today.setHours(0, 0, 0, 0);
-    
-            let newData: WorkflowItem[] = [];
-            for (let docSnapshot of querySnapshot.docs) {
-                let item = docSnapshot.data() as WorkflowItem;
-                let itemDay: Date;
-    
-                if (typeof item.day === 'string') {
-                    itemDay = new Date(item.day);
-                } else if (typeof item.day === 'object' && 'seconds' in item.day) {
-                    itemDay = new Date((item.day as any).seconds * 1000);
-                } else {
-                    continue; 
-                }
-    
-                if (itemDay.toDateString() === today.toDateString()) {
-                    newData.push(item);
-                }
-            }
-            await this.replaceOldEvents(newData);
-        } catch (error) {
-            console.error('Error when checking and removing outdated workflow elements: ', error);
-        }
-    }
 
-    async replaceOldEvents(newData: WorkflowItem[]): Promise<void> {
-        let workflowCollection = collection(this.firestore, 'workflow');
+    async isNotTodayThenRemove(): Promise<void> {
+        let querySnapshot = await getDocs(this.getWorkflowRef());
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
     
-        try {
-            let querySnapshot = await getDocs(workflowCollection);
-            querySnapshot.forEach(async (doc) => {
-                await deleteDoc(doc.ref);
-            });
+        for (let docSnapshot of querySnapshot.docs) {
+            let item = docSnapshot.data() as WorkflowItem;
+            let itemDay: Date;
     
-            for (let item of newData) {
-                let newItem = new WorkflowItem(item);
-                await addDoc(workflowCollection, newItem.toJson());
+            if (typeof item.day === 'string') {
+                itemDay = new Date(item.day);
+            } else if (typeof item.day === 'object' && 'seconds' in item.day) {
+                itemDay = new Date((item.day as any).seconds * 1000);
+            } else {
+                continue;
             }
-        } catch (error) {
-            console.error('Error replacing the workflow collection: ', error);
+    
+            if (itemDay.toDateString() !== today.toDateString()) {
+            
+            await deleteDoc(doc(this.getWorkflowRef(), docSnapshot.id));
+            }
         }
+       
     }
 
     setNextDayStartInterval() {
@@ -161,15 +142,14 @@ export class WorkflowComponent implements OnInit{
         let tomorrow = new Date(now);
         tomorrow.setDate(now.getDate() + 1);
         tomorrow.setHours(0, 0, 0, 0);
-    
+      
         let timeUntilNextDayStart = tomorrow.getTime() - now.getTime();
-    
+      
         setInterval(() => {
             this.isNotTodayThenRemove();
-            this.setNextDayStartInterval();
         }, timeUntilNextDayStart);
     }
-
+    
     getWorkflowRef() {
         return collection(this.firestore, 'workflow');
     }
@@ -185,6 +165,7 @@ export class WorkflowComponent implements OnInit{
         let workflowDoc = doc(this.firestore, 'workflow', workflowItem.id);
         return updateDoc(workflowDoc, { position: workflowItem.position });
     }
+
 
     filterTasks() {
         this.todoFilter = this.inputValue ? this.todoFilter.filter(item => this.compareInputUser(item)) : [...this.todo];
@@ -209,7 +190,6 @@ export class WorkflowComponent implements OnInit{
             if (hoursA !== hoursB) {
                 return hoursA - hoursB;
             }
-        
             return minutesA - minutesB;
         });
     }
@@ -228,16 +208,11 @@ export class WorkflowComponent implements OnInit{
             list.forEach(element => {
                 this.usersList.push(new User().setUserObject(element.data(), element.id));
             });
-            this.innerJoin();
-            this.sortTasksByTime(this.todo);
-            this.sortTasksByTime(this.todoFilter);
         });
     }
 
     innerJoin() {
         this.animalIdsToday = this.todayEvents.map(event => event.animalID);
-        this.workflow = [];
-    
         this.usersList.forEach((user: User) => {
             user.animals.forEach(animal => {
                 if (this.animalIdsToday.includes(animal.id)) {
@@ -246,16 +221,17 @@ export class WorkflowComponent implements OnInit{
                     if (matchingEvent) {
                         let imgPath = `./assets/img/${animal.species}.png`;
                         let eventWithLastNameImg = {...matchingEvent, 
-                        lastName: user.lastName,
-                        img: imgPath 
+                            lastName: user.lastName,
+                            img: imgPath 
                         };
-
-                        this.workflow.push(eventWithLastNameImg);
                         this.todo.push(eventWithLastNameImg);
                         this.todoFilter.push(eventWithLastNameImg);
+                        this.addWorkflowItemDatabase(eventWithLastNameImg);
+                        this.sortTasksByTime(this.todo);
+                        this.sortTasksByTime(this.todoFilter);   
                     }
                 }
-            });
-        });
-    }
+            })
+        })
+    }  
 }

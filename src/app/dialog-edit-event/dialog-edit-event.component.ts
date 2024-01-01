@@ -4,6 +4,7 @@ import { Firestore, collection, deleteDoc, doc, onSnapshot, updateDoc } from '@a
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { WorkflowItem } from '../models/workflow.class';
 
 interface TreatmentsSelection {
   name: string;
@@ -49,38 +50,38 @@ export class DialogEditEventComponent {
   }
 
   saveChangeEvent() {
-      if (this.event.id && this.event.day && this.event.hour && this.event.name && this.event.treatmentName) {
-          let selectedTreatment = this.treatments.find(treatment => treatment.name === this.event.treatmentName);
+        this.loading = true;
+        if (this.event.id && this.event.day && this.event.hour && this.event.name && this.event.treatmentName) {
+            let selectedTreatment = this.treatments.find(treatment => treatment.name === this.event.treatmentName);
 
-          if (selectedTreatment) {
-              let { name, categoryColor, duration } = selectedTreatment;
-              const updatedEventData = {
-                name: this.event.name,
-                treatmentName: name,
-                categoryColor: categoryColor,
-                day: this.selectedDate,
-                hour: this.selectedHour,
-                duration: duration,
-            };
-
+            if (selectedTreatment) {
+                let { name, categoryColor, duration } = selectedTreatment;
+                let updatedEventData = {
+                    name: this.event.name,
+                    treatmentName: name,
+                    categoryColor: categoryColor,
+                    day: this.selectedDate,
+                    hour: this.selectedHour,
+                    duration: duration,
+                };
                 if (this.isEventAfterClosingTime(duration, this.selectedHour)) {
-                      this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
-                          duration: 3000,
-                          
-                      });
+                    this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
+                        duration: 3000,
+                        
+                    });
                 } else {
                     updateDoc(this.getEventID(), updatedEventData).then(() => {
                         this.reloadEventData();
                         this.dialogRef.close();
-                    }).catch((error) => {
-                        console.error('Error updating event in Firebase: ', error);
-                    });
+                        this.loading = false;
+                    })
                 }
-          } else {
-              console.error('Selected treatment not found.');
-          }
-      }
+            } else {
+                console.error('Selected treatment not found.');
+            }
+        }
   }
+
 
   isEventAfterClosingTime(duration:number, hour:string): boolean {
       let endHour = this.calculateEndTime(hour, duration);
@@ -112,13 +113,15 @@ export class DialogEditEventComponent {
   }
 
   deleteEvent(): void {
-      deleteDoc(this.getEventID()).then(() => {
-          this.reloadEventData();
-          this.dialogRef.close();
-      }).catch((error) => {
-          console.error('Error deleting event from Firebase: ', error);
-      });
-      this.isConfirmationVisible = false;
+        this.loading = true;
+        deleteDoc(this.getEventID()).then(() => {
+            this.reloadEventData();
+            this.dialogRef.close();
+            this.loading = false;
+        }).catch((error) => {
+            console.error('Error deleting event from Firebase: ', error);
+        });
+        this.isConfirmationVisible = false;
   }
 
   reloadEventData() {

@@ -84,21 +84,6 @@ export class DashboardComponent implements AfterViewInit {
       return collection(this.firestore, 'events');
   }
 
-  /* updateEventsByMonth() {
-      this.eventsByMonth = Object.fromEntries(this.allMonths.map(month => [`${month}-${this.eventYear}`, 0]));
-    
-      this.eventsList.forEach(event => {
-          let eventDate = new Date(event.day);
-          let eventMonth = eventDate.getMonth();
-          let eventYear = eventDate.getFullYear();
-      
-          if (eventYear === this.eventYear) {
-              let month = this.allMonths[eventMonth];
-              this.eventsByMonth[`${month}-${this.eventYear}`]++;
-          } 
-      });
-  } */
-
   updateEventsByMonth() {
     this.eventsByMonth = Object.fromEntries(this.allMonths.map(month => [`${month}-${this.eventYear}`, 0]));
   
@@ -140,7 +125,7 @@ export class DashboardComponent implements AfterViewInit {
                     stepSize: 2
                   },
                   min: 0,
-                  max: 8,
+                  max: 14,
                   grid: {
                     color: 'rgb(1,103,175)'
                   },
