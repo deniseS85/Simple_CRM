@@ -14,7 +14,19 @@
                 <mat-card-content routerLink="/calendar">
                     <div class="title">
                         <mat-icon>trending_up</mat-icon>
-                        <p>Patients last 30 days</p>
+                        <p>Patients current Month</p>
+                    </div>
+                    <div class="statistic">
+                        <p class="statistic-number">{{ patientsThisMonth }}</p>
+                        <p [style.color]="percentageChangeColor" class="statistic-number">{{ percentageChangeDisplay }}</p>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <mat-card>
+                <mat-card-content routerLink="/calendar">
+                    <div class="title">
+                        <mat-icon>event</mat-icon>
+                        <p>Total Events</p>
                     </div>
                     <p class="statistic-number">{{ eventsList.length }}</p>
                 </mat-card-content>

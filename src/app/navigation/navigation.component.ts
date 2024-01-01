@@ -27,7 +27,7 @@ export class NavigationComponent implements OnInit {
     animal = new Animals();
     user = new User();
 
-    constructor(private router: Router, private authService: AuthService, private dataUpdate: DataUpdateService) {
+    constructor(public router: Router, private authService: AuthService, private dataUpdate: DataUpdateService) {
         this.currentUrl = this.router.url;
         this.unsubList = this.subUsersList();
         this.getSubURL();
@@ -76,11 +76,8 @@ export class NavigationComponent implements OnInit {
     
         if (this.router.isActive(routerLink, true)) {
             this.currentLink = hasSubURL ? 'Patient File' : routerLink.charAt(0).toUpperCase() + routerLink.slice(1);
-            
-           
         }
 
-        //hier weiterarbeiten
         return this.router.isActive(routerLink, true) /* || this.router.url.includes(routerLink) */;
     }
 

@@ -29,7 +29,11 @@ export class DashboardComponent implements AfterViewInit {
   weeks: Date[][] = [];
   datePipe: DatePipe = new DatePipe('en-US');
   formattedMonth: string | null = null;
-
+  patientsThisMonth: number = 0;
+  patientsLastMonth:number = 0;
+  percentageChange: number = 0;
+  percentageChangeDisplay: string = '';
+  percentageChangeColor: string = '';
 
   constructor(private router: Router) {
       this.unsubUserList = this.subUsersList();
@@ -40,6 +44,9 @@ export class DashboardComponent implements AfterViewInit {
   
   ngAfterViewInit() {
       this.createBarChart();
+      this.subEventsList().then(() => {
+        this.calculatePatientsAndPercentageChange();
+      });
   }
 
   subUsersList() {
@@ -52,19 +59,21 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   subEventsList() {
-      return onSnapshot(this.getEventsRef(), (list) =>{
+      return new Promise<void>((resolve) => {
+        onSnapshot(this.getEventsRef(), (list) => {
           this.eventsList = [];
           list.forEach(element => {
-              this.eventsList.push(new Events().setEventsObject(element.data(), element.id));
+            this.eventsList.push(new Events().setEventsObject(element.data(), element.id));
           });
           this.updateEventsByMonth();
-          this.updateBarChart(); 
-      })
+          this.updateBarChart();
+          resolve(); 
+        });
+      });
   }
 
   ngOnDestroy(){
       this.unsubUserList();
-      this.unsubEventList();
   }
 
   getUserRef() {
@@ -75,9 +84,7 @@ export class DashboardComponent implements AfterViewInit {
       return collection(this.firestore, 'events');
   }
 
-  updateEventsByMonth() {
-      let currentMonth = new Date().getMonth();
-    
+  /* updateEventsByMonth() {
       this.eventsByMonth = Object.fromEntries(this.allMonths.map(month => [`${month}-${this.eventYear}`, 0]));
     
       this.eventsList.forEach(event => {
@@ -85,14 +92,29 @@ export class DashboardComponent implements AfterViewInit {
           let eventMonth = eventDate.getMonth();
           let eventYear = eventDate.getFullYear();
       
-          if (eventYear === this.eventYear && eventMonth <= currentMonth) {
+          if (eventYear === this.eventYear) {
               let month = this.allMonths[eventMonth];
               this.eventsByMonth[`${month}-${this.eventYear}`]++;
-          }
+          } 
       });
+  } */
+
+  updateEventsByMonth() {
+    this.eventsByMonth = Object.fromEntries(this.allMonths.map(month => [`${month}-${this.eventYear}`, 0]));
+  
+    this.eventsList.forEach(event => {
+      let eventDate = new Date(event.day);
+      let eventMonth = eventDate.getMonth();
+      let eventYear = eventDate.getFullYear();
+  
+      let month = this.allMonths[eventMonth];
+      let key = `${month}-${eventYear}`;
+      if (this.eventsByMonth[key] !== undefined) {
+        this.eventsByMonth[key]++;
+      }
+    });
   }
   
-
   createBarChart() {
       let ctx = this.barCanvas.nativeElement.getContext('2d');
   
@@ -199,41 +221,60 @@ export class DashboardComponent implements AfterViewInit {
       this.formattedMonth = datePipe.transform(this.currentMonth, 'MMMM yyyy');
   }
   
-
   isToday(date: Date | null): boolean {
-    if (date) {
-      let today = new Date();
-      if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
-        // Hervorhebung für den heutigen Tag
-        return true;
+      if (date) {
+          let today = new Date();
+          if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
+              return true;
+          }
+          if (date.getDay() === 6 && date.getDate() === today.getDate()) {
+              return true;
+          }
+          if (date.getDay() === 0 && date.getDate() === today.getDate()) {
+              return true;
+          }
       }
-      if (date.getDay() === 6 && date.getDate() === today.getDate()) {
-        // Samstag und heute
-        return true;
-      }
-      if (date.getDay() === 0 && date.getDate() === today.getDate()) {
-        // Sonntag und heute
-        return true;
-      }
-    }
-    return false; 
+      return false; 
   }
   
-
   previousMonth() {
-    this.currentMonth.setMonth(this.currentMonth.getMonth() - 1);
-    this.generateCalendar();
+      this.currentMonth.setMonth(this.currentMonth.getMonth() - 1);
+      this.generateCalendar();
   }
 
   nextMonth() {
-    this.currentMonth.setMonth(this.currentMonth.getMonth() + 1);
-    this.generateCalendar();
+      this.currentMonth.setMonth(this.currentMonth.getMonth() + 1);
+      this.generateCalendar();
   }
 
   navigateToDay(day: Date) {
       let formattedDate = this.datePipe.transform(day, 'yyyy-MM-dd');
       this.router.navigate(['/calendar'], { queryParams: { selectedDate: formattedDate } });
   }
+
+  calculatePatientsAndPercentageChange(): void {
+      let currentMonthIndex = this.currentMonth.getMonth();
+      let currentYear = this.currentMonth.getFullYear();
+      let previousMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1;
+      let previousYear = currentMonthIndex === 0 ? currentYear - 1 : currentYear;
+      let currentMonthKey = `${this.allMonths[currentMonthIndex]}-${currentYear}`;
+      let currentMonthEvents = this.eventsByMonth[currentMonthKey] || 0;
+    
+      let previousMonthEvents = this.eventsList.filter(event => {
+          let eventDate = new Date(event.day);
+          return eventDate.getMonth() === previousMonthIndex && eventDate.getFullYear() === previousYear;
+      }).length;
+    
+      this.patientsThisMonth = currentMonthEvents;
+      this.patientsLastMonth = previousMonthEvents;
+      this.percentageChange = previousMonthEvents !== 0 ? parseFloat(((currentMonthEvents - previousMonthEvents) / Math.abs(previousMonthEvents) * 100).toFixed(0)) : 0;
+
+      this.percentageChangeDisplay = this.percentageChange > 0 ? `+${this.percentageChange}%` : `${this.percentageChange}%`;
+      this.percentageChangeColor = this.percentageChange > 0 ? '#05fb4e' : this.percentageChange < 0 ? '#fb1005' : 'white';
+  }
+  
+  
+  
 }
 
 

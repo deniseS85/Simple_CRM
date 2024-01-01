@@ -21,7 +21,7 @@
                 <mat-icon>view_kanban</mat-icon>
                 <span>Workflow</span>
             </li>
-            <li routerLink="/calendar" [class.active]="activeLink('calendar')">
+            <li routerLink="/calendar" [class.active]="activeLink('calendar') || router.url.includes('/calendar')">
                 <mat-icon>calendar_month</mat-icon>
                 <span>Calendar</span>
             </li>

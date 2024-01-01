@@ -12,7 +12,7 @@
             gap: 30px;
             mat-card {
                 height: 90px;
-                width: 200px;
+                width: 208px;
                 cursor: pointer;
                 background-color: rgb(12, 54, 89);
                 border-radius: 10px;
@@ -23,6 +23,10 @@
                 mat-card-content {
                     padding: 10px;
                     font-weight: bold;
+                    .statistic {
+                        display: flex;
+                        justify-content: space-evenly;
+                    }
                     .title {
                         display: flex;
                         align-items: center;
