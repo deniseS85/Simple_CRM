@@ -22,7 +22,6 @@
     "@angular/platform-browser": "^17.0.0",
     "@angular/platform-browser-dynamic": "^17.0.0",
     "@angular/router": "^17.0.0",
-    "@mobiscroll/angular": "npm:@mobiscroll/angular-ivy-trial@^5.28.0",
     "blip-ds": "^1.270.2",
     "chart.js": "^4.4.1",
     "esbuild": "^0.19.8",

@@ -42,6 +42,7 @@ import { DialogAddEventComponent } from './dialog-add-event/dialog-add-event.com
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { DialogEditEventComponent } from './dialog-edit-event/dialog-edit-event.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,7 +60,8 @@ import { DialogEditEventComponent } from './dialog-edit-event/dialog-edit-event.
     AnimalDetailComponent,
     DialogEditAnimalComponent,
     DialogAddEventComponent,
-    DialogEditEventComponent
+    DialogEditEventComponent,
+
   ],
   imports: [ 
     BrowserModule,

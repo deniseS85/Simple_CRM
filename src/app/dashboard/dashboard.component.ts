@@ -3,7 +3,6 @@ import { User } from '../models/user.class';
 import { Firestore, collection, onSnapshot } from '@angular/fire/firestore';
 import { Events } from '../models/events.class';
 import { Chart, registerables } from 'chart.js';
-Chart.register(...registerables);
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -39,6 +38,7 @@ export class DashboardComponent implements AfterViewInit {
       this.unsubUserList = this.subUsersList();
       this.unsubEventList = this.subEventsList();
       this.generateCalendar();
+      Chart.register(...registerables);
   }
 
   
