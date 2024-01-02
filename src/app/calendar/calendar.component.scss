@@ -71,10 +71,12 @@
             height: 32px;
             &:hover:not(tr td:first-child):empty {
                 border: 1.5px solid rgb(5, 251, 251);
+                box-sizing: border-box;
             }
         }
         td > div {
             height: 100%;
+            box-sizing: border-box;
         }
         td.past-day { 
           /*   pointer-events: none;  */

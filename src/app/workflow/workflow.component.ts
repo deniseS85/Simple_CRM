@@ -1,11 +1,11 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
 import { User } from '../models/user.class';
 import { Animals } from '../models/animals.class';
 import { DataUpdateService } from '../data-update.service';
 import { WorkflowItem } from '../models/workflow.class';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 
 
 @Component({
@@ -53,12 +53,13 @@ export class WorkflowComponent implements OnInit{
         this.loadTodayEvents().then(() => {
             this.innerJoin();
             this.setNextDayStartInterval();
+            this.deleteOldWorkflowItems();
         });
     }
 
     async addWorkflowItemsToDatabase() {
         for (let event of this.todayEvents) {
-          await this.addWorkflowItemDatabase(event);
+          await this.addWorkflowItemDatabase(event, event.id);
         }
     }
 
@@ -96,14 +97,14 @@ export class WorkflowComponent implements OnInit{
         }
     }
 
-    async addWorkflowItemDatabase(item: WorkflowItem): Promise<void> {
+    async addWorkflowItemDatabase(item: WorkflowItem, eventId: string): Promise<void> {
         try {
             let collectionRef = collection(this.firestore, 'workflow');
             let collectionQuery = query(collectionRef, where('id', '==', item.id));
             let querySnapshot = await getDocs(collectionQuery);
            
                 if (querySnapshot.size === 0) {
-                    let newItem = new WorkflowItem().setWorkflowItemObject(item);
+                    let newItem = new WorkflowItem().setWorkflowItemObject(item, eventId);
                     await addDoc(collectionRef, newItem.toJson());
                 }
         } catch (error) {
@@ -226,12 +227,35 @@ export class WorkflowComponent implements OnInit{
                         };
                         this.todo.push(eventWithLastNameImg);
                         this.todoFilter.push(eventWithLastNameImg);
-                        this.addWorkflowItemDatabase(eventWithLastNameImg);
+                        this.addWorkflowItemDatabase(eventWithLastNameImg, eventWithLastNameImg.id);
                         this.sortTasksByTime(this.todo);
                         this.sortTasksByTime(this.todoFilter);   
                     }
                 }
             })
         })
-    }  
+    } 
+    
+    async deleteOldWorkflowItems(): Promise<void> {
+        let querySnapshot = await getDocs(this.getWorkflowRef());
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+    
+        for (let docSnapshot of querySnapshot.docs) {
+            let item = docSnapshot.data() as WorkflowItem;
+            let itemDay: Date;
+    
+            if (typeof item.day === 'string') {
+                itemDay = new Date(item.day);
+            } else if (typeof item.day === 'object' && 'seconds' in item.day) {
+                itemDay = new Date((item.day as any).seconds * 1000);
+            } else {
+                continue;
+            }
+    
+            if (itemDay.toDateString() !== today.toDateString()) {
+                await deleteDoc(doc(this.getWorkflowRef(), docSnapshot.id));
+            }
+        }
+    }
 }

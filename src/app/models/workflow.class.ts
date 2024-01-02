@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 export class WorkflowItem {
     id: string; 
     img: string;
@@ -11,7 +9,7 @@ export class WorkflowItem {
     position: number;
   
     constructor(obj?: any) {
-      this.id = obj && obj.id ? obj.id : uuidv4();
+      this.id = obj && obj.id ? obj.id : '';
       this.img = obj && obj.img ? obj.img : '';
       this.name = obj && obj.name ? obj.name : '';
       this.lastName = obj && obj.lastName ? obj.lastName : '';
@@ -34,9 +32,9 @@ export class WorkflowItem {
       };
     }
   
-    setWorkflowItemObject(obj: any) {
+    setWorkflowItemObject(obj: any, eventId: string) {
       return new WorkflowItem({
-        id: obj.id || uuidv4(),
+        id: eventId,
         img: obj.img || '',
         name: obj.name || '',
         lastName: obj.lastName || '',

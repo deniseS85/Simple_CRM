@@ -1,16 +1,17 @@
 import { Component, Inject, inject } from '@angular/core';
 import { Animals } from '../models/animals.class';
-import { Firestore, collection, deleteDoc, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkflowItem } from '../models/workflow.class';
+import { User } from '../models/user.class';
+
 
 interface TreatmentsSelection {
   name: string;
   categoryColor: string;
   duration: number;
-  cost?: number;
 }
 
 @Component({
@@ -20,14 +21,16 @@ interface TreatmentsSelection {
 })
 export class DialogEditEventComponent {
   treatments: TreatmentsSelection[] = [ 
-    { name: 'Medical Check-Up ', categoryColor: '#c9f7f9', duration: 2, cost: 140 },
-    { name: 'Dental Care', categoryColor: '#fbd1d1', duration: 1, cost: 80 },
-    { name: 'Vaccination', categoryColor: '#eec3fd', duration: 1, cost: 50 },
-    { name: 'Castration', categoryColor: '#d4f9c6', duration: 2, cost: 150 },
-    { name: 'Laboratory Test', categoryColor: '#f9f6c3', duration: 1, cost: 120 },
-    { name: 'Operation', categoryColor: '#DBDBDB', duration: 3, cost: 300 },
+    { name: 'Medical Check-Up ', categoryColor: '#c9f7f9', duration: 2},
+    { name: 'Dental Care', categoryColor: '#fbd1d1', duration: 1 },
+    { name: 'Vaccination', categoryColor: '#eec3fd', duration: 1},
+    { name: 'Castration', categoryColor: '#d4f9c6', duration: 2},
+    { name: 'Laboratory Test', categoryColor: '#f9f6c3', duration: 1},
+    { name: 'Operation', categoryColor: '#DBDBDB', duration: 3},
 ];
   firestore: Firestore = inject(Firestore);
+  user = new User();
+  animal = new Animals();
   loading = false;
   hideRequired = 'true';
   selectedDate: Date;
@@ -37,84 +40,216 @@ export class DialogEditEventComponent {
   unsubList;
   isConfirmationVisible = false;
   selectedTreatment!:any;
+  usersList:any = [];
+  unsubUser:any = [];
+  workflowCompleteData:any;
+  
 
   constructor(@Inject(MAT_DIALOG_DATA) public event: any, private dataUpdate: DataUpdateService, public dialogRef: MatDialogRef<DialogEditEventComponent>, private snackBar: MatSnackBar) {
       this.unsubList = this.subAnimalList();
+      this.unsubUser = this.subUsersList();
       this.selectedDate = event.day;
       this.selectedHour = event.hour;
   }
   
 
-  ngOnDestroy() {
-      this.unsubList(); 
-  }
+    ngOnDestroy() {
+        this.unsubList(); 
+        this.unsubUser();
+    }
 
-  saveChangeEvent() {
+    async saveChangeEvent() {
         this.loading = true;
-        if (this.event.id && this.event.day && this.event.hour && this.event.name && this.event.treatmentName) {
-            let selectedTreatment = this.treatments.find(treatment => treatment.name === this.event.treatmentName);
+
+        if (this.isEventValid()) {
+            let selectedTreatment = this.getSelectedTreatment();
 
             if (selectedTreatment) {
-                let { name, categoryColor, duration } = selectedTreatment;
-                let updatedEventData = {
-                    name: this.event.name,
-                    treatmentName: name,
-                    categoryColor: categoryColor,
-                    day: this.selectedDate,
-                    hour: this.selectedHour,
-                    duration: duration,
-                };
-                if (this.isEventAfterClosingTime(duration, this.selectedHour)) {
-                    this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
-                        duration: 3000,
-                        
-                    });
-                } else {
-                    updateDoc(this.getEventID(), updatedEventData).then(() => {
-                        this.reloadEventData();
-                        this.dialogRef.close();
-                        this.loading = false;
-                    })
+                let updatedEventData = this.getUpdatedEventData(selectedTreatment);
+                let workflowCompleteData = this.loadUserData(updatedEventData);
+                this.updateEventAndWorkflow(updatedEventData, workflowCompleteData);
+                let isAfterClosingTime = this.isEventAfterClosingTime(selectedTreatment.duration, this.selectedHour);
+    
+                if (isAfterClosingTime) {
+                    this.showClosingTimeSnackBar();
                 }
-            } else {
-                console.error('Selected treatment not found.');
             }
         }
-  }
+    }
+    
+    isEventValid(): boolean {
+        return this.event.id && this.event.day && this.event.hour && this.event.name && this.event.treatmentName;
+    }
 
+    getSelectedTreatment(): TreatmentsSelection | undefined {
+        return this.treatments.find(treatment => treatment.name === this.event.treatmentName);
+    }
 
-  isEventAfterClosingTime(duration:number, hour:string): boolean {
-      let endHour = this.calculateEndTime(hour, duration);
-      return endHour > '19:00';
-  }
+    getUpdatedEventData(selectedTreatment: TreatmentsSelection): any {
+        let { name, categoryColor, duration } = selectedTreatment;
+        return {
+            name: this.event.name,
+            treatmentName: name,
+            categoryColor: categoryColor,
+            day: this.selectedDate,
+            hour: this.selectedHour,
+            duration: duration,
+        };
+    }
 
-  calculateEndTime(startTime: string, duration: number): string {
-      let startHour = parseInt(startTime.split(':')[0], 10);
-      let endHour = startHour + duration;
-      
-      return `${endHour.toString().padStart(2, '0')}:00`;
-  }
+    getUpdateWorkflowData(selectedTreatment: TreatmentsSelection): any {
+        let { name } = selectedTreatment;
+    
+        return {
+            name: this.event.name,
+            treatmentName: name,
+            day: this.selectedDate,
+            hour: this.selectedHour,
+            id: this.event.id,
+            img: this.workflowCompleteData.length > 0 ? this.workflowCompleteData[0].img : '',
+            lastName: this.workflowCompleteData.length > 0 ? this.workflowCompleteData[0].lastName : '',
+            position: this.workflowCompleteData.length > 0 ? this.workflowCompleteData[0].position || 0 : 0,
+        };
+    }
 
-  getEventID() {
-      let eventId = this.event.id;
-      return doc(this.firestore, 'events', eventId);
-  }
+    showClosingTimeSnackBar(): void {
+        this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
+            duration: 3000,
+        });
+    }
 
-  openDeleteConfirmationDialog() {
-      this.isConfirmationVisible = true;
-  }
+    updateEventAndWorkflow(updatedEventData: any, workflowCompleteData: any): void {
+        let eventId = this.event.id;
+       
+        updateDoc(this.getEventID(), updatedEventData).then(() => {
+            let updatedWorkflowData = this.getUpdateWorkflowData(this.getSelectedTreatment()!);
+            
+            if (Object.keys(updatedWorkflowData).length > 0) {
+                let workflowItem = new WorkflowItem().setWorkflowItemObject(updatedWorkflowData, eventId);
+                this.updateWorkflowDatabase(workflowItem, eventId, workflowCompleteData);
+            }
+            this.reloadEventData();
+            this.dialogRef.close();
+            this.loading = false;
+        });
+    }
 
-  closeDeleteConfirmationDialog(): void {
-      this.isConfirmationVisible = false;
-  }
+    async updateWorkflowDatabase(item: WorkflowItem, eventId: string, workflowInklNameImg: any): Promise<void> {
+        try {
+            let workflowRef = collection(this.firestore, 'workflow');
+            let querySnapshot = await getDocs(query(workflowRef, where('id', '==', eventId)));
+                
+            if (querySnapshot.size > 0) {
+                let existingWorkflowItem = querySnapshot.docs[0];
+                let existingEventDate = existingWorkflowItem.data()?.["day"]?.toDate() || null;
+    
+                let existingEventDateMidnight = existingEventDate ? new Date(existingEventDate) : null;
+                if (existingEventDateMidnight) {
+                    existingEventDateMidnight.setHours(0, 0, 0, 0);
+                }
+    
+                let selectedDateMidnight = new Date(this.selectedDate);
+                selectedDateMidnight.setHours(0, 0, 0, 0);
+    
+                if (existingEventDateMidnight && existingEventDateMidnight.getTime() !== selectedDateMidnight.getTime()) {
+                    await deleteDoc(existingWorkflowItem.ref);
+                } else {
+                    let cleanData = this.cleanZoneProperties({ ...item.toJson(), ...workflowInklNameImg });
+                    await updateDoc(existingWorkflowItem.ref, cleanData);
+                }
+            } else {
+                if (this.event.id && this.event.day && this.event.hour) {
+                    await addDoc(workflowRef, { ...item.toJson(), ...this.workflowCompleteData });
+                }
+            }
+        } catch (error) {
+            console.error('Error adding or updating workflow item: ', error);
+        }
+    }
+    
+    cleanZoneProperties(data: any): any {
+        const cleanData: any = {};
+    
+        Object.keys(data).forEach(key => {
+            if (!key.startsWith('__zone_symbol__')) {
+                cleanData[key] = data[key];
+            }
+        });
+    
+        return cleanData;
+    }
 
-  doNotClose(event: any): void {
-      event.stopPropagation();
-  }
+    
+    subUsersList() {
+        return onSnapshot(this.getUsersRef(), (list) =>{
+            this.usersList = [];
+            list.forEach(element => {
+                this.usersList.push(new User().setUserObject(element.data(), element.id));
+            });
+        });
+    }
 
-  deleteEvent(): void {
+    getUsersRef() {
+        return collection(this.firestore, 'users');
+    }
+
+    async loadUserData(updatedEventData: any): Promise<any> {
+        this.workflowCompleteData = [];
+    
+        await Promise.all(this.usersList.map(async (user: User) => {
+            for (const animal of user.animals) {
+                if (animal.name === updatedEventData.name) {
+                    let imgPath = `./assets/img/${animal.species}.png`;
+                    this.workflowCompleteData.push({
+                        lastName: user.lastName,
+                        img: imgPath
+                    });
+                    break; 
+                }
+            }
+        }));
+        return this.workflowCompleteData;
+    }
+
+    isEventAfterClosingTime(duration:number, hour:string): boolean {
+        let endHour = this.calculateEndTime(hour, duration);
+        return endHour > '19:00';
+    }
+
+    calculateEndTime(startTime: string, duration: number): string {
+        let startHour = parseInt(startTime.split(':')[0], 10);
+        let endHour = startHour + duration;
+        
+        return `${endHour.toString().padStart(2, '0')}:00`;
+    }
+
+    getEventID() {
+        let eventId = this.event.id;
+        return doc(this.firestore, 'events', eventId);
+    }
+
+    openDeleteConfirmationDialog() {
+        this.isConfirmationVisible = true;
+    }
+
+    closeDeleteConfirmationDialog(): void {
+        this.isConfirmationVisible = false;
+    }
+
+    doNotClose(event: any): void {
+        event.stopPropagation();
+    }
+
+    deleteEvent(): void {
         this.loading = true;
-        deleteDoc(this.getEventID()).then(() => {
+        deleteDoc(this.getEventID()).then(async () => {
+            let workflowRef = collection(this.firestore, 'workflow');
+            let querySnapshot = await getDocs(query(workflowRef, where('id', '==', this.event.id)));
+
+            if (querySnapshot.size > 0) {
+                let existingWorkflowItem = querySnapshot.docs[0];
+                await deleteDoc(existingWorkflowItem.ref);
+            }
             this.reloadEventData();
             this.dialogRef.close();
             this.loading = false;
@@ -122,43 +257,43 @@ export class DialogEditEventComponent {
             console.error('Error deleting event from Firebase: ', error);
         });
         this.isConfirmationVisible = false;
-  }
+    }
 
-  reloadEventData() {
-      this.dataUpdate.getAllEvents();
-  }
-  
-  subAnimalList() {
-      return onSnapshot(this.getUserRef(), (usersSnapshot) => {
-          this.animalList = [];
+    reloadEventData() {
+        this.dataUpdate.getAllEvents();
+    }
     
-          usersSnapshot.forEach((userDoc) => {
-              let userData = userDoc.data();
-              if (userData && userData["animals"]) {
-                let userAnimals = userData["animals"].map((animalData: any) => {
-                    return new Animals().setAnimalObject(animalData, animalData.id);
-                });
-                this.animalList.push(...userAnimals);
-              }
-          });
-      });
-  }
+    subAnimalList() {
+        return onSnapshot(this.getUserRef(), (usersSnapshot) => {
+            this.animalList = [];
+        
+            usersSnapshot.forEach((userDoc) => {
+                let userData = userDoc.data();
+                if (userData && userData["animals"]) {
+                    let userAnimals = userData["animals"].map((animalData: any) => {
+                        return new Animals().setAnimalObject(animalData, animalData.id);
+                    });
+                    this.animalList.push(...userAnimals);
+                }
+            });
+        });
+    }
 
-  getUserRef() {
-      return collection(this.firestore, 'users');
-  } 
+    getUserRef() {
+        return collection(this.firestore, 'users');
+    } 
 
-  convertDateFormat(date: Date | null): string {
-      if (!date) {
-          return '';
-      }
-      let dayOfMonth = date.getDate();
-      let month = date.getMonth() + 1;
-      let year = date.getFullYear();
-      let formattedDay = (dayOfMonth < 10) ? `0${dayOfMonth}` : `${dayOfMonth}`;
-      let formattedMonth = (month < 10) ? `0${month}` : `${month}`;
+    convertDateFormat(date: Date | null): string {
+        if (!date) {
+            return '';
+        }
+        let dayOfMonth = date.getDate();
+        let month = date.getMonth() + 1;
+        let year = date.getFullYear();
+        let formattedDay = (dayOfMonth < 10) ? `0${dayOfMonth}` : `${dayOfMonth}`;
+        let formattedMonth = (month < 10) ? `0${month}` : `${month}`;
 
-      return `${formattedDay}.${formattedMonth}.${year}`;
-  }
+        return `${formattedDay}.${formattedMonth}.${year}`;
+    }
   
 }

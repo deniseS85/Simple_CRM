@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Events } from './models/events.class';
 import { Firestore, collection, doc, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
 import { WorkflowItem } from './models/workflow.class';
@@ -19,6 +19,7 @@ export class DataUpdateService {
     animalEventsList$ = this.animalEventsListSubject.asObservable();
     allAnimalIds$ = this.allAnimalIdsSubject.asObservable();
     eventsList$ = this.eventsListSubject.asObservable();
+    
     
 
     setUserData(updatedData: any): void {
