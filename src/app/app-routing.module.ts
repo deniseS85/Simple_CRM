@@ -7,6 +7,7 @@ import { LoginComponent } from './login/login.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { WorkflowComponent } from './workflow/workflow.component';
 import { AnimalDetailComponent } from './animal-detail/animal-detail.component';
+import { ImprintComponent } from './imprint/imprint.component';
 
 const routes: Routes = [
     { path: '', component: LoginComponent },
@@ -16,6 +17,7 @@ const routes: Routes = [
     { path: 'patients/:id/:animal', component: AnimalDetailComponent},
     { path: 'calendar', component: CalendarComponent},
     { path: 'workflow', component: WorkflowComponent},
+    { path: 'imprint', component: ImprintComponent}
 ];
 
 

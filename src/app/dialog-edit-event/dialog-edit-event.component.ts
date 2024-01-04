@@ -8,6 +8,7 @@ import { WorkflowItem } from '../models/workflow.class';
 import { User } from '../models/user.class';
 
 
+
 interface TreatmentsSelection {
   name: string;
   categoryColor: string;
@@ -42,8 +43,8 @@ export class DialogEditEventComponent {
   selectedTreatment!:any;
   usersList:any = [];
   unsubUser:any = [];
-  workflowCompleteData:any;
-  
+  workflowCompleteData: { lastName: string, img: string } = { lastName: '', img: '' };
+
 
   constructor(@Inject(MAT_DIALOG_DATA) public event: any, private dataUpdate: DataUpdateService, public dialogRef: MatDialogRef<DialogEditEventComponent>, private snackBar: MatSnackBar) {
       this.unsubList = this.subAnimalList();
@@ -66,8 +67,10 @@ export class DialogEditEventComponent {
 
             if (selectedTreatment) {
                 let updatedEventData = this.getUpdatedEventData(selectedTreatment);
-                let workflowCompleteData = this.loadUserData(updatedEventData);
+                let workflowCompleteData = await this.loadUserData(updatedEventData);
+
                 this.updateEventAndWorkflow(updatedEventData, workflowCompleteData);
+
                 let isAfterClosingTime = this.isEventAfterClosingTime(selectedTreatment.duration, this.selectedHour);
     
                 if (isAfterClosingTime) {
@@ -87,14 +90,23 @@ export class DialogEditEventComponent {
 
     getUpdatedEventData(selectedTreatment: TreatmentsSelection): any {
         let { name, categoryColor, duration } = selectedTreatment;
+        let updatedAnimalID = '';
+    
+        this.animalList.forEach((animal: Animals) => {
+            if (animal.name === this.event.name) {
+                updatedAnimalID = animal.id;
+            }
+        });
+        
         return {
+            animalID: updatedAnimalID,
             name: this.event.name,
             treatmentName: name,
             categoryColor: categoryColor,
             day: this.selectedDate,
             hour: this.selectedHour,
-            duration: duration,
-        };
+            duration: duration
+        }; 
     }
 
     getUpdateWorkflowData(selectedTreatment: TreatmentsSelection): any {
@@ -106,10 +118,11 @@ export class DialogEditEventComponent {
             day: this.selectedDate,
             hour: this.selectedHour,
             id: this.event.id,
-            img: this.workflowCompleteData.length > 0 ? this.workflowCompleteData[0].img : '',
-            lastName: this.workflowCompleteData.length > 0 ? this.workflowCompleteData[0].lastName : '',
-            position: this.workflowCompleteData.length > 0 ? this.workflowCompleteData[0].position || 0 : 0,
+            img: this.workflowCompleteData.img || '',
+            lastName: this.workflowCompleteData.lastName || '',
+           /*  position: this.position || 0 */
         };
+
     }
 
     showClosingTimeSnackBar(): void {
@@ -120,10 +133,10 @@ export class DialogEditEventComponent {
 
     updateEventAndWorkflow(updatedEventData: any, workflowCompleteData: any): void {
         let eventId = this.event.id;
-       
+
         updateDoc(this.getEventID(), updatedEventData).then(() => {
             let updatedWorkflowData = this.getUpdateWorkflowData(this.getSelectedTreatment()!);
-            
+
             if (Object.keys(updatedWorkflowData).length > 0) {
                 let workflowItem = new WorkflowItem().setWorkflowItemObject(updatedWorkflowData, eventId);
                 this.updateWorkflowDatabase(workflowItem, eventId, workflowCompleteData);
@@ -150,7 +163,6 @@ export class DialogEditEventComponent {
     
                 let selectedDateMidnight = new Date(this.selectedDate);
                 selectedDateMidnight.setHours(0, 0, 0, 0);
-    
                 if (existingEventDateMidnight && existingEventDateMidnight.getTime() !== selectedDateMidnight.getTime()) {
                     await deleteDoc(existingWorkflowItem.ref);
                 } else {
@@ -186,30 +198,35 @@ export class DialogEditEventComponent {
             list.forEach(element => {
                 this.usersList.push(new User().setUserObject(element.data(), element.id));
             });
+            
         });
     }
+
 
     getUsersRef() {
         return collection(this.firestore, 'users');
     }
 
     async loadUserData(updatedEventData: any): Promise<any> {
-        this.workflowCompleteData = [];
+        this.workflowCompleteData = { lastName: '', img: '' };
     
         await Promise.all(this.usersList.map(async (user: User) => {
             for (const animal of user.animals) {
-                if (animal.name === updatedEventData.name) {
-                    let imgPath = `./assets/img/${animal.species}.png`;
-                    this.workflowCompleteData.push({
-                        lastName: user.lastName,
-                        img: imgPath
-                    });
-                    break; 
-                }
+              if (animal.name === updatedEventData.name) {
+                let imgPath = `./assets/img/${animal.species}.png`;
+      
+                this.workflowCompleteData = {
+                  lastName: user.lastName,
+                  img: imgPath
+                };
+                break;
+              }
             }
-        }));
-        return this.workflowCompleteData;
-    }
+          }));
+      
+          // Rückgabe als einfaches Objekt, nicht als Array
+          return this.workflowCompleteData;
+        }
 
     isEventAfterClosingTime(duration:number, hour:string): boolean {
         let endHour = this.calculateEndTime(hour, duration);

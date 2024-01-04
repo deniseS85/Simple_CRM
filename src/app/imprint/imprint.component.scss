@@ -1,0 +1,57 @@
+.imprint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .content {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        color: #fff;
+        gap: 10px;
+        .imprint-title {
+            font-size: 2vw;
+            margin-bottom: 20px;
+        }
+        a {
+            text-decoration: none;
+            cursor: pointer;
+            color: rgb(5, 251, 251);
+        }
+        p, .privacy {
+            margin: 6px;
+            font-size: 16px;
+        }
+        h2 {
+            font-size: 35px;
+        }
+    }
+}
+
+
+@media only screen and (max-width: 1000px) {
+    .imprint {
+        .content {
+            .imprint-title {
+                font-size: 20px !important;
+            }
+        }
+        h2 {
+            font-size: 25px !important;
+        }
+    }
+}
+
+@media only screen and (min-width: 2000px) {
+    .imprint {
+        .content {
+            p, .privacy {
+                font-size: 30px !important;
+            }
+        }
+        h2 {
+            font-size: 50px !important;
+        }
+    }
+    
+}

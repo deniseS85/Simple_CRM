@@ -41,6 +41,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DialogAddEventComponent } from './dialog-add-event/dialog-add-event.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { DialogEditEventComponent } from './dialog-edit-event/dialog-edit-event.component';
+import { ImprintComponent } from './imprint/imprint.component';
 
 
 @NgModule({
@@ -61,6 +62,7 @@ import { DialogEditEventComponent } from './dialog-edit-event/dialog-edit-event.
     DialogEditAnimalComponent,
     DialogAddEventComponent,
     DialogEditEventComponent,
+    ImprintComponent,
 
   ],
   imports: [ 

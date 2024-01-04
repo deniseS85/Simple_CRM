@@ -28,6 +28,7 @@ export class DashboardComponent implements AfterViewInit {
   weeks: Date[][] = [];
   datePipe: DatePipe = new DatePipe('en-US');
   formattedMonth: string | null = null;
+  currentMonthForHTML: string | null = null;
   patientsThisMonth: number = 0;
   patientsLastMonth:number = 0;
   percentageChange: number = 0;
@@ -204,6 +205,7 @@ export class DashboardComponent implements AfterViewInit {
   setFormattedMonth() {
       const datePipe: DatePipe = new DatePipe('en-US');
       this.formattedMonth = datePipe.transform(this.currentMonth, 'MMMM yyyy');
+      this.currentMonthForHTML = datePipe.transform(this.currentMonth, 'MMMM');
   }
   
   isToday(date: Date | null): boolean {
