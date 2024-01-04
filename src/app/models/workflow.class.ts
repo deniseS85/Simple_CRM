@@ -6,7 +6,7 @@ export class WorkflowItem {
     treatmentName: string;
     hour: string;
     day: string;
-    position: number;
+    position: string;
   
     constructor(obj?: any) {
       this.id = obj && obj.id ? obj.id : '';
@@ -16,7 +16,7 @@ export class WorkflowItem {
       this.treatmentName = obj && obj.treatmentName ? obj.treatmentName : '';
       this.hour = obj && obj.hour ? obj.hour : '';
       this.day = obj && obj.day ? obj.day : '';
-      this.position = obj && obj.position !== undefined ? obj.position : 0;
+      this.position = obj && obj.position ? obj.position : '';
     }
   
     public toJson() {
@@ -41,7 +41,7 @@ export class WorkflowItem {
         treatmentName: obj.treatmentName || '',
         hour: obj.hour || '',
         day: obj.day || '',
-        position: obj.position !== undefined ? obj.position : 0
+        position: obj.position ? obj.position : ''
       });
     }
 }

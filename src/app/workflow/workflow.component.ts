@@ -32,6 +32,7 @@ export class WorkflowComponent implements OnInit{
   animalIdsToday:any = [];
   unsubUser;
   private unsubscribe$: Subject<void> = new Subject<void>();
+  
 
 
   constructor(public dataUpdate: DataUpdateService) {
@@ -83,23 +84,25 @@ export class WorkflowComponent implements OnInit{
     }
 
 
-    drop(event: CdkDragDrop<WorkflowItem[]>) {
+
+    drop(event: CdkDragDrop<WorkflowItem[]>): void {
         if (event.previousContainer === event.container) {
-            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-            this.updatePositionsInDatabase(event.container.data);
+          moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
-            transferArrayItem(
-                event.previousContainer.data,
-                event.container.data,
-                event.previousIndex,
-                event.currentIndex,
-            );
-            this.updatePositionsInDatabase(event.container.data);
-        }
+          transferArrayItem(
+            event.previousContainer.data,
+            event.container.data,
+            event.previousIndex,
+            event.currentIndex,
+          );  
+        }  
     }
 
+  
+      
+   
+
     async addWorkflowItemDatabase(item: WorkflowItem, eventId: string): Promise<void> {
-        
         try {
             let collectionRef = collection(this.firestore, 'workflow');
             let collectionQuery = query(collectionRef, where('id', '==', item.id));
@@ -113,7 +116,6 @@ export class WorkflowComponent implements OnInit{
             console.error('Error saving workflow item: ', error);
         }
     }
-
 
     async isNotTodayThenRemove(): Promise<void> {
         let querySnapshot = await getDocs(this.getWorkflowRef());
@@ -156,19 +158,6 @@ export class WorkflowComponent implements OnInit{
     getWorkflowRef() {
         return collection(this.firestore, 'workflow');
     }
-
-    updatePositionsInDatabase(items: WorkflowItem[]) {
-        items.forEach((item, index) => {
-            item.position = index;
-            this.updateWorkflowItem(item);
-        });
-    }
-
-    updateWorkflowItem(workflowItem: WorkflowItem) {
-        let workflowDoc = doc(this.firestore, 'workflow', workflowItem.id);
-        return updateDoc(workflowDoc, { position: workflowItem.position });
-    }
-
 
     filterTasks() {
         this.todoFilter = this.inputValue ? this.todoFilter.filter(item => this.compareInputUser(item)) : [...this.todo];
@@ -240,8 +229,6 @@ export class WorkflowComponent implements OnInit{
         })
     } 
     
-
-
     async deleteOldWorkflowItems(): Promise<void> {
         let querySnapshot = await getDocs(this.getWorkflowRef());
         let today = new Date();

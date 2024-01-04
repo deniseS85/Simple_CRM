@@ -120,7 +120,7 @@ export class DialogEditEventComponent {
             id: this.event.id,
             img: this.workflowCompleteData.img || '',
             lastName: this.workflowCompleteData.lastName || '',
-           /*  position: this.position || 0 */
+            /* position: this.event.position || '0' */
         };
 
     }

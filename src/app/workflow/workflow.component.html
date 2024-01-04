@@ -7,11 +7,12 @@
 
 
 
-<div cdkDropListGroup class="kanban-container">
+<div class="kanban-container">
     <div class="kanban-row">
         <h2>To do</h2>
         <div cdkDropList [cdkDropListData]="todoFilter" #todoList="cdkDropList" [cdkDropListConnectedTo]="[doneList, treatmentList, waitingList]"
-            class="kanban-list" [ngClass]="{'empty': todoFilter.length === 0}"
+            class="kanban-list" 
+            [ngClass]="{'empty': todoFilter.length === 0}"
             (cdkDropListDropped)="drop($event)">
             <div *ngFor="let item of todoFilter" cdkDrag class="kanban-item">
                 <div class="info-animal">
