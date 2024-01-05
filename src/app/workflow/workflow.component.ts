@@ -33,8 +33,6 @@ export class WorkflowComponent implements OnInit{
   unsubUser;
   private unsubscribe$: Subject<void> = new Subject<void>();
   
-
-
   constructor(public dataUpdate: DataUpdateService) {
       this.unsubUser = this.subUsersList();
       this.dataUpdate.getAllEvents();
@@ -83,8 +81,6 @@ export class WorkflowComponent implements OnInit{
         })
     }
 
-
-
     drop(event: CdkDragDrop<WorkflowItem[]>, targetColumn: string): void {
         if (event.previousContainer === event.container) {
           moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -97,15 +93,14 @@ export class WorkflowComponent implements OnInit{
           );  
           event.container.data[event.currentIndex].position = targetColumn;
           this.updateWorkflowItemPositions(event.container.data[event.currentIndex]);
-         
         }  
     }
 
     async updateWorkflowItemPositions(item: WorkflowItem): Promise<void> {
-        const docRef = doc(collection(this.firestore, 'workflow'), item.id);
+        let workflowID = doc(collection(this.firestore, 'workflow'), item.id);
     
         try {
-            await updateDoc(docRef, { position: item.position });
+            await updateDoc(workflowID, { position: item.position });
         } catch (error) {
             console.error('Error updating workflow item:', error);
         }
@@ -114,7 +109,6 @@ export class WorkflowComponent implements OnInit{
 
     async loadWorkflowItems(): Promise<void> {
         let querySnapshot = await getDocs(this.getWorkflowRef());
-    
         let workflowItems: WorkflowItem[] = [];
     
         querySnapshot.forEach((doc) => {
@@ -158,8 +152,7 @@ export class WorkflowComponent implements OnInit{
                     await addDoc(this.getWorkflowRef(), newItem.toJson());
                     this.workflow.push(newItem);
                     this.sortTasksByTime(this.workflow);
-                    this.updateFilterArrays()
-                    
+                    this.updateFilterArrays();
                 }
         } catch (error) {
             console.error('Error saving workflow item: ', error);
@@ -184,11 +177,9 @@ export class WorkflowComponent implements OnInit{
             }
     
             if (itemDay.toDateString() !== today.toDateString()) {
-            
-            await deleteDoc(doc(this.getWorkflowRef(), docSnapshot.id));
+                await deleteDoc(doc(this.getWorkflowRef(), docSnapshot.id));
             }
         }
-       
     }
 
     setNextDayStartInterval() {
@@ -208,7 +199,6 @@ export class WorkflowComponent implements OnInit{
         return collection(this.firestore, 'workflow');
     }
     
-
     filterTasks() {
         if (this.inputValue) {
             let filterByPosition = (position: string) => {
@@ -219,7 +209,6 @@ export class WorkflowComponent implements OnInit{
             this.treatmentFilter = filterByPosition('treatment');
             this.doneFilter = filterByPosition('done');
         } else {
-          
             this.updateFilterArrays();
         }
     }
@@ -308,5 +297,4 @@ export class WorkflowComponent implements OnInit{
             }
         }
     }
-
 }

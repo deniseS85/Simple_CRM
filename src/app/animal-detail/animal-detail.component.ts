@@ -85,34 +85,74 @@ export class AnimalDetailComponent implements OnInit{
 
     loadAppointments() {
         const eventsRef = collection(this.firestore, 'events');
-        
-        onSnapshot(eventsRef, (querySnapshot) => {
-          const animalEventsList: Events[] = [];
-      
-          querySnapshot.forEach((doc) => {
-            const event = doc.data();
-            animalEventsList.push(new Events().setEventsObject(event, doc.id));
-          });
     
-          this.updateAppointmentDates(animalEventsList);
-          this.treatments = animalEventsList
-          .filter((event) => event.animalID === this.selectedAnimal.id)
-          .map((event) => ({ date: this.formatDate(event.day), treatment: event.treatmentName }));
+        onSnapshot(eventsRef, (querySnapshot) => {
+            const animalEventsList: Events[] = [];
+    
+            querySnapshot.forEach((doc) => {
+                const event = doc.data();
+                animalEventsList.push(new Events().setEventsObject(event, doc.id));
+            });
+    
+            let validEvents = animalEventsList.filter(event => event.animalID === this.selectedAnimal.id);
+            let sortedEvents = validEvents.sort((a, b) => b.day.getTime() - a.day.getTime());
+    
+            this.treatments = sortedEvents.map(event => ({
+                date: this.formatDate(event.day),
+                treatment: event.treatmentName
+            }));
+    
+            this.updateAppointmentDates(sortedEvents);
         });
-    }   
+    }
 
     updateAppointmentDates(animalEventsList: Events[]) {
         let validEvents = animalEventsList.filter(event => event.day instanceof Date && event.animalID === this.selectedAnimal.id);
         let sortedEvents = validEvents.sort((a, b) => a.day.getTime() - b.day.getTime());
         let lastAppointmentEvent = sortedEvents.find(event => event.day < new Date());
-        let nextAppointmentEvent = sortedEvents.find(event => event.day >= new Date());
+        let nextAppointmentEvent = sortedEvents.find(event => this.isFutureDate(event.day));
     
         this.lastAppointment = lastAppointmentEvent ? this.formatDate(lastAppointmentEvent.day) : '---';
-        this.nextAppointment = nextAppointmentEvent ? this.formatDate(nextAppointmentEvent.day) : '---';
+    
+        if (nextAppointmentEvent !== undefined) {
+            if (this.isToday(nextAppointmentEvent.day)) {
+                this.nextAppointment = 'Today';
+            } else {
+                this.nextAppointment = this.formatDate(nextAppointmentEvent.day);
+            }
+        } else {
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+    
+            if (this.isToday(today)) {
+                this.nextAppointment = 'Today';
+            } else {
+                this.nextAppointment = '---';
+            }
+        }
     }
     
+    isToday(date: Date): boolean {
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+        date.setHours(0, 0, 0, 0);
+        return date.getTime() === today.getTime();
+    }
+    
+    isFutureDate(date: Date): boolean {
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+        date.setHours(0, 0, 0, 0);
+        return date > today;
+    }
+    
+    
     formatDate(date: Date): string {
-        return date.toLocaleDateString();
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        
+        return `${day}.${month}.${year}`;
     }
     
     toEventDate(timestamp: any): Date | null {
