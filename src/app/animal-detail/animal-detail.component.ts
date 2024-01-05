@@ -109,8 +109,12 @@ export class AnimalDetailComponent implements OnInit{
     updateAppointmentDates(animalEventsList: Events[]) {
         let validEvents = animalEventsList.filter(event => event.day instanceof Date && event.animalID === this.selectedAnimal.id);
         let sortedEvents = validEvents.sort((a, b) => a.day.getTime() - b.day.getTime());
-        let lastAppointmentEvent = sortedEvents.find(event => event.day < new Date());
-        let nextAppointmentEvent = sortedEvents.find(event => this.isFutureDate(event.day));
+    
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+    
+        let lastAppointmentEvent = sortedEvents.find(event => event.day < today);
+        let nextAppointmentEvent = sortedEvents.find(event => event.day >= today);
     
         this.lastAppointment = lastAppointmentEvent ? this.formatDate(lastAppointmentEvent.day) : '---';
     
@@ -121,14 +125,7 @@ export class AnimalDetailComponent implements OnInit{
                 this.nextAppointment = this.formatDate(nextAppointmentEvent.day);
             }
         } else {
-            let today = new Date();
-            today.setHours(0, 0, 0, 0);
-    
-            if (this.isToday(today)) {
-                this.nextAppointment = 'Today';
-            } else {
-                this.nextAppointment = '---';
-            }
+            this.nextAppointment = '---';
         }
     }
     
@@ -138,15 +135,7 @@ export class AnimalDetailComponent implements OnInit{
         date.setHours(0, 0, 0, 0);
         return date.getTime() === today.getTime();
     }
-    
-    isFutureDate(date: Date): boolean {
-        let today = new Date();
-        today.setHours(0, 0, 0, 0);
-        date.setHours(0, 0, 0, 0);
-        return date > today;
-    }
-    
-    
+
     formatDate(date: Date): string {
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0');

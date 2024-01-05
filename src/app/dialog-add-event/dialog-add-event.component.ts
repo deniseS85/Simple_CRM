@@ -1,7 +1,7 @@
 import { Component, Inject, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Animals } from '../models/animals.class';
-import { addDoc, collection, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
+import { addDoc, collection, doc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
 import { Firestore } from '@angular/fire/firestore';
 import { Events } from '../models/events.class';
 import { MatSnackBar,} from '@angular/material/snack-bar';
@@ -46,6 +46,7 @@ export class DialogAddEventComponent {
     unsubList;
     event = new Events();
     selectedTreatment!:any;
+    existingEventsArray: any[] = [];
 
 
     constructor(@Inject(MAT_DIALOG_DATA) public data: { day: Date, hour: string, row: number, column: number  }, private dialogRef: MatDialogRef<DialogAddEventComponent>, private snackBar: MatSnackBar, public dataUpdate: DataUpdateService) {
@@ -67,6 +68,13 @@ export class DialogAddEventComponent {
 
             if (this.isEventAfterClosingTime()) {
                 this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
+                    duration: 3000,
+                });
+                this.loading = false;
+                return;
+            }
+            if (!await this.isTreatmentDurationValid()) {
+                this.snackBar.open('The selected treatment duration overlaps with an existing event.', 'OK', {
                     duration: 3000,
                 });
                 this.loading = false;
@@ -109,6 +117,50 @@ export class DialogAddEventComponent {
         let endHour = startHour + duration;
         
         return `${endHour.toString().padStart(2, '0')}:00`;
+    }
+
+    calculateStartTime(endTime: string, duration: number) {
+        let endHour = parseInt(endTime.split(':')[0], 10);
+        let startHour = endHour + 1 - duration;
+    
+        return `${startHour.toString().padStart(2, '0')}:00`;
+    }
+
+    async isTreatmentDurationValid(): Promise<boolean> {
+        await this.getExistingEventsForDay(this.eventData.day);
+
+        let newEndHour = this.calculateEndTime(this.eventData.hour, this.selectedTreatment.duration);
+    
+        for (let i = 0; i < this.existingEventsArray.length; i++) {
+            let existingEvent = this.existingEventsArray[i];
+            let existingStartHour = existingEvent.hour;
+            let existingEndHour = this.calculateEndTime(existingEvent.hour, existingEvent.duration);
+    
+            if (newEndHour > existingStartHour && newEndHour <= existingEndHour) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    async getExistingEventsForDay(day: Date): Promise<any[]> {
+        let startOfDay = new Date(day);
+        startOfDay.setHours(0, 0, 0, 0);
+    
+        let endOfDay = new Date(day);
+        endOfDay.setHours(23, 59, 59, 999);
+    
+        let querySnapshot = await getDocs(query(collection(this.firestore, 'events'),
+            where('day', '>=', startOfDay),
+            where('day', '<=', endOfDay),
+            where('day', '<', this.eventData.day) 
+        ));
+    
+        this.existingEventsArray = [];
+        querySnapshot.forEach((doc) => {
+            this.existingEventsArray.push(doc.data());
+        });
+        return this.existingEventsArray;
     }
 
     convertDateFormat(date: Date | null): string {
