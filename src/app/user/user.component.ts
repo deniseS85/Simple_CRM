@@ -18,7 +18,6 @@ export class UserComponent {
     @Input() inputValue!: string;
     filteredUser!: any[];
   
-  
     constructor(public dialog: MatDialog) {
         this.unsubList = this.subUsersList(); 
     }

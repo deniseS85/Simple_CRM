@@ -210,10 +210,18 @@ export class WorkflowComponent implements OnInit{
     
 
     filterTasks() {
-        this.todoFilter = this.inputValue ? this.todoFilter.filter(item => this.compareInputUser(item)) : [...this.todo];
-        this.waitingFilter = this.inputValue ? this.waitingFilter.filter(item => this.compareInputUser(item)) : [...this.waiting];
-        this.treatmentFilter = this.inputValue ? this.treatmentFilter.filter(item => this.compareInputUser(item)) : [...this.treatment];
-        this.doneFilter = this.inputValue ? this.doneFilter.filter(item => this.compareInputUser(item)) : [...this.done];
+        if (this.inputValue) {
+            let filterByPosition = (position: string) => {
+                return this.workflow.filter(item => item.position === position && this.compareInputUser(item));
+            };
+            this.todoFilter = filterByPosition('todo');
+            this.waitingFilter = filterByPosition('waiting');
+            this.treatmentFilter = filterByPosition('treatment');
+            this.doneFilter = filterByPosition('done');
+        } else {
+          
+            this.updateFilterArrays();
+        }
     }
     
     compareInputUser(item: WorkflowItem) {
