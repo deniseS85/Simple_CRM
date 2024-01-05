@@ -13,8 +13,8 @@
         <div cdkDropList [cdkDropListData]="todoFilter" #todoList="cdkDropList" [cdkDropListConnectedTo]="[doneList, treatmentList, waitingList]"
             class="kanban-list" 
             [ngClass]="{'empty': todoFilter.length === 0}"
-            (cdkDropListDropped)="drop($event)">
-            <div *ngFor="let item of todoFilter" cdkDrag class="kanban-item">
+            (cdkDropListDropped)="drop($event, 'todo')">
+            <div *ngFor="let item of todoFilter" cdkDrag class="kanban-item" (cdkDragStarted)="onDragStarted(item, 'todo')">
                 <div class="info-animal">
                     <img [src]="item.img">
                     <div>{{ item.name }} ({{ item.lastName }}) </div>
@@ -31,8 +31,8 @@
 
         <div cdkDropList [cdkDropListData]="waitingFilter" #waitingList="cdkDropList" [cdkDropListConnectedTo]="[doneList, treatmentList, todoList]"
             class="kanban-list" [ngClass]="{'empty': waitingFilter.length === 0}"
-            (cdkDropListDropped)="drop($event)">
-            <div *ngFor="let item of waitingFilter" cdkDrag class="kanban-item">
+            (cdkDropListDropped)="drop($event, 'waiting')">
+            <div *ngFor="let item of waitingFilter" cdkDrag class="kanban-item" (cdkDragStarted)="onDragStarted(item, 'waiting')">
                 <div class="info-animal">
                     <img [src]="item.img">
                     <div>{{ item.name }} ({{ item.lastName }})</div> 
@@ -49,8 +49,8 @@
 
         <div cdkDropList [cdkDropListData]="treatmentFilter" #treatmentList="cdkDropList" [cdkDropListConnectedTo]="[doneList, todoList, waitingList]"
             class="kanban-list" [ngClass]="{'empty': treatmentFilter.length === 0}"
-            (cdkDropListDropped)="drop($event)">
-            <div *ngFor="let item of treatmentFilter" cdkDrag class="kanban-item">
+            (cdkDropListDropped)="drop($event, 'treatment')">
+            <div *ngFor="let item of treatmentFilter" cdkDrag class="kanban-item" (cdkDragStarted)="onDragStarted(item, 'treatment')">
                 <div class="info-animal">
                     <img [src]="item.img">
                     <div>{{ item.name }} ({{ item.lastName }})</div>
@@ -67,8 +67,8 @@
   
         <div cdkDropList [cdkDropListData]="doneFilter" #doneList="cdkDropList" [cdkDropListConnectedTo]="[todoList, waitingList, treatmentList]"
             class="kanban-list" [ngClass]="{'empty': doneFilter.length === 0}"
-            (cdkDropListDropped)="drop($event)">
-            <div *ngFor="let item of doneFilter" cdkDrag class="kanban-item">
+            (cdkDropListDropped)="drop($event, 'done')">
+            <div *ngFor="let item of doneFilter" cdkDrag class="kanban-item" (cdkDragStarted)="onDragStarted(item, 'done')">
                 <div class="info-animal">
                     <img [src]="item.img">
                     <div>{{ item.name }} ({{ item.lastName }})</div> 

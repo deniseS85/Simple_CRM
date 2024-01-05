@@ -123,10 +123,10 @@ export class DashboardComponent implements AfterViewInit {
                   beginAtZero: true,
                   ticks: {
                     color: 'lightgrey',
-                    stepSize: 2
+                    stepSize: 10
                   },
                   min: 0,
-                  max: 14,
+                  max: 100,
                   grid: {
                     color: 'rgb(1,103,175)'
                   },

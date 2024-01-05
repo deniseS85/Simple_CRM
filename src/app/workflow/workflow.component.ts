@@ -52,6 +52,7 @@ export class WorkflowComponent implements OnInit{
 
     initializeWorkflow():void {
         this.loadTodayEvents().then(() => {
+            this.loadWorkflowItems();
             this.innerJoin();
             this.setNextDayStartInterval();
             this.deleteOldWorkflowItems();
@@ -69,8 +70,7 @@ export class WorkflowComponent implements OnInit{
             let today = new Date();
             today.setHours(0, 0, 0, 0);
     
-            let eventsRef = collection(this.firestore, 'events');
-            let queryToday = query(eventsRef, where('day', '>=', today), where('day', '<', new Date(today.getTime() + 24 * 60 * 60 * 1000)));
+            let queryToday = query(this.getEventsRef(), where('day', '>=', today), where('day', '<', new Date(today.getTime() + 24 * 60 * 60 * 1000)));
     
             onSnapshot(queryToday, (querySnapshot) => {
                 this.todayEvents = [];
@@ -85,7 +85,7 @@ export class WorkflowComponent implements OnInit{
 
 
 
-    drop(event: CdkDragDrop<WorkflowItem[]>): void {
+    drop(event: CdkDragDrop<WorkflowItem[]>, targetColumn: string): void {
         if (event.previousContainer === event.container) {
           moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
@@ -95,22 +95,71 @@ export class WorkflowComponent implements OnInit{
             event.previousIndex,
             event.currentIndex,
           );  
+          event.container.data[event.currentIndex].position = targetColumn;
+          this.updateWorkflowItemPositions(event.container.data[event.currentIndex]);
+         
         }  
     }
 
+    async updateWorkflowItemPositions(item: WorkflowItem): Promise<void> {
+        const docRef = doc(collection(this.firestore, 'workflow'), item.id);
+    
+        try {
+            await updateDoc(docRef, { position: item.position });
+        } catch (error) {
+            console.error('Error updating workflow item:', error);
+        }
+        await this.loadWorkflowItems();
+    }
+
+    async loadWorkflowItems(): Promise<void> {
+        let querySnapshot = await getDocs(this.getWorkflowRef());
+    
+        let workflowItems: WorkflowItem[] = [];
+    
+        querySnapshot.forEach((doc) => {
+            let data = doc.data();
+            let workflowItem = new WorkflowItem({
+                id: doc.id,
+                img: data['img'],
+                name: data['name'],
+                lastName: data['lastName'],
+                treatmentName: data['treatmentName'],
+                hour: data['hour'],
+                day: data['day'],
+                position: data['position'],
+            });
+    
+            workflowItems.push(workflowItem);
+        });
+        this.workflow = workflowItems;
+        this. updateFilterArrays()
+        
+    }
+
+    updateFilterArrays(): void {
+        this.todoFilter = this.workflow.filter(item => item.position === 'todo');
+        this.waitingFilter = this.workflow.filter(item => item.position === 'waiting');
+        this.treatmentFilter = this.workflow.filter(item => item.position === 'treatment');
+        this.doneFilter = this.workflow.filter(item => item.position === 'done');
+    }
   
-      
-   
+    onDragStarted(item: WorkflowItem, position: string): void {
+        item.position = position;  
+    }
 
     async addWorkflowItemDatabase(item: WorkflowItem, eventId: string): Promise<void> {
         try {
-            let collectionRef = collection(this.firestore, 'workflow');
-            let collectionQuery = query(collectionRef, where('id', '==', item.id));
+            let collectionQuery = query(this.getWorkflowRef(), where('id', '==', item.id));
             let querySnapshot = await getDocs(collectionQuery);
            
                 if (querySnapshot.size === 0) {
                     let newItem = new WorkflowItem().setWorkflowItemObject(item, eventId);
-                    await addDoc(collectionRef, newItem.toJson());
+                    await addDoc(this.getWorkflowRef(), newItem.toJson());
+                    this.workflow.push(newItem);
+                    this.sortTasksByTime(this.workflow);
+                    this.updateFilterArrays()
+                    
                 }
         } catch (error) {
             console.error('Error saving workflow item: ', error);
@@ -158,6 +207,7 @@ export class WorkflowComponent implements OnInit{
     getWorkflowRef() {
         return collection(this.firestore, 'workflow');
     }
+    
 
     filterTasks() {
         this.todoFilter = this.inputValue ? this.todoFilter.filter(item => this.compareInputUser(item)) : [...this.todo];
@@ -204,30 +254,29 @@ export class WorkflowComponent implements OnInit{
     }
 
     innerJoin() { 
-        this.animalIdsToday = this.todayEvents.map(event => event.animalID);
-
         this.usersList.forEach((user: User) => {
             user.animals.forEach(animal => {
-                if (this.animalIdsToday.includes(animal.id)) {
-                    let matchingEvent = this.todayEvents.find(event => event.animalID === animal.id);
+                this.todayEvents.filter(todayEvent => todayEvent.animalID === animal.id).forEach(todayEvent => {
+                    let eventWithLastNameImg = new WorkflowItem({
+                        id: todayEvent.id,
+                        name: todayEvent.name,
+                        lastName: user.lastName,
+                        img: `./assets/img/${animal.species}.png`,
+                        treatmentName: todayEvent.treatmentName,
+                        hour: todayEvent.hour,
+                        day: todayEvent.day,
+                        position: todayEvent.position
+                    });
 
-                    if (matchingEvent) {
-                        let eventWithLastNameImg = {...matchingEvent, 
-                            lastName: user.lastName,
-                            img: `./assets/img/${animal.species}.png`
-                        };
-                        
-                        this.todo.push(eventWithLastNameImg);
-                        this.todoFilter.push(eventWithLastNameImg);
-                        this.addWorkflowItemDatabase(eventWithLastNameImg, eventWithLastNameImg.id);
-                        this.sortTasksByTime(this.todo);
-                        this.sortTasksByTime(this.todoFilter);  
-                        
-                    }
-                }
-            })
-        })
-    } 
+                    this.todo.push(eventWithLastNameImg);
+                    this.todoFilter.push(eventWithLastNameImg);
+                    this.addWorkflowItemDatabase(eventWithLastNameImg, eventWithLastNameImg.id);
+                    this.sortTasksByTime(this.todo);
+                    this.sortTasksByTime(this.todoFilter);
+                });
+            });
+        }); 
+    }
     
     async deleteOldWorkflowItems(): Promise<void> {
         let querySnapshot = await getDocs(this.getWorkflowRef());
