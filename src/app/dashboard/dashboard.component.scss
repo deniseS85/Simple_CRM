@@ -1,6 +1,10 @@
 .dashboad-wrapper {
     display: flex;
     justify-content: space-between;
+    @media only screen and (max-width: 900px) {
+        flex-direction: column-reverse;
+        align-items: center;
+    }
     .dashboard-container {
         display: flex;
         margin-top: 25px;
@@ -10,9 +14,13 @@
         .dashboard-info {
             display: flex;
             gap: 30px;
+            @media only screen and (max-width: 1573px) {
+                flex-direction: column;
+                align-items: center;
+            }
             mat-card {
-                height: 90px;
-                width: 208px;
+                height: clamp(4.375rem, 3.9286rem + 2.2321vw, 7.5rem);
+                width: clamp(13rem, 12.5357rem + 2.3214vw, 16.25rem);
                 cursor: pointer;
                 background-color: rgb(12, 54, 89);
                 border-radius: 10px;
@@ -24,6 +32,7 @@
                     padding: 10px;
                     font-weight: bold;
                     .statistic {
+                        height: 20px;
                         display: flex;
                         justify-content: space-evenly;
                     }
@@ -33,13 +42,13 @@
                         height: 35px;
                         gap: 10px;
                         p {
-                            font-size: 14px;
+                            font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
                             margin-bottom: 0;
                         }
                     }
                     .statistic-number {
                         text-align: center;
-                        font-size: 18px;
+                        font-size: clamp(0.875rem, 0.8393rem + 0.1786vw, 1.125rem);
                         color: rgb(5, 251, 251);
                     }
                 }
@@ -49,8 +58,8 @@
             }
         }
         .chart-container {
-            max-height: 300px;
-            max-width: 600px;
+            max-height: clamp(18.75rem, 16.0714rem + 13.3929vw, 37.5rem);
+            max-width: clamp(18.75rem, 10.7143rem + 40.1786vw, 75rem);
             position: relative;
             .chart-year {
                 display: flex;
@@ -61,6 +70,7 @@
                 top: 5px;
                 width: 97px;
                 color: rgb(5, 251, 251);
+                font-size: clamp(0.875rem, 0.8393rem + 0.1786vw, 1.125rem);
                 p {
                     margin-bottom: 4px;
                 }
@@ -72,6 +82,10 @@
             }
             h3 {
                 text-align: center;
+                font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
+                @media only screen and (max-width: 488px) {
+                    text-align: unset;
+                }
             }
            canvas {
                 height: 100% !important;
@@ -85,8 +99,8 @@
         }  
     }
     .calender {
-        width: 220px;
-        height: 220px;
+        width: clamp(13.75rem, 12.1429rem + 8.0357vw, 25rem);
+        height: clamp(13.75rem, 12.1429rem + 8.0357vw, 25rem);;
         padding: 10px;
         background-color: rgb(12, 54, 89);
         border-radius: 10px;
@@ -97,8 +111,10 @@
             justify-content: space-between;
             margin-bottom: 20px;
             color: rgb(5, 251, 251);
+            padding: 0 clamp(0rem, -0.1518rem + 0.7589vw, 1.0625rem);
             h3 {
                 margin-bottom: 0px;
+                font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
             }
             mat-icon {
                 cursor: pointer;
@@ -106,6 +122,8 @@
         }
         table {
             width: 100%;
+            height: clamp(9.75rem, 8.0179rem + 8.6607vw, 21.875rem);
+            font-size: clamp(0.875rem, 0.8393rem + 0.1786vw, 1.125rem);
             tr {
                 text-align: center;
             }
@@ -118,8 +136,7 @@
             background-color: #00bcd4;
             color: white;
             border-radius: 50%;
-            padding: 5px;
-            padding: 4px 0;
+            padding: 5px 10px;
             border: 1px solid white;
         }
         .saturday, .sunday {

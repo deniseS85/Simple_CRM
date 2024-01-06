@@ -59,12 +59,14 @@
             <tbody>
                 <tr *ngFor="let week of weeks">
                     <td *ngFor="let day of week">
-                    <div class="single-day" *ngIf="day.getMonth() === currentMonth.getMonth()" 
-                    [ngClass]="{'today': isToday(day), 'saturday': day && day.getDay() === 6, 'sunday': day && day.getDay() === 0}"
-                    (click)="navigateToDay(day)">
-                        {{ day | date: 'd' }}
-                    </div>
-                    </td>
+                        <ng-container *ngIf="day.getMonth() === currentMonth.getMonth()">
+                          <span class="single-day" 
+                                [ngClass]="{'today': isToday(day), 'saturday': day && day.getDay() === 6, 'sunday': day && day.getDay() === 0}"
+                                (click)="navigateToDay(day)">
+                            {{ day | date: 'd' }}
+                          </span>
+                        </ng-container>
+                      </td>
                 </tr>
             </tbody>
         </table>

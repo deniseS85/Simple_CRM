@@ -13,10 +13,9 @@
         box-shadow: 0 0 8px rgb(157, 207, 243);
         display: flex;
         justify-content: space-between;
-        padding: 0 30px 10px 30px;
-        min-height: 450px;
-        height: fit-content;
-        width: 350px;
+        padding: 0 30px clamp(0.625rem, 0.4464rem + 0.8929vw, 1.875rem) 30px;
+        height: clamp(29.625rem, 25.8214rem + 19.0179vw, 56.25rem);
+        width: clamp(19.375rem, 15.8929rem + 17.4107vw, 43.75rem);
         mat-progress-bar {
             position: absolute;
             top: 0;
@@ -24,10 +23,11 @@
             left: 0;
         }
         .logo {
-            height: 113px;
+            height: clamp(4.375rem, 3.2143rem + 5.8036vw, 12.5rem);
             object-fit: contain;
         }
         .login-title {
+            font-size: clamp(1.5rem, 1.2679rem + 1.1607vw, 3.125rem);
             text-align: center;
             color: rgb(5, 251, 251);
             font-weight: bold;
@@ -45,6 +45,7 @@
             align-items: center;
             gap: 10px;
             height: 50px;
+            font-size: clamp(0.875rem, 0.7321rem + 0.7143vw, 1.875rem);
             a {
                 color: rgb(5, 251, 251);
                 cursor: pointer;
@@ -53,20 +54,24 @@
     }
     .arrow-back {
         position: absolute;
-        top: 25px;
-        left: 25px;
+        top: clamp(1.5625rem, 1.3839rem + 0.8929vw, 2.8125rem);
+        left: clamp(1.5625rem, 1.3839rem + 0.8929vw, 2.8125rem);
         cursor: pointer;
+        width: clamp(1.5rem, 1.3571rem + 0.7143vw, 2.5rem);
+        height: clamp(1.5rem, 1.3571rem + 0.7143vw, 2.5rem);
+        font-size: clamp(1.5rem, 1.3571rem + 0.7143vw, 2.5rem);
     }
     form {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px 0;
+        padding: clamp(0.625rem, 0.5357rem + 0.4464vw, 1.25rem) 0;
         mat-label {
             color: white;
         }
         .input-full-width {
             width: 100%;
+            font-size: clamp(1rem, 0.9643rem + 0.1786vw, 1.25rem);
         }
         .form-group {
             height: 90px;
@@ -75,13 +80,14 @@
                 margin-top: -20px;
                 margin-bottom: 10px;
                 color: #af3636;
+                font-size: clamp(0.625rem, 0.5714rem + 0.2679vw, 1rem);
             }
         }
     }
     button {
         cursor: pointer;
         display: flex;
-        font-size: 16px;
+        font-size: clamp(1rem, 0.875rem + 0.625vw, 1.875rem);
         align-items: center;
         justify-content: center;
         background-color: transparent;
@@ -89,14 +95,18 @@
         box-shadow: 0 0 10px rgb(1,103,175);
         border-radius: 10px;
         color: white;
-        gap: 20px;
+        gap: 14px;
         transition: all 125ms ease-in-out;
         padding: 10px 30px;
+        height: clamp(2.5rem, 2.1429rem + 1.7857vw, 5rem);
         &:hover {
             background-color: rgb(1,103,175);
             transition: all 125ms ease-in-out;
         }
     } 
+    mat-icon {
+        font-size: 24px;
+    }
 }
 
 .alert-bg {

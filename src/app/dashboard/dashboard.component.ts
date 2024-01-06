@@ -103,6 +103,10 @@ export class DashboardComponent implements AfterViewInit {
   
   createBarChart() {
       let ctx = this.barCanvas.nativeElement.getContext('2d');
+      let barThickness = 30;
+      if (window.innerWidth < 768) {
+        barThickness = 10;
+      }
   
       this.barChart = new Chart(ctx, {
         type: 'bar',
@@ -113,7 +117,7 @@ export class DashboardComponent implements AfterViewInit {
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
             borderColor: 'rgba(75, 192, 192, 1)',
             borderWidth: 1,
-            barThickness: 20,
+            barThickness: barThickness
           }],
         },
         options: {
@@ -123,7 +127,10 @@ export class DashboardComponent implements AfterViewInit {
                   beginAtZero: true,
                   ticks: {
                     color: 'lightgrey',
-                    stepSize: 10
+                    stepSize: 10,
+                    font: {
+                      size: this.calculateFontSize()
+                  }
                   },
                   min: 0,
                   max: 100,
@@ -135,7 +142,10 @@ export class DashboardComponent implements AfterViewInit {
                   ticks: {
                     color: 'lightgrey',
                     maxRotation: 0,
-                    minRotation: 0
+                    minRotation: 0,
+                    font: {
+                      size: this.calculateFontSize()
+                  }
                   }
               }
           },
@@ -154,6 +164,18 @@ export class DashboardComponent implements AfterViewInit {
         }
       });
   }
+
+  calculateFontSize(): number {
+    const minWidth = 8; 
+    const maxWidth = 20;
+    const baseWidth = 0.8214;
+    const viewportWidthFactor = 0.02;
+  
+    const calculatedFontSize = Math.max(minWidth, Math.min(maxWidth, baseWidth + viewportWidthFactor * window.innerWidth));
+  
+    return calculatedFontSize;
+  }
+
 
   updateBarChart() {
       if (this.barChart) {

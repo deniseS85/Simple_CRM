@@ -11,11 +11,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 113px;
+            height: clamp(3.75rem, 3.2679rem + 2.4107vw, 7.125rem);
             padding-top: 15px;
             box-sizing: border-box;
             img {
-                height: 135px;
+               height: clamp(6.25rem, 3.7356rem + 2.9387vw, 8.4375rem);
             }
         }
         .menu-items {
@@ -43,7 +43,6 @@
                     transition: all 125ms ease-in-out;
                 }
                 mat-icon {
-                   
                     font-size: 30px;
                     width: 30px;
                     height: 30px;
@@ -58,6 +57,9 @@
                 .selected-user-name {
                     margin-bottom: 0;
                 }
+                span {
+                    font-size: clamp(0.875rem, 0.8393rem + 0.1786vw, 1.125rem);
+                }
             }
             .sub-menu-animals {
                 font-size: 16px;
@@ -70,8 +72,8 @@
             }
         }
     }
-    mat-toolbar, mat-toolbar-row {
-        height: 114px;
+    mat-toolbar {
+        height: clamp(3.75rem, 3.2679rem + 2.4107vw, 7.125rem);
         background-color: rgb(3, 33, 56);
         box-shadow: 0 0 10px rgb(1, 103, 175);
         display: flex;
@@ -84,13 +86,13 @@
             align-items: center;
             .menu-icon {
                 cursor: pointer;
-                margin-right: 18px;
-                width: 30px;
-                font-size: 30px;
-                height: 30px;
+                margin-right: clamp(0.3125rem, 0.1964rem + 0.5804vw, 1.125rem);
+                width: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+                font-size: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+                height: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
             }
             .menu-title {
-                font-size: 22px;
+                font-size: clamp(1rem, 0.9464rem + 0.2679vw, 1.375rem);
             }
         }
         .logout-img-container {
@@ -98,14 +100,14 @@
             align-items: center;
             cursor: pointer;
             .logout-img {
-                width: 30px;
-                font-size: 30px;
-                height: 30px;
+                width: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+                font-size: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+                height: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
             }
         }
     }
     .router-container {
-        padding: 173px 56px 56px 56px;
+        padding: clamp(5rem, 4.1696rem + 4.1518vw, 10.8125rem) clamp(0.625rem, 0.2143rem + 2.0536vw, 3.5rem) 56px clamp(0.625rem, 0.2143rem + 2.0536vw, 3.5rem);
     }
 }
 

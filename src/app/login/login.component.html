@@ -4,7 +4,7 @@
         <img class="logo" src="assets/img/logo.png">
         <h1 class="login-title">{{ isSignUp ? 'Sign up' : 'Log in' }}</h1>
         
-        <form (ngSubmit)="isSignUp ? signUpUser() : signIn()" [formGroup]="getForm()" *ngIf="!isLogin">
+        <form (ngSubmit)="isSignUp ? signUpUser() : signIn()" [formGroup]="getForm()" *ngIf="!isLogin" #formGroupDirective="ngForm">
             <mat-icon (click)="navigateToLogInSelection()" class="arrow-back" matTooltip="Got to Log In">arrow_back_ios</mat-icon>
         
             <div class="form-group">
@@ -27,7 +27,7 @@
 
                 <div class="input-feedback" id="passwordFeedback"
                     *ngIf="getForm().get('password')?.hasError('pattern') && getForm().get('password')?.touched">
-                    Password must contain at least one uppercase letter, one digit, and one special character.
+                    Enter uppercase letter, digit, special character.
                 </div>
             </div>
 

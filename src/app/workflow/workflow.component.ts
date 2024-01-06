@@ -127,6 +127,7 @@ export class WorkflowComponent implements OnInit{
             workflowItems.push(workflowItem);
         });
         this.workflow = workflowItems;
+        this.sortTasksByTime(this.workflow); 
         this. updateFilterArrays()
         
     }

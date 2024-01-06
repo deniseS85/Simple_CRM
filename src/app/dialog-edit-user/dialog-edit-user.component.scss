@@ -2,6 +2,9 @@
     position: relative;
     background-color: rgb(3,33,56);
     padding: 20px;
+    @media only screen and (max-width: 659px) {
+        padding: 12px;
+    }
     mat-progress-bar {
         position: absolute;
         top: 0;
@@ -10,7 +13,7 @@
     }
     h1 {
         margin-bottom: 0;
-        font-size: 24px;
+        font-size: clamp(1.25rem, 1.1607rem + 0.4464vw, 1.875rem);
         color: rgb(5, 251, 251);
         display: flex;
         justify-content: center;
@@ -20,9 +23,16 @@
     .dialog-edit-content {
         padding-top: 5px;
         padding-bottom: 5px;
+        @media only screen and (max-width: 659px) {
+            padding-left: 0;
+            padding-right: 0;
+        }
     }
     .input-field {
         margin-top: 10px;
+        @media only screen and (max-width: 659px) {
+            width: 100%;
+        }
         &:first-child {
             margin-right: 16px;
         }
@@ -33,6 +43,7 @@
         justify-content: center;
         button {
             color: rgb(5, 251, 251);
+            font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
         }
     }
     .input-full-width {
@@ -40,5 +51,9 @@
     }
     mat-label {
         color: white;
+        font-size: clamp(1rem, 0.9643rem + 0.1786vw, 1.25rem);
+    }
+    input {
+        font-size: clamp(1rem, 0.9643rem + 0.1786vw, 1.25rem);
     }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, HostListener } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -7,6 +7,7 @@ import { collection, onSnapshot } from '@angular/fire/firestore';
 import { User } from '../models/user.class';
 import { Animals } from '../models/animals.class';
 import { DataUpdateService } from '../data-update.service';
+import { MatDrawer } from '@angular/material/sidenav';
 
 
 @Component({
@@ -26,11 +27,23 @@ export class NavigationComponent implements OnInit {
     unsubList;
     animal = new Animals();
     user = new User();
+    @ViewChild('drawer') drawer!: MatDrawer;
+    isDrawerOpened = true;
 
     constructor(public router: Router, private authService: AuthService, private dataUpdate: DataUpdateService) {
         this.currentUrl = this.router.url;
         this.unsubList = this.subUsersList();
         this.getSubURL();
+    }
+
+    @HostListener('window:resize', ['$event'])
+        onResize(event: Event): void {
+        this.checkScreenWidth();
+    }
+
+    checkScreenWidth(): void {
+        let screenWidth = 1369;
+        this.isDrawerOpened = window.innerWidth >= screenWidth;
     }
 
     ngOnDestroy() {
@@ -42,10 +55,9 @@ export class NavigationComponent implements OnInit {
      * UserName wird vom LocalStorage geladen, wenn Seite neugeladen wird
      */
     ngOnInit() {
-
+        this.checkScreenWidth();
         this.getUpdateDate();
         this.userName = localStorage.getItem('userName') || ''; 
-
         this.router.events.pipe(
             filter((event): event is NavigationEnd => event instanceof NavigationEnd)
             ).subscribe((event: NavigationEnd) => {
@@ -58,6 +70,17 @@ export class NavigationComponent implements OnInit {
                         document.getElementById('menu')?.classList.add('d-none');
                     }
         });
+    }
+
+    toggleDrawer() {
+        this.isDrawerOpened = !this.isDrawerOpened;
+        if (this.drawer) {
+            if (this.isDrawerOpened) {
+                this.drawer.open();
+            } else {
+                this.drawer.close();
+            }
+        }
     }
 
     getUpdateDate() {

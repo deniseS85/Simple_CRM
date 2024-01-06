@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { DialogAddUserComponent } from '../dialog-add-user/dialog-add-user.component';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from '../models/user.class';
@@ -11,16 +11,18 @@ import { collection, onSnapshot } from 'firebase/firestore';
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
-export class UserComponent {
+export class UserComponent  {
     firestore: Firestore = inject(Firestore);
     unsubList;
     userList:any = [];
     @Input() inputValue!: string;
     filteredUser!: any[];
+   
   
     constructor(public dialog: MatDialog) {
         this.unsubList = this.subUsersList(); 
     }
+
 
     subUsersList() {
         return onSnapshot(this.getUserRef(), (list) =>{
