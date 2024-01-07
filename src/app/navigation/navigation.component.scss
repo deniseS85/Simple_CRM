@@ -6,6 +6,9 @@
         background-color: rgb(3, 33, 56);
         border-right: none;
         box-shadow: 0 0 10px rgb(1,103,175);
+        @media only screen and (max-width: 560px) {
+            width: 100%;
+        }
         .logo-container {
             box-shadow: 0 0 10px rgb(1,103,175);
             display: flex;
@@ -15,7 +18,7 @@
             padding-top: 15px;
             box-sizing: border-box;
             img {
-               height: clamp(6.25rem, 3.7356rem + 2.9387vw, 8.4375rem);
+               height: clamp(4.125rem, 3.5089rem + 3.0804vw, 8.4375rem);
             }
         }
         .menu-items {

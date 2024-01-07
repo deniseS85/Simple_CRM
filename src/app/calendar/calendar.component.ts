@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DialogAddEventComponent } from '../dialog-add-event/dialog-add-event.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
@@ -23,6 +23,7 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     private unsubscribe$: Subject<void> = new Subject<void>();
     @ViewChild('calendarContainer', { read: ElementRef }) calendarContainer!: ElementRef;
     selectedDate: Date | null = null;
+    isMobileView: boolean = false;
 
     constructor(public dialog: MatDialog, public dataUpdate: DataUpdateService, private route: ActivatedRoute) {
         this.dataUpdate.getAllEvents();
@@ -41,6 +42,19 @@ export class CalendarComponent implements OnInit, OnDestroy  {
             }
           });
     }
+
+    @HostListener('window:resize', ['$event'])
+        onResize(event:any) {
+            this.isMobileView = window.innerWidth <= 430;
+    }
+
+    getFormattedTime(startTime: any): string {
+        if (this.isMobileView) {
+          return startTime.endsWith(':00') ? startTime.slice(0, -3) : startTime;
+        } else {
+          return startTime.endsWith(':00') ? startTime : `${startTime.toString().padStart(2, '0')}:00`;
+        } 
+      }
 
     setWeekForSelectedDate(selectedDate: Date): void {
         let weekStart = this.getWeekStartDate(selectedDate);
@@ -257,8 +271,11 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     calculateEndTime(startTime: string, duration: number): string {
         let startHour = parseInt(startTime.split(':')[0], 10);
         let endHour = startHour + duration;
-        
-        return `${endHour.toString().padStart(2, '0')}:00`;
+        if (this.isMobileView) {
+            return `${endHour < 10 ? '0' : ''}${endHour}`;
+          } else {
+            return `${endHour.toString().padStart(2, '0')}:00`;
+          }
     }
 
     getTreatmentCategoryClass(categoryColor: string) {

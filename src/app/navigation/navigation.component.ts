@@ -83,6 +83,15 @@ export class NavigationComponent implements OnInit {
         }
     }
 
+    closeDrawer() {
+        if (window.innerWidth <= 560) {
+          this.isDrawerOpened = false;
+          if (this.drawer) {
+            this.drawer.close();
+          }
+        }
+      }
+
     getUpdateDate() {
         this.dataUpdate.userData$.subscribe(userData => {
             this.userName = `${userData.firstName} ${userData.lastName}`;

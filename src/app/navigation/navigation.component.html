@@ -5,11 +5,11 @@
         </div>
   
         <ul class="menu-items">
-            <li routerLink="/dashboard" [class.active]="activeLink('dashboard')">
+            <li routerLink="/dashboard" [class.active]="activeLink('dashboard')" (click)="closeDrawer()">
                 <mat-icon>space_dashboard</mat-icon>
                 <span>Dashboard</span>
             </li>
-            <li routerLink="/patients" [class.active]="activeLink('patients')">
+            <li routerLink="/patients" [class.active]="activeLink('patients')" (click)="closeDrawer()">
                 <mat-icon>perm_identity</mat-icon>
                 <span>Patients</span>
             </li> 
@@ -17,15 +17,15 @@
                 <mat-icon class="arrow-img">subdirectory_arrow_right</mat-icon>
                 <span id="userName" class="selected-user-name">{{ userName }}</span>
             </li>
-            <li routerLink="/workflow" [class.active]="activeLink('workflow')">
+            <li routerLink="/workflow" [class.active]="activeLink('workflow')" (click)="closeDrawer()">
                 <mat-icon>view_kanban</mat-icon>
                 <span>Workflow</span>
             </li>
-            <li routerLink="/calendar" [class.active]="activeLink('calendar') || router.url.includes('/calendar')">
+            <li routerLink="/calendar" [class.active]="activeLink('calendar') || router.url.includes('/calendar')" (click)="closeDrawer()">
                 <mat-icon>calendar_month</mat-icon>
                 <span>Calendar</span>
             </li>
-            <li routerLink="/imprint" [class.active]="activeLink('imprint')" class="imprint">
+            <li routerLink="/imprint" [class.active]="activeLink('imprint')" class="imprint" (click)="closeDrawer()">
                 <img class="imprint-icon" src="./assets/img/imprint.png">
                 <span>Imprint</span>
             </li>

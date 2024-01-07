@@ -19,6 +19,16 @@
             color: white;
             padding: 10px 20px;
             cursor: pointer;
+            @media only screen and (max-width: 700px) {
+                left: 5px;
+                top: 68.5px;
+                padding: 5px 8px;
+            }
+            @media only screen and (max-width: 430px) {
+                font-size: 12px;
+                left: 1px;
+                padding: 3px 4px;
+            }
             &:hover {
                 background-color: rgb(1, 103, 175);
             }
@@ -38,6 +48,7 @@
             }
             h2 {
                 margin-bottom: 0;
+                font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
             }
         }
     }
@@ -46,11 +57,14 @@
         border-collapse: collapse;
         color: white;
         box-sizing: border-box;
-       /*  border-style: hidden; */
         .table-header {
             height: 60px;
-            font-size: 16px;
+            font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
             border-bottom: 1.5px solid rgb(1, 103, 175);
+            @media only screen and (max-width: 430px) {
+                font-size: 12px;
+                border-bottom: 0.5px solid rgb(1, 103, 175);
+            }
             .table-header th:first-child {
                 width: 50px;
             }
@@ -60,30 +74,59 @@
         }
         .time-column {
             width: 50px;
+            height: 32px;
+            min-height: 32px;
+            max-height: 32px;
             padding: 13px;
+            border: 1px solid rgb(1, 103, 175);
+            @media only screen and (max-width: 430px) {
+                padding: 3px;
+                max-width: 35px;
+                font-size: 12px;
+                border: 0.5px solid rgb(1, 103, 175);
+            }
         }
         .day-column {
             width: 110px;
             cursor: pointer;
-        }
-        td {
             border: 1px solid rgb(1, 103, 175);
             height: 32px;
+            min-height: 32px;
+            max-height: 32px;
+            @media only screen and (max-width: 430px) {
+                height: 65px;
+                max-width: 48px;
+                white-space: nowrap; 
+                overflow: hidden; 
+                text-overflow: ellipsis;
+                border: 0.5px solid rgb(1, 103, 175);
+            }
             &:hover:not(tr td:first-child):empty {
                 border: 1.5px solid rgb(5, 251, 251);
                 box-sizing: border-box;
+                @media only screen and (max-width: 430px) {
+                    border: none;
+                }
             }
-        }
-        td > div {
-            height: 100%;
-            box-sizing: border-box;
-        }
-        td.past-day { 
-          /*   pointer-events: none;  */
-            background-color: rgb(15, 42, 63);
+            div {
+                height: 100%;
+                box-sizing: border-box;
+                @media only screen and (max-width: 430px) {
+                    font-size: 12px;
+                    padding: 1px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis; 
+                }
+            } 
         }
     }
 }
+
+.past-day { 
+    /*   pointer-events: none;  */
+      background-color: rgb(15, 42, 63);
+  }
 
 .today {
     background-color: rgb(12, 54, 89);

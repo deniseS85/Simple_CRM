@@ -48,7 +48,8 @@
     box-sizing: border-box;
     @media only screen and (max-width: 700px) {
         flex-direction: column;
-        margin-top: 58px
+        margin-top: 58px;
+        align-items: center;
     }
     .kanban-row {
         width: 300px;

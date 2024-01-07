@@ -2,6 +2,9 @@
     position: relative;
     background-color: rgb(3, 33, 56);
     padding: 20px;
+    @media only screen and (max-width: 659px) {
+        padding: 12px;
+    }
     mat-progress-bar {
         position: absolute;
         top: 0;
@@ -11,10 +14,14 @@
     .add-event-content {
         padding-top: 5px;
         padding-bottom: 5px;
+        @media only screen and (max-width: 659px) {
+            padding-left: 0;
+            padding-right: 0;
+        }
     }
     h1 {
         margin-bottom: 0;
-        font-size: 24px;
+        font-size: clamp(1.25rem, 1.1607rem + 0.4464vw, 1.875rem);
         color: rgb(5, 251, 251);
         display: flex;
         justify-content: center;
@@ -23,6 +30,9 @@
     }
     .input-field {
         margin-top: 10px;
+        @media only screen and (max-width: 659px) {
+            width: 100%;
+        }
         &:first-child {
             margin-right: 16px;
         }
@@ -35,6 +45,7 @@
         button {
             color: rgb(5, 251, 251);
             transition: all 125ms ease-in-out;
+            font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
             &:disabled {
                 color: rgba(5, 251, 251, 0.6);
             }
@@ -49,6 +60,10 @@
     }
     mat-label {
         color: white;
+        font-size: clamp(1rem, 0.9643rem + 0.1786vw, 1.25rem);
+    }
+    input {
+        font-size: clamp(1rem, 0.9643rem + 0.1786vw, 1.25rem);
     }  
 }
 
@@ -59,6 +74,11 @@
     width: 35px;
     cursor: pointer;
     transition: all 150ms ease-in-out;
+    @media only screen and (max-width: 659px) {
+        bottom: 31px;
+        right: 11px;
+        width: 30px;
+    }
     &:hover {
         transition: all 150ms ease-in-out;
         filter: brightness(50%) sepia(100) saturate(100) hue-rotate(25deg);
@@ -88,11 +108,19 @@
         border-radius: 10px;
         border: 2px solid red;
         padding: 10px;
+        h2 {
+            @media only screen and (max-width: 659px) {
+                font-size: clamp(1.25rem, 1.1607rem + 0.4464vw, 1.875rem);
+                text-align: center;
+            }
+        }
         button {
             color: rgb(5, 251, 251);
+            font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
             &:hover {
                 background-color: rgb(1, 103, 175);
             }
+
         }
     }
 }

@@ -27,7 +27,7 @@
               *ngIf="isDurationOneHour(getVisibleEvents(day, hour), row, column)">
               <div *ngFor="let event of getVisibleEvents(day, hour)"
                   [ngClass]="['categoryColor', getTreatmentCategoryClass(event.categoryColor)]">
-                  {{ event.hour }} - {{ calculateEndTime(event.hour, event.duration) }}<br>
+                  {{ getFormattedTime(event.hour) }} - {{ calculateEndTime(event.hour, event.duration) }}<br>
                   {{ event.name }}<br>
                   {{ event.treatmentName }}
               </div>
