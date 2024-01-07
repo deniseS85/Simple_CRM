@@ -5,21 +5,37 @@
     left: 50%;
     height: 30px;
     z-index: 1;
+    @media only screen and (max-width: 1368px) {
+        transform: translateX(-50%);
+    }
+    @media only screen and (min-width: 461px) {
+        top: clamp(1.25rem, 0.9343rem + 1.0958vw, 2.6875rem);
+    }
+    @media only screen and (max-width: 460px) {
+        top: 86px;
+    }
     .input-search {
+        width: clamp(7.5rem, 6.4286rem + 5.3571vw, 15rem);
+        height: clamp(1rem, 0.875rem + 0.625vw, 1.875rem);        
         padding: 5px;
         border: 1px transparent;
         border-radius: 5px;
         box-shadow: 0 0 16px -2px #0000007a;
-        font-size: 18px;
+        font-size: clamp(1rem, 0.9464rem + 0.2679vw, 1.375rem);
         &::placeholder {
-            font-size: 15px;
+            font-size: clamp(0.75rem, 0.7232rem + 0.1339vw, 0.9375rem);
         }
     }
     .search-btn {
         background-color: transparent;
         border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         img {
-            height: 30px;
+            width: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+            font-size: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+            height: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
             cursor: pointer;
         }
     }
@@ -30,6 +46,10 @@
     justify-content: space-between;
     gap: 20px;
     box-sizing: border-box;
+    @media only screen and (max-width: 700px) {
+        flex-direction: column;
+        margin-top: 58px
+    }
     .kanban-row {
         width: 300px;
         max-width: 100%;
@@ -53,6 +73,9 @@
             display: block;
             &:hover {
                 border: 1px solid rgb(1, 103, 175) !important;
+            }
+            @media only screen and (max-width: 700px) {
+                min-height: auto;
             }
         }
     }

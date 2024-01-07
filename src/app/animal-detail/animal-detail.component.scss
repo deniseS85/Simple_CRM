@@ -1,6 +1,9 @@
 .animal-info-container {
     display: flex;
     gap: 30px;
+    @media only screen and (max-width: 700px) {
+        flex-direction: column;
+    }
     mat-card {
         background-color: rgb(3, 33, 56);
         box-shadow: 0 0 10px rgb(1,103,175);
@@ -9,6 +12,9 @@
     .animal-profile-container {
         width: 50%;
         position: relative;
+        @media only screen and (max-width: 700px) {
+            width: 100%;
+        }
         .animal-info-header {
             display: flex;
             justify-content: space-between;
@@ -24,6 +30,10 @@
                 transition: all 225ms linear;
                 cursor: pointer;
                 background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%2305FBFBFF' stroke-width='6' stroke-dasharray='6 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+                @media only screen and (max-width: 700px) {
+                    height: clamp(6.25rem, 5.8929rem + 1.7857vw, 8.75rem);
+                    width: clamp(6.25rem, 5.8929rem + 1.7857vw, 8.75rem);
+                }
                 .custom-file-upload {
                     display: flex;
                     flex-direction: column;
@@ -35,6 +45,11 @@
                         width: 30px;
                         height: 30px;
                         transition: all 225ms linear;
+                        @media only screen and (max-width: 700px) {
+                            height: clamp(1.25rem, 1.1607rem + 0.4464vw, 1.875rem);
+                            width: clamp(1.25rem, 1.1607rem + 0.4464vw, 1.875rem);
+        
+                        }
                         &:hover {
                             transform: scale(1.3);
                             transition: all 225ms linear;
@@ -49,6 +64,9 @@
         }
         .left-right {
             height: 140px;
+            @media only screen and (max-width: 700px) {
+                height: clamp(6.25rem, 5.8929rem + 1.7857vw, 8.75rem);
+            }
         }
         .arrow-back {
             display: flex;
@@ -63,7 +81,12 @@
             justify-content: center;
             margin-top: 20px;
             margin-bottom: 20px;
+            @media only screen and (max-width: 700px) {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
             .animal-title {
+                font-size: clamp(1.125rem, 1.0714rem + 0.2679vw, 1.5rem);
                 color: rgb(5, 251, 251);
             }
         }
@@ -71,8 +94,12 @@
             display: flex;
             justify-content: space-between;
             padding: 0 20px;
+            @media only screen and (max-width: 700px) {
+                padding: 0,
+            }
             .last-visit, .next-visit {
                 text-align: center;
+                font-size: clamp(0.875rem, 0.8393rem + 0.1786vw, 1.125rem);
             }
         }  
     }  
@@ -81,26 +108,44 @@
         flex-direction: column;
         width: 50%;
         gap: 30px;
+        @media only screen and (max-width: 700px) {
+            width: 100%;
+        }
         .info-card {
             height: 284px;
+            @media only screen and (max-width: 700px) {
+                height: auto; 
+            }
+            mat-card-content {
+                @media only screen and (max-width: 700px) {
+                    padding-top: 0;                
+                }
+            }
             .animal-info-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                @media only screen and (max-width: 700px) {
+                padding-right: 0px;
+                padding-top: 0px;
+            }
                 .animal-title {
                     color: rgb(5, 251, 251);
+                    font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
                 }
             }
             p {
                 display: flex;
                 justify-content: space-between;
                 padding-right: 23px;
+                @media only screen and (max-width: 700px) {
+                    padding-right: 0px;
+                }
                 span {
                     opacity: 0.6;
                 }
             }
-        }
-        
+        }   
     }
 }
 
@@ -114,13 +159,21 @@
         box-shadow: 0 0 10px rgb(1,103,175);
         width: 100%;
         padding-bottom: 16px;
+        @media only screen and (max-width: 700px) {
+            padding-bottom: 0px;
+        }
         .animal-subinfo-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 64px;
+            @media only screen and (max-width: 700px) {
+                padding-right: 0px;
+                padding-top: 0px;
+            }
             .animal-info-title {
                 color: rgb(5, 251, 251);
+                font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
             }
         }
         .animals-list-container {
@@ -140,6 +193,14 @@
                         color: rgb(5, 251, 251);
                         &:first-child {
                             padding-left: 20px;
+                            @media only screen and (max-width: 700px) {
+                                padding-left: 0px;
+                            }
+                        }
+                        &:last-child {
+                            @media only screen and (max-width: 700px) {
+                                text-align: end;
+                            }
                         }
                     }
                     td {
@@ -148,6 +209,14 @@
                             padding-left: 20px;
                             display: flex;
                             align-items: center;
+                            @media only screen and (max-width: 700px) {
+                                padding-left: 0px;
+                            }
+                        }
+                        &:last-child {
+                            @media only screen and (max-width: 700px) {
+                                text-align: end;
+                            }
                         }
                     }
                 }
