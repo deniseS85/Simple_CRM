@@ -68,13 +68,16 @@ export class DialogEditEventComponent {
                 let updatedEventData = this.getUpdatedEventData(selectedTreatment);
                 let workflowCompleteData = await this.loadUserData(updatedEventData);
 
-                this.updateEventAndWorkflow(updatedEventData, workflowCompleteData);
-
-                let isAfterClosingTime = this.isEventAfterClosingTime(selectedTreatment.duration, this.selectedHour);
-    
-                if (isAfterClosingTime) {
+                if (this.isEventAfterClosingTime(selectedTreatment.duration, this.selectedHour)) {
                     this.showClosingTimeSnackBar();
+                    this.loading = false;
+                    return;
                 }
+    
+                this.updateEventAndWorkflow(updatedEventData, workflowCompleteData);
+    
+                this.reloadEventData();
+                this.dialogRef.close();
             }
         }
     }
