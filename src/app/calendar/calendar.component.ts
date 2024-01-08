@@ -33,7 +33,20 @@ export class CalendarComponent implements OnInit, OnDestroy  {
         this.currentWeek = this.getcurrentWeek();
         this.generateDaysOfWeek();
         this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true));
+        this.subscribeToEventsList();
+        this.handleSelectedDateQueryParam();
+    }
+
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
+    }
+
+    private subscribeToEventsList(): void {
         this.dataUpdate.eventsList$.pipe(takeUntil(this.unsubscribe$)).subscribe((eventsList) => {});
+    }
+
+    private handleSelectedDateQueryParam(): void {
         this.route.queryParams.subscribe(params => {
             let selectedDate = params['selectedDate'];
             if (selectedDate) {
@@ -73,11 +86,6 @@ export class CalendarComponent implements OnInit, OnDestroy  {
         return startDay;
     }
 
-    ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
-    }
-
     getcurrentWeek(): { start: Date, end: Date } { 
         let today = new Date();
         let startDay = new Date(today);
@@ -89,10 +97,8 @@ export class CalendarComponent implements OnInit, OnDestroy  {
                 startDay.setDate(startDay.getDate() + 1);
             }
         }
-    
         let endOfWeek = new Date(startDay);
         endOfWeek.setDate(startDay.getDate() + 6);
-
         return { start: startDay, end: endOfWeek };
     }
     
@@ -102,30 +108,24 @@ export class CalendarComponent implements OnInit, OnDestroy  {
         return result;
     }
 
+    private updateWeek(offset: number): void {
+        let start = new Date(this.currentWeek.start);
+        start.setDate(start.getDate() + offset);
+        let end = new Date(start);
+        end.setDate(end.getDate() + 4);
+        this.currentWeek = { start, end };
+        this.generateDaysOfWeek();
+        this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true));
+    }
+    
     previousWeek(): void {
-        let startPreviousWeek = new Date(this.currentWeek.start);
-        startPreviousWeek.setDate(startPreviousWeek.getDate() - 7);
-    
-        let endOfPreviousWeek = new Date(startPreviousWeek);
-        endOfPreviousWeek.setDate(endOfPreviousWeek.getDate() + 4);
-        this.currentWeek = { start: startPreviousWeek, end: endOfPreviousWeek };
-        this.generateDaysOfWeek();
-
-        this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true) ); 
+        this.updateWeek(-7);
     }
-
+    
     nextWeek(): void {
-        let startNextWeek = new Date(this.currentWeek.start);
-        startNextWeek.setDate(startNextWeek.getDate() + 7);
-    
-        let endOfNextWeek = new Date(startNextWeek);
-        endOfNextWeek.setDate(endOfNextWeek.getDate() + 4);
-        this.currentWeek = { start: startNextWeek, end: endOfNextWeek };
-        this.generateDaysOfWeek();
-
-        this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true) ); 
+        this.updateWeek(7);
     }
-
+    
     generateDaysOfWeek(): void {
         let days: Date[] = [];
         let startDay = new Date(this.currentWeek.start);
@@ -134,12 +134,10 @@ export class CalendarComponent implements OnInit, OnDestroy  {
             let day = new Date(startDay);
             day.setDate(startDay.getDate() + i);
     
-            // Überspringe Samstag (6) und Sonntag (0)
             if (day.getDay() !== 0 && day.getDay() !== 6) {
                 days.push(day);
             }
         }
-    
         this.daysOfWeek = days;
         this.currentDay = days[0];
     }
@@ -147,7 +145,6 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     today() {
         this.currentWeek = this.getcurrentWeek();
         this.generateDaysOfWeek();
-
         this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true) ); 
     }
 
@@ -159,7 +156,7 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     }
 
     isPastDay(day: Date): boolean {
-        const today = new Date();
+        let today = new Date();
         today.setHours(0, 0, 0, 0);
         return day < today;
     }
@@ -171,7 +168,6 @@ export class CalendarComponent implements OnInit, OnDestroy  {
             this.editEvent(day, hour);
             return;
         }
-        
         
         this.dialog.open(DialogAddEventComponent, {
             data: {
@@ -252,7 +248,6 @@ export class CalendarComponent implements OnInit, OnDestroy  {
                 return eventDay.toDateString() === day.toDateString() && event.hour === hour;
             });
         });
-    
         return isOccupied;
     } 
     
@@ -261,10 +256,8 @@ export class CalendarComponent implements OnInit, OnDestroy  {
         let dayOfMonth = date.getDate();
         let month = date.getMonth() + 1;
         let year = date.getFullYear();
-        
         let formattedDay = (dayOfMonth < 10) ? `0${dayOfMonth}` : `${dayOfMonth}`;
         let formattedMonth = (month < 10) ? `0${month}` : `${month}`;
-        
         return `${formattedDay}.${formattedMonth}.${year}`;
     }
 
@@ -316,7 +309,7 @@ export class CalendarComponent implements OnInit, OnDestroy  {
                         : undefined;
     
                 if (!eventDay) {
-                    return false; // Wenn weder Date noch Timestamp vorhanden ist, schließe das Event aus.
+                    return false;
                 }
     
                 let eventHour = event.hour;
@@ -353,5 +346,4 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     
         return rowspan;
     }
-   
 }

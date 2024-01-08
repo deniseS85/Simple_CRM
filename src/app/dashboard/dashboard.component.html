@@ -17,7 +17,7 @@
                         <p>Patients in {{this.currentMonthForHTML}}</p>
                     </div>
                     <div class="statistic">
-                        <p class="statistic-number">{{ patientsThisMonth }}</p>
+                        <p class="statistic-number">{{ calculateEventsForSelectedMonth(selectedYear, currentMonth.getMonth()) }}</p>
                         <p [style.color]="percentageChangeColor" class="statistic-number">{{ percentageChangeDisplay }}</p>
                     </div>
                 </mat-card-content>

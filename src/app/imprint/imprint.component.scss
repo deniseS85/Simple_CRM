@@ -23,15 +23,15 @@
         }
         p, .privacy {
             margin: 6px;
-            font-size: 16px;
-            @media only screen and (max-width:700px) {
-                font-size: 14px;
-            }
+            font-size: clamp(0.875rem, 0.8214rem + 0.2679vw, 1.25rem);
+            line-height: 1.5;
         }
         h3 {
-            @media only screen and (max-width:700px) {
-                margin-bottom: 0px;
-            }
+            font-size: clamp(1rem, 0.875rem + 0.625vw, 1.875rem);
+            margin-bottom: 0;
+        }
+        h4 {
+            font-size: clamp(0.875rem, 0.7679rem + 0.5357vw, 1.625rem);
         }
     }
 }
@@ -47,13 +47,3 @@
     }
 }
 
-@media only screen and (min-width: 2000px) {
-    .imprint {
-        .content {
-            p, .privacy {
-                font-size: 30px !important;
-            }
-        }
-    }
-    
-}

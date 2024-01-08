@@ -34,6 +34,15 @@ export class AnimalDetailComponent implements OnInit{
     }
 
     ngOnInit(): void {
+        this.loadSelectedAnimal();
+        this.loadAppointments();
+    }
+
+    ngOnDestroy(){
+        this.unsubAnimalList();
+    }
+
+    loadSelectedAnimal(): void {
         let storedAnimalData = localStorage.getItem('selectedAnimal');
         if (storedAnimalData) {
             this.selectedAnimal = JSON.parse(storedAnimalData);
@@ -43,14 +52,12 @@ export class AnimalDetailComponent implements OnInit{
         this.dataUpdate.getAllAnimalIds();
 
         this.dataUpdate.allAnimalIds$.subscribe((animalIds) => {
-          this.animalIds = animalIds;
+            this.animalIds = animalIds;
         });
-    
-        this.loadAppointments();
     }
 
-    ngOnDestroy(){
-        this.unsubAnimalList();
+    getEventRef() {
+        return collection(this.firestore, 'events');
     }
 
     getUserID() {
@@ -84,14 +91,11 @@ export class AnimalDetailComponent implements OnInit{
     }
 
     loadAppointments() {
-        const eventsRef = collection(this.firestore, 'events');
-    
-        onSnapshot(eventsRef, (querySnapshot) => {
-            const animalEventsList: Events[] = [];
+        onSnapshot(this.getEventRef(), (querySnapshot) => {
+            let animalEventsList: Events[] = [];
     
             querySnapshot.forEach((doc) => {
-                const event = doc.data();
-                animalEventsList.push(new Events().setEventsObject(event, doc.id));
+                animalEventsList.push(new Events().setEventsObject(doc.data(), doc.id));
             });
     
             let validEvents = animalEventsList.filter(event => event.animalID === this.selectedAnimal.id);
@@ -137,9 +141,9 @@ export class AnimalDetailComponent implements OnInit{
     }
 
     formatDate(date: Date): string {
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
+        let day = date.getDate().toString().padStart(2, '0');
+        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+        let year = date.getFullYear();
         
         return `${day}.${month}.${year}`;
     }
@@ -148,9 +152,8 @@ export class AnimalDetailComponent implements OnInit{
         return timestamp instanceof Timestamp ? new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6) : null;
     }
     
-    
     goBack() {
-        const userId = this.route.snapshot.paramMap.get('id');
+        let userId = this.route.snapshot.paramMap.get('id');
         this.router.navigate(['/patients', userId]);
     }
 
@@ -170,7 +173,7 @@ export class AnimalDetailComponent implements OnInit{
     }
 
     editAnimal() {
-        const dialog = this.dialog.open(DialogEditAnimalComponent, {
+        let dialog = this.dialog.open(DialogEditAnimalComponent, {
             data: { animal: this.selectedAnimal }
         });
         dialog.componentInstance.user = new User(this.user.toJson());
