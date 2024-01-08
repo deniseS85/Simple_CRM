@@ -65,6 +65,7 @@ export class DialogEditEventComponent {
             let selectedTreatment = this.getSelectedTreatment();
 
             if (selectedTreatment) {
+                this.selectedTreatment = selectedTreatment;
                 let updatedEventData = this.getUpdatedEventData(selectedTreatment);
                 let workflowCompleteData = await this.loadUserData(updatedEventData);
 
@@ -73,17 +74,66 @@ export class DialogEditEventComponent {
                     this.loading = false;
                     return;
                 }
+
+                if (!await this.isTreatmentDurationValid()) {
+                    this.snackBar.open('The selected treatment duration overlaps with an existing event.', 'OK', {
+                        duration: 3000,
+                    });
+                    this.loading = false;
+                    return;
+                }
     
                 this.updateEventAndWorkflow(updatedEventData, workflowCompleteData);
     
                 this.reloadEventData();
                 this.dialogRef.close();
+                this.loading = false;
             }
         }
     }
     
     isEventValid(): boolean {
         return this.event.id && this.event.day && this.event.hour && this.event.name && this.event.treatmentName;
+    }
+
+    async isTreatmentDurationValid(): Promise<boolean> {
+        await this.getExistingEventsForDay(this.event.day);
+    
+        let newStartHour = this.selectedHour;
+        let newEndHour = this.calculateEndTime(newStartHour, this.selectedTreatment.duration);
+    
+        for (let i = 0; i < this.existingEventsArray.length; i++) {
+            let existingEvent = this.existingEventsArray[i];
+            let existingStartHour = existingEvent.hour;
+            let existingEndHour = this.calculateEndTime(existingEvent.hour, existingEvent.duration);
+    
+            if ((newStartHour >= existingStartHour && newStartHour < existingEndHour) ||
+                (newEndHour > existingStartHour && newEndHour <= existingEndHour)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    
+    async getExistingEventsForDay(day: Date): Promise<any[]> {
+        let startOfDay = new Date(day);
+        startOfDay.setHours(0, 0, 0, 0);
+    
+        let endOfDay = new Date(day);
+        endOfDay.setHours(23, 59, 59, 999);
+    
+        let querySnapshot = await getDocs(query(collection(this.firestore, 'events'),
+            where('day', '>=', startOfDay),
+            where('day', '<=', endOfDay),
+            where('day', '<', this.event.day) 
+        ));
+    
+        this.existingEventsArray = [];
+        querySnapshot.forEach((doc) => {
+            this.existingEventsArray.push(doc.data());
+        });
+        return this.existingEventsArray;
     }
 
     getSelectedTreatment(): TreatmentsSelection | undefined {
@@ -122,7 +172,6 @@ export class DialogEditEventComponent {
             id: this.event.id,
             img: this.workflowCompleteData.img || '',
             lastName: this.workflowCompleteData.lastName || '',
-            /* position: this.event.position || '0' */
         };
 
     }
@@ -204,7 +253,6 @@ export class DialogEditEventComponent {
         });
     }
 
-
     getUsersRef() {
         return collection(this.firestore, 'users');
     }
@@ -225,8 +273,6 @@ export class DialogEditEventComponent {
               }
             }
           }));
-      
-          // Rückgabe als einfaches Objekt, nicht als Array
           return this.workflowCompleteData;
         }
 

@@ -96,10 +96,19 @@ export class DialogAddEventComponent {
                 let docRef = await addDoc(this.getEventRef(), eventsObject.toEventJson());
                 await updateDoc(doc(this.getEventRef(), docRef.id), { id: docRef.id });
                 
+                this.reloadEventData();
                 this.dialogRef.close({ ...eventData, id: docRef.id });
                 this.loading = false;                      
             } 
         }
+    }
+    
+    messageEventAfterClosingTime() {
+        
+    }
+
+    reloadEventData() {
+        this.dataUpdate.getAllEvents();
     }
 
     findAnimalIDByName(animalName: string): string | undefined {
