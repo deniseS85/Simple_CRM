@@ -31,15 +31,53 @@ export class WorkflowComponent implements OnInit{
   usersList:any = [];
   animalIdsToday:any = [];
   unsubUser;
+  isMobile: boolean = false;
+  popupOpen: boolean = false;
+  selectedItem: any;
+  popupOpenMap: { [itemId: string]: boolean } = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
   
   constructor(public dataUpdate: DataUpdateService) {
       this.unsubUser = this.subUsersList();
       this.dataUpdate.getAllEvents();
+      window.addEventListener('resize', () => {
+            this.checkScreenWidth();
+      });
+      this.checkScreenWidth();
   }
 
     ngOnInit(): void {
         this.initializeWorkflow();
+    }
+
+    checkScreenWidth() {
+        this.isMobile = window.innerWidth <= 700;
+    }
+
+    openPopup(item: any) {
+        this.selectedItem = item;
+        if (this.popupOpenMap[item.id]) {
+        this.popupOpenMap[item.id] = false;
+        } else {
+        this.closeAllPopups();
+        this.popupOpenMap[item.id] = true;
+        }
+      }
+    
+    closeAllPopups() {
+        for (const itemId in this.popupOpenMap) {
+            if (this.popupOpenMap.hasOwnProperty(itemId)) {
+                this.popupOpenMap[itemId] = false;
+            }
+        }
+    }
+
+    moveTo(status: string) {
+        this.popupOpen = false;
+        this.selectedItem.status = status;
+        this.selectedItem.position = status;
+        this.popupOpenMap[this.selectedItem.id] = false;
+        this.updateWorkflowItemPositions(this.selectedItem);
     }
 
     ngOnDestroy() {

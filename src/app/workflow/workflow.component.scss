@@ -1,45 +1,59 @@
-.search-container {
-    display: flex;
-    position: fixed;
-    top: 43px;
-    left: 50%;
-    height: 30px;
-    z-index: 1;
-    @media only screen and (max-width: 1368px) {
-        transform: translateX(-50%);
+
+.search-bg {
+    @media only screen and (max-width: 700px) {
+        background-color: rgb(14 23 41);
+        position: fixed;
+        top: 57px;
+        left: 0;
+        right: 0;
+        height: 76px;
+        box-shadow: 1px 1px 5px rgb(14 23 41);
     }
-    @media only screen and (min-width: 461px) {
-        top: clamp(1.25rem, 0.9343rem + 1.0958vw, 2.6875rem);
-    }
-    @media only screen and (max-width: 460px) {
-        top: 86px;
-    }
-    .input-search {
-        width: clamp(7.5rem, 6.4286rem + 5.3571vw, 15rem);
-        height: clamp(1rem, 0.875rem + 0.625vw, 1.875rem);        
-        padding: 5px;
-        border: 1px transparent;
-        border-radius: 5px;
-        box-shadow: 0 0 16px -2px #0000007a;
-        font-size: clamp(1rem, 0.9464rem + 0.2679vw, 1.375rem);
-        &::placeholder {
-            font-size: clamp(0.75rem, 0.7232rem + 0.1339vw, 0.9375rem);
-        }
-    }
-    .search-btn {
-        background-color: transparent;
-        border: none;
+    .search-container {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        img {
-            width: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
-            font-size: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
-            height: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
-            cursor: pointer;
+        position: fixed;
+        top: 43px;
+        left: 50%;
+        height: 30px;
+        z-index: 1;
+        @media only screen and (max-width: 1368px) {
+            transform: translateX(-50%);
+        }
+        @media only screen and (min-width: 461px) {
+            top: clamp(1.25rem, 0.9343rem + 1.0958vw, 2.6875rem);
+        }
+        @media only screen and (max-width: 460px) {
+            top: 86px;
+        }
+        .input-search {
+            width: clamp(7.5rem, 6.4286rem + 5.3571vw, 15rem);
+            height: clamp(1rem, 0.875rem + 0.625vw, 1.875rem);        
+            padding: 5px;
+            border: 1px transparent;
+            border-radius: 5px;
+            box-shadow: 0 0 16px -2px #0000007a;
+            font-size: clamp(1rem, 0.9464rem + 0.2679vw, 1.375rem);
+            &::placeholder {
+                font-size: clamp(0.75rem, 0.7232rem + 0.1339vw, 0.9375rem);
+            }
+        }
+        .search-btn {
+            background-color: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img {
+                width: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+                font-size: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+                height: clamp(1.375rem, 1.3036rem + 0.3571vw, 1.875rem);
+                cursor: pointer;
+            }
         }
     }
+    
 }
+
 
 .kanban-container {
     display: flex;
@@ -48,7 +62,7 @@
     box-sizing: border-box;
     @media only screen and (max-width: 700px) {
         flex-direction: column;
-        margin-top: 58px;
+        margin-top: 65px;
         align-items: center;
     }
     .kanban-row {
@@ -63,8 +77,6 @@
             background-color: rgb(3, 33, 56);
             padding: 10px;
             text-align: center;
-            position: sticky;
-            top: 173px;
         }
         .kanban-list {
             border: 1px solid rgb(1, 103, 175);;
@@ -99,6 +111,7 @@
     background-color: rgb(12, 54, 89);
     font-size: 14px;
     min-height: 72px;
+    position: relative;
     .info-animal {
         display: flex;
         img {
@@ -110,9 +123,41 @@
     .info-treatment {
         margin-left: 30px;
     }
-    
     &:hover {
         border: 1px solid rgb(5, 251, 251);
+    }
+    .icon-drag-responsiv {
+        width: 25px;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        &:hover {
+            color: rgb(5, 251, 251);
+        }
+    }
+    .popup {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        right: 44px;
+        border: 1px solid rgb(5, 251, 251);
+        button {
+            width: 90px;
+            background-color: rgb(12, 54, 89);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-right: 1px solid rgb(5, 251, 251);
+            &:nth-child(3) {
+                border-right: none;
+            }
+        }
+    }
+    @media only screen and (max-width: 700px) {
+        cursor: default;
     }
 }
 

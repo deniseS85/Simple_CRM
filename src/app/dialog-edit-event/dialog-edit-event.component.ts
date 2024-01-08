@@ -44,7 +44,7 @@ export class DialogEditEventComponent {
   usersList:any = [];
   unsubUser:any = [];
   workflowCompleteData: { lastName: string, img: string } = { lastName: '', img: '' };
-
+  existingEventsArray: any[] = [];
 
   constructor(@Inject(MAT_DIALOG_DATA) public event: any, private dataUpdate: DataUpdateService, public dialogRef: MatDialogRef<DialogEditEventComponent>, private snackBar: MatSnackBar) {
       this.unsubList = this.subAnimalList();
@@ -53,7 +53,6 @@ export class DialogEditEventComponent {
       this.selectedHour = event.hour;
   }
   
-
     ngOnDestroy() {
         this.unsubList(); 
         this.unsubUser();

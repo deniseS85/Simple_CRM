@@ -1,11 +1,11 @@
-<div class="search-container">
-    <input [(ngModel)]="inputValue" (ngModelChange)="filterTasks()" class="input-search" placeholder="Search" type="text"> 
-    <button (click)="filterTasks()" class="search-btn"> 
-        <img src="./assets/img/search.png">
-    </button>
+<div class="search-bg">
+    <div class="search-container">
+        <input [(ngModel)]="inputValue" (ngModelChange)="filterTasks()" class="input-search" placeholder="Search" type="text"> 
+        <button (click)="filterTasks()" class="search-btn"> 
+            <img src="./assets/img/search.png">
+        </button>
+    </div>
 </div>
-
-
 
 <div class="kanban-container">
     <div class="kanban-row">
@@ -21,6 +21,12 @@
                 </div>
                 <div class="info-treatment">
                     <div>{{ item.treatmentName }}, {{ item.hour }}</div>
+                </div>
+                <img *ngIf="isMobile" src="./assets/img/draganddrop.png" class="icon-drag-responsiv" (click)="openPopup(item)">
+                <div *ngIf="popupOpenMap[item.id]" class="popup">
+                    <button (click)="moveTo('waiting')">Move to Waiting</button>
+                    <button (click)="moveTo('treatment')">Move to Treatment</button>
+                    <button (click)="moveTo('done')">Move to Done</button>
                 </div>
             </div>
         </div>
@@ -40,6 +46,12 @@
                 <div class="info-treatment">
                     <div>{{ item.treatmentName }}, {{ item.hour }}</div>
                 </div>
+                <img *ngIf="isMobile" src="./assets/img/draganddrop.png" class="icon-drag-responsiv" (click)="openPopup(item)">
+                <div *ngIf="popupOpenMap[item.id]" class="popup">
+                    <button (click)="moveTo('todo')">Move to Todo</button>
+                    <button (click)="moveTo('treatment')">Move to Treatment</button>
+                    <button (click)="moveTo('done')">Move to Done</button>
+                  </div>
             </div>
         </div>
     </div>
@@ -58,6 +70,12 @@
                 <div class="info-treatment">
                     <div>{{ item.treatmentName }}, {{ item.hour }}</div>
                 </div>
+                <img *ngIf="isMobile" src="./assets/img/draganddrop.png" class="icon-drag-responsiv" (click)="openPopup(item)">
+                <div *ngIf="popupOpenMap[item.id]" class="popup">
+                    <button (click)="moveTo('todo')">Move to Todo</button>
+                    <button (click)="moveTo('waiting')">Move to Waiting</button>
+                    <button (click)="moveTo('done')">Move to Done</button>
+                  </div>
             </div>
         </div>
     </div>
@@ -76,6 +94,12 @@
                 <div class="info-treatment">
                     <div>{{ item.treatmentName }}, {{ item.hour }}</div>
                 </div>
+                <img *ngIf="isMobile" src="./assets/img/draganddrop.png" class="icon-drag-responsiv" (click)="openPopup(item)">
+                <div *ngIf="popupOpenMap[item.id]" class="popup">
+                    <button (click)="moveTo('todo')">Move to Todo</button>
+                    <button (click)="moveTo('waiting')">Move to Waiting</button>
+                    <button (click)="moveTo('treatment')">Move to Treatment</button>
+                  </div>
             </div>
         </div>
     </div>
