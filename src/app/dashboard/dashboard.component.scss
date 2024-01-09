@@ -7,10 +7,12 @@
     }
     .dashboard-container {
         display: flex;
-        margin-top: 25px;
         flex-direction: column;
         gap: 80px;
         max-height: 100vh;
+        @media only screen and (max-width: 900px) {
+            margin-top: 25px;
+        }
         .dashboard-info {
             display: flex;
             gap: 30px;
@@ -20,7 +22,7 @@
             }
             mat-card {
                 height: clamp(4.375rem, 3.9286rem + 2.2321vw, 7.5rem);
-                width: clamp(13rem, 12.5357rem + 2.3214vw, 16.25rem);
+                width: clamp(13rem, 12.1786rem + 4.1071vw, 18.75rem);
                 cursor: pointer;
                 background-color: rgb(12, 54, 89);
                 border-radius: 10px;

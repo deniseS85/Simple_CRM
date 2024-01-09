@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Firestore, addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
+import { DocumentData, Firestore, QuerySnapshot, addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
 import { User } from '../models/user.class';
 import { Animals } from '../models/animals.class';
 import { DataUpdateService } from '../data-update.service';
@@ -46,9 +46,12 @@ export class WorkflowComponent implements OnInit{
       this.checkScreenWidth();
   }
 
-    ngOnInit(): void {
-        this.initializeWorkflow();
-    }
+  ngOnInit(): void {
+    this.loadTodayEvents().then(() => {
+      this.dataUpdate.getAllEvents(); // Verschieben Sie diesen Aufruf hierhin, nachdem die heutigen Termine geladen wurden.
+      this.initializeWorkflow();
+    });
+  }
 
     checkScreenWidth() {
         this.isMobile = window.innerWidth <= 700;
@@ -56,16 +59,17 @@ export class WorkflowComponent implements OnInit{
 
     openPopup(item: any) {
         this.selectedItem = item;
+
         if (this.popupOpenMap[item.id]) {
-        this.popupOpenMap[item.id] = false;
+            this.popupOpenMap[item.id] = false;
         } else {
-        this.closeAllPopups();
-        this.popupOpenMap[item.id] = true;
+            this.closeAllPopups();
+            this.popupOpenMap[item.id] = true;
         }
       }
     
     closeAllPopups() {
-        for (const itemId in this.popupOpenMap) {
+        for (let itemId in this.popupOpenMap) {
             if (this.popupOpenMap.hasOwnProperty(itemId)) {
                 this.popupOpenMap[itemId] = false;
             }
@@ -86,14 +90,12 @@ export class WorkflowComponent implements OnInit{
         this.unsubscribe$.complete();
     }
 
-    initializeWorkflow():void {
-        this.loadTodayEvents().then(() => {
-            this.loadWorkflowItems();
-            this.innerJoin();
-            this.setNextDayStartInterval();
-            this.deleteOldWorkflowItems();
-        });
-    }
+    initializeWorkflow(): void {
+        this.loadWorkflowItems();
+        this.innerJoin();
+        this.setNextDayStartInterval();
+        this.deleteOldWorkflowItems();
+      }
 
     async addWorkflowItemsToDatabase() {
         for (let event of this.todayEvents) {
@@ -147,27 +149,36 @@ export class WorkflowComponent implements OnInit{
 
     async loadWorkflowItems(): Promise<void> {
         let querySnapshot = await getDocs(this.getWorkflowRef());
-        let workflowItems: WorkflowItem[] = [];
-    
-        querySnapshot.forEach((doc) => {
-            let data = doc.data();
-            let workflowItem = new WorkflowItem({
-                id: doc.id,
-                img: data['img'],
-                name: data['name'],
-                lastName: data['lastName'],
-                treatmentName: data['treatmentName'],
-                hour: data['hour'],
-                day: data['day'],
-                position: data['position'],
-            });
-    
-            workflowItems.push(workflowItem);
-        });
+        let  workflowItems: WorkflowItem[] = this.mapQuerySnapshotToWorkflowItems(querySnapshot);
         this.workflow = workflowItems;
         this.sortTasksByTime(this.workflow); 
         this. updateFilterArrays()
         
+    }
+
+    private mapQuerySnapshotToWorkflowItems(querySnapshot: QuerySnapshot<DocumentData>): WorkflowItem[] {
+        const workflowItems: WorkflowItem[] = [];
+    
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const workflowItem = this.createWorkflowItemFromData(doc.id, data);
+            workflowItems.push(workflowItem);
+        });
+    
+        return workflowItems;
+    }
+    
+    private createWorkflowItemFromData(id: string, data: DocumentData): WorkflowItem {
+        return new WorkflowItem({
+            id: id,
+            img: data['img'],
+            name: data['name'],
+            lastName: data['lastName'],
+            treatmentName: data['treatmentName'],
+            hour: data['hour'],
+            day: data['day'],
+            position: data['position'],
+        });
     }
 
     updateFilterArrays(): void {
@@ -289,29 +300,51 @@ export class WorkflowComponent implements OnInit{
         });
     }
 
-    innerJoin() { 
+    innerJoin() {
         this.usersList.forEach((user: User) => {
             user.animals.forEach(animal => {
-                this.todayEvents.filter(todayEvent => todayEvent.animalID === animal.id).forEach(todayEvent => {
-                    let eventWithLastNameImg = new WorkflowItem({
-                        id: todayEvent.id,
-                        name: todayEvent.name,
-                        lastName: user.lastName,
-                        img: `./assets/img/${animal.species}.png`,
-                        treatmentName: todayEvent.treatmentName,
-                        hour: todayEvent.hour,
-                        day: todayEvent.day,
-                        position: todayEvent.position
-                    });
-
-                    this.todo.push(eventWithLastNameImg);
-                    this.todoFilter.push(eventWithLastNameImg);
-                    this.addWorkflowItemDatabase(eventWithLastNameImg, eventWithLastNameImg.id);
-                    this.sortTasksByTime(this.todo);
-                    this.sortTasksByTime(this.todoFilter);
-                });
+                this.filterTodayEventsForAnimal(user, animal);
             });
-        }); 
+        });
+    }
+    
+    private filterTodayEventsForAnimal(user: User, animal: Animals) {
+        const animalEvents = this.todayEvents.filter(todayEvent => todayEvent.animalID === animal.id);
+    
+        animalEvents.forEach(todayEvent => {
+            this.processAnimalEvent(user, animal, todayEvent);
+        });
+    }
+    
+    private processAnimalEvent(user: User, animal: Animals, todayEvent: WorkflowItem) {
+        const eventWithLastNameImg = this.createWorkflowItemFromEvent(user, animal, todayEvent);
+    
+        this.addToTodoLists(eventWithLastNameImg);
+        this.addToDatabaseAndSort(eventWithLastNameImg);
+    }
+    
+    private createWorkflowItemFromEvent(user: User, animal: Animals, todayEvent: WorkflowItem): WorkflowItem {
+        return new WorkflowItem({
+            id: todayEvent.id,
+            name: todayEvent.name,
+            lastName: user.lastName,
+            img: `./assets/img/${animal.species}.png`,
+            treatmentName: todayEvent.treatmentName,
+            hour: todayEvent.hour,
+            day: todayEvent.day,
+            position: todayEvent.position
+        });
+    }
+    
+    private addToTodoLists(eventWithLastNameImg: WorkflowItem) {
+        this.todo.push(eventWithLastNameImg);
+        this.todoFilter.push(eventWithLastNameImg);
+    }
+    
+    private addToDatabaseAndSort(eventWithLastNameImg: WorkflowItem) {
+        this.addWorkflowItemDatabase(eventWithLastNameImg, eventWithLastNameImg.id);
+        this.sortTasksByTime(this.todo);
+        this.sortTasksByTime(this.todoFilter);
     }
     
     async deleteOldWorkflowItems(): Promise<void> {

@@ -7,8 +7,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkflowItem } from '../models/workflow.class';
 import { User } from '../models/user.class';
 
-
-
 interface TreatmentsSelection {
   name: string;
   categoryColor: string;
@@ -70,22 +68,14 @@ export class DialogEditEventComponent {
                 let workflowCompleteData = await this.loadUserData(updatedEventData);
 
                 if (this.isEventAfterClosingTime(selectedTreatment.duration, this.selectedHour)) {
-                    this.showClosingTimeSnackBar();
-                    this.loading = false;
+                    this.messageEventAfterClosingTime();
                     return;
                 }
-
                 if (!await this.isTreatmentDurationValid()) {
-                    this.snackBar.open('The selected treatment duration overlaps with an existing event.', 'OK', {
-                        duration: 3000,
-                    });
-                    this.loading = false;
+                    this.messageOverlappingEvents();
                     return;
                 }
-    
                 this.updateEventAndWorkflow(updatedEventData, workflowCompleteData);
-    
-                this.reloadEventData();
                 this.dialogRef.close();
                 this.loading = false;
             }
@@ -98,29 +88,25 @@ export class DialogEditEventComponent {
 
     async isTreatmentDurationValid(): Promise<boolean> {
         await this.getExistingEventsForDay(this.event.day);
-    
-        let newStartHour = this.selectedHour;
-        let newEndHour = this.calculateEndTime(newStartHour, this.selectedTreatment.duration);
+
+        let newEndHour = this.calculateEndTime(this.event.hour, this.selectedTreatment.duration);
     
         for (let i = 0; i < this.existingEventsArray.length; i++) {
             let existingEvent = this.existingEventsArray[i];
             let existingStartHour = existingEvent.hour;
             let existingEndHour = this.calculateEndTime(existingEvent.hour, existingEvent.duration);
     
-            if ((newStartHour >= existingStartHour && newStartHour < existingEndHour) ||
-                (newEndHour > existingStartHour && newEndHour <= existingEndHour)) {
+            if (newEndHour > existingStartHour && newEndHour <= existingEndHour) {
                 return false;
             }
         }
         return true;
     }
-    
-    
+
     async getExistingEventsForDay(day: Date): Promise<any[]> {
         let startOfDay = new Date(day);
-        startOfDay.setHours(0, 0, 0, 0);
-    
         let endOfDay = new Date(day);
+        startOfDay.setHours(0, 0, 0, 0);
         endOfDay.setHours(23, 59, 59, 999);
     
         let querySnapshot = await getDocs(query(collection(this.firestore, 'events'),
@@ -176,10 +162,18 @@ export class DialogEditEventComponent {
 
     }
 
-    showClosingTimeSnackBar(): void {
+    messageEventAfterClosingTime() {
         this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
             duration: 3000,
         });
+        this.loading = false;
+    }
+
+    messageOverlappingEvents() {
+        this.snackBar.open('The selected treatment duration overlaps with an existing event.', 'OK', {
+            duration: 3000,
+        });
+        this.loading = false;
     }
 
     updateEventAndWorkflow(updatedEventData: any, workflowCompleteData: any): void {
@@ -192,7 +186,6 @@ export class DialogEditEventComponent {
                 let workflowItem = new WorkflowItem().setWorkflowItemObject(updatedWorkflowData, eventId);
                 this.updateWorkflowDatabase(workflowItem, eventId, workflowCompleteData);
             }
-            this.reloadEventData();
             this.dialogRef.close();
             this.loading = false;
         });
@@ -229,7 +222,7 @@ export class DialogEditEventComponent {
             console.error('Error adding or updating workflow item: ', error);
         }
     }
-    
+
     cleanZoneProperties(data: any): any {
         const cleanData: any = {};
     
@@ -242,7 +235,6 @@ export class DialogEditEventComponent {
         return cleanData;
     }
 
-    
     subUsersList() {
         return onSnapshot(this.getUsersRef(), (list) =>{
             this.usersList = [];
@@ -255,6 +247,10 @@ export class DialogEditEventComponent {
 
     getUsersRef() {
         return collection(this.firestore, 'users');
+    }
+
+    getWorkflowRef() {
+        return collection(this.firestore, 'workflow');
     }
 
     async loadUserData(updatedEventData: any): Promise<any> {
@@ -274,7 +270,7 @@ export class DialogEditEventComponent {
             }
           }));
           return this.workflowCompleteData;
-        }
+    }
 
     isEventAfterClosingTime(duration:number, hour:string): boolean {
         let endHour = this.calculateEndTime(hour, duration);
@@ -286,6 +282,13 @@ export class DialogEditEventComponent {
         let endHour = startHour + duration;
         
         return `${endHour.toString().padStart(2, '0')}:00`;
+    }
+
+    calculateStartTime(endTime: string, duration: number) {
+        let endHour = parseInt(endTime.split(':')[0], 10);
+        let startHour = endHour + 1 - duration;
+    
+        return `${startHour.toString().padStart(2, '0')}:00`;
     }
 
     getEventID() {
@@ -308,24 +311,18 @@ export class DialogEditEventComponent {
     deleteEvent(): void {
         this.loading = true;
         deleteDoc(this.getEventID()).then(async () => {
-            let workflowRef = collection(this.firestore, 'workflow');
-            let querySnapshot = await getDocs(query(workflowRef, where('id', '==', this.event.id)));
+            let querySnapshot = await getDocs(query(this.getWorkflowRef(), where('id', '==', this.event.id)));
 
             if (querySnapshot.size > 0) {
                 let existingWorkflowItem = querySnapshot.docs[0];
                 await deleteDoc(existingWorkflowItem.ref);
             }
-            this.reloadEventData();
             this.dialogRef.close();
             this.loading = false;
         }).catch((error) => {
             console.error('Error deleting event from Firebase: ', error);
         });
         this.isConfirmationVisible = false;
-    }
-
-    reloadEventData() {
-        this.dataUpdate.getAllEvents();
     }
     
     subAnimalList() {
@@ -360,5 +357,4 @@ export class DialogEditEventComponent {
 
         return `${formattedDay}.${formattedMonth}.${year}`;
     }
-  
 }

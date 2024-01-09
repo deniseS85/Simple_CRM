@@ -26,7 +26,6 @@ export class DialogAddAnimalComponent {
     { value: 'Rat', viewValue: 'Rat' },
   ];
   genders: string[] = ['Female', 'Male'];
-
   firestore: Firestore = inject(Firestore);
   user!: User;
   animal = new Animals();
@@ -45,7 +44,7 @@ export class DialogAddAnimalComponent {
       this.animal.species = this.selectedSpecies;
       this.loading = true;
       
-      const newAnimal = new Animals(this.animal.toJsonAnimals());
+      let newAnimal = new Animals(this.animal.toJsonAnimals());
       newAnimal.generateUniqueId(); 
 
       this.user.animals.push(newAnimal);
@@ -55,17 +54,15 @@ export class DialogAddAnimalComponent {
           this.dialogRef.close();
       }); 
   }
-  
 
   getUserID() {
       return doc(collection(this.firestore, 'users'), this.user.id);
   }
 
   limitLength(event: any) {
-      const maxLength = 15;
+      let maxLength = 15;
         if (event.target.value.length > maxLength) {
             event.target.value = event.target.value.slice(0, maxLength);
         }
       }
-
 }

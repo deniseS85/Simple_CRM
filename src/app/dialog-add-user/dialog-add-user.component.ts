@@ -22,15 +22,10 @@ export class DialogAddUserComponent {
   async saveUser() {
       this.user.birthDate = this.birthDate.getTime();
       this.loading = true;
-    
-      try {
-        const docRef = await addDoc(this.getUserRef(), this.user.toJson());
-        await updateDoc(doc(this.getUserRef(), docRef.id), {id: docRef.id});
-        this.loading = false;
-        this.dialogRef.close({ ...this.user.toJson(), id: docRef.id });
-      } catch (error) {
-        console.error('Error adding user: ', error);
-      }
+      let docRef = await addDoc(this.getUserRef(), this.user.toJson());
+      await updateDoc(doc(this.getUserRef(), docRef.id), {id: docRef.id});
+      this.loading = false;
+      this.dialogRef.close({ ...this.user.toJson(), id: docRef.id });
   }
 
   getUserRef() {

@@ -13,7 +13,6 @@ import { DataUpdateService } from '../data-update.service';
 })
 
 export class DialogEditUserComponent implements OnInit {
-
   firestore: Firestore = inject(Firestore);
   loading =  false;
   user!: User;
@@ -22,31 +21,26 @@ export class DialogEditUserComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<DialogEditUserComponent>, private dataUpdate: DataUpdateService) {}
 
-  ngOnInit(): void {
-      this.birthDate = new Date(this.user.birthDate);
-  }
+    ngOnInit(): void {
+        this.birthDate = new Date(this.user.birthDate);
+    }
   
-  async saveUserChange() {
-      this.loading = true;
-      const updatedData = this.user.toJson();
+    async saveUserChange() {
+        this.loading = true;
+        let updatedData = this.user.toJson();
+        await updateDoc(this.getUserID(), updatedData);
+        this.loading = false;
+        this.dialogRef.close();
+        this.dataUpdate.setUserData(updatedData);
+        this.updateUserNameInLocalStorage();
+    } 
 
-      try {
-          await updateDoc(this.getUserID(), updatedData);
-          this.loading = false;
-          this.dialogRef.close();
-          this.dataUpdate.setUserData(updatedData);
-          this.updateUserNameInLocalStorage();
-      } catch (error) {
-          console.error('Error updating user: ', error);
-      }
-}
+    updateUserNameInLocalStorage() {
+          let userName = this.user.firstName + ' ' + this.user.lastName;
+          localStorage.setItem('userName', userName);
+    }
 
-  updateUserNameInLocalStorage() {
-        let userName = this.user.firstName + ' ' + this.user.lastName;
-        localStorage.setItem('userName', userName);
-  }
-
-  getUserID() {
-      return doc(collection(this.firestore, 'users'), this.user.id);
-  }
+    getUserID() {
+        return doc(collection(this.firestore, 'users'), this.user.id);
+    }
 }

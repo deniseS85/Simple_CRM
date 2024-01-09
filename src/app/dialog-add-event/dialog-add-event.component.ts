@@ -19,7 +19,6 @@ interface TreatmentsSelection {
   styleUrls: ['./dialog-add-event.component.scss']
 })
 export class DialogAddEventComponent {
-
     treatments: TreatmentsSelection[] = [ 
         { name: 'Medical Check-Up ', categoryColor: '#c9f7f9', duration: 2 },
         { name: 'Dental Care', categoryColor: '#fbd1d1', duration: 1 },
@@ -59,56 +58,72 @@ export class DialogAddEventComponent {
         let animalID = this.findAnimalIDByName(this.eventData.name);
     
         if (this.selectedTreatment) {
-            let { name, categoryColor, duration } = this.selectedTreatment;
-    
-            this.eventData.treatmentName = name;
-            this.eventData.categoryColor = categoryColor;
-            this.eventData.duration = duration;
-            this.loading = true;
+            this.prepareEventData(this.selectedTreatment);
 
             if (this.isEventAfterClosingTime()) {
-                this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
-                    duration: 3000,
-                });
-                this.loading = false;
+                this.messageEventAfterClosingTime();
                 return;
             }
             if (!await this.isTreatmentDurationValid()) {
-                this.snackBar.open('The selected treatment duration overlaps with an existing event.', 'OK', {
-                    duration: 3000,
-                });
-                this.loading = false;
+                this.messageOverlappingEvents();
                 return;
             }
-    
             if (animalID) {
-                let eventData = {
-                    day: this.eventData.day,
-                    hour: this.eventData.hour,
-                    name: this.eventData.name,
-                    treatmentName: this.eventData.treatmentName,
-                    duration: this.eventData.duration,
-                    categoryColor: this.eventData.categoryColor,
-                    animalID: animalID,
-                };
-    
-                let eventsObject = new Events(eventData);
-                let docRef = await addDoc(this.getEventRef(), eventsObject.toEventJson());
-                await updateDoc(doc(this.getEventRef(), docRef.id), { id: docRef.id });
-                
-                this.reloadEventData();
-                this.dialogRef.close({ ...eventData, id: docRef.id });
-                this.loading = false;                      
+                let eventData = this.createEventData(animalID);
+                let docRef = await this.saveEventData(eventData);
+                await this.updateDocument(docRef);
+                this.saveProcess(eventData, docRef);               
             } 
         }
     }
+
+    prepareEventData(selectedTreatment:any) {
+        let { name, categoryColor, duration } = selectedTreatment;
+    
+        this.eventData.treatmentName = name;
+        this.eventData.categoryColor = categoryColor;
+        this.eventData.duration = duration;
+        this.loading = true;
+    }
     
     messageEventAfterClosingTime() {
-        
+        this.snackBar.open('The selected time exceeds the latest time available (18:00).', 'OK', {
+            duration: 3000,
+        });
+        this.loading = false;
     }
 
-    reloadEventData() {
-        this.dataUpdate.getAllEvents();
+    messageOverlappingEvents() {
+        this.snackBar.open('The selected treatment duration overlaps with an existing event.', 'OK', {
+            duration: 3000,
+        });
+        this.loading = false;
+    }
+
+    createEventData(animalID:string) {
+        return {
+            day: this.eventData.day,
+            hour: this.eventData.hour,
+            name: this.eventData.name,
+            treatmentName: this.eventData.treatmentName,
+            duration: this.eventData.duration,
+            categoryColor: this.eventData.categoryColor,
+            animalID: animalID,
+        };
+    }
+
+    async saveEventData(eventData:any) {
+        let eventsObject = new Events(eventData);
+        return await addDoc(this.getEventRef(), eventsObject.toEventJson());
+    }
+
+    async updateDocument(docRef:any) {
+        await updateDoc(doc(this.getEventRef(), docRef.id), { id: docRef.id });
+    }
+
+    saveProcess(eventData:any, docRef:any) {
+        this.dialogRef.close({ ...eventData, id: docRef.id });
+        this.loading = false;
     }
 
     findAnimalIDByName(animalName: string): string | undefined {
@@ -154,9 +169,8 @@ export class DialogAddEventComponent {
 
     async getExistingEventsForDay(day: Date): Promise<any[]> {
         let startOfDay = new Date(day);
-        startOfDay.setHours(0, 0, 0, 0);
-    
         let endOfDay = new Date(day);
+        startOfDay.setHours(0, 0, 0, 0);
         endOfDay.setHours(23, 59, 59, 999);
     
         let querySnapshot = await getDocs(query(collection(this.firestore, 'events'),

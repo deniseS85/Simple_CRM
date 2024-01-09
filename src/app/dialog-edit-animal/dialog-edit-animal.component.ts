@@ -18,78 +18,84 @@ interface Species {
 })
 
 export class DialogEditAnimalComponent implements OnInit  {
-  animals: Species[] = [
-    { value: 'Cat', viewValue: 'Cat' },
-    { value: 'Dog', viewValue: 'Dog' },
-    { value: 'Hamster', viewValue: 'Hamster' },
-    { value: 'Rabbit', viewValue: 'Rabbit' },
-    { value: 'Guinea pig', viewValue: 'Guinea pig' },
-    { value: 'Ferret', viewValue: 'Ferret' },
-    { value: 'Rat', viewValue: 'Rat' },
-  ];
-  genders: string[] = ['Female', 'Male'];
-  firestore: Firestore = inject(Firestore);
-  user!: User;
-  loading =  false;
-  animal!: Animals;
-  hideRequired = 'true';
-  birthDate: any;
-  selectedAnimal;
+    animals: Species[] = [
+        { value: 'Cat', viewValue: 'Cat' },
+        { value: 'Dog', viewValue: 'Dog' },
+        { value: 'Hamster', viewValue: 'Hamster' },
+        { value: 'Rabbit', viewValue: 'Rabbit' },
+        { value: 'Guinea pig', viewValue: 'Guinea pig' },
+        { value: 'Ferret', viewValue: 'Ferret' },
+        { value: 'Rat', viewValue: 'Rat' },
+    ];
+    genders: string[] = ['Female', 'Male'];
+    firestore: Firestore = inject(Firestore);
+    user!: User;
+    loading =  false;
+    animal!: Animals;
+    hideRequired = 'true';
+    birthDate: any;
+    selectedAnimal;
 
 
-  constructor(public dialogRef: MatDialogRef<DialogEditAnimalComponent>,@Inject(MAT_DIALOG_DATA) public data: {animal: Animals}, private dataUpdate: DataUpdateService) {
+    constructor(public dialogRef: MatDialogRef<DialogEditAnimalComponent>,@Inject(MAT_DIALOG_DATA) public data: {animal: Animals}, private dataUpdate: DataUpdateService) {
       this.selectedAnimal = { ...data.animal };
-  }
+    }
 
-  ngOnInit(): void {
-      this.birthDate = new Date(this.selectedAnimal.birthDate);
-  }
+    ngOnInit(): void {
+        this.birthDate = new Date(this.selectedAnimal.birthDate);
+    }
 
+    async saveAnimalChange() {
+        if (this.selectedAnimal) {
+            this.selectedAnimal.birthDate = this.birthDate.getTime();
+            this.loading = true;
 
-  async saveAnimalChange() {
-      if (this.selectedAnimal) {
-          this.selectedAnimal.birthDate = this.birthDate.getTime();
-          this.loading = true;
+            const isAnimal = this.user.animals.find(animal => animal.id === this.selectedAnimal.id);
 
-          const isAnimal = this.user.animals.find(animal => animal.id === this.selectedAnimal.id);
+            if (isAnimal) {
+                this.dataUpdate.setAnimalData({ ...this.selectedAnimal });
+                await this.updateUserAnimalsInFirestore(isAnimal);
+                await this.updateEventsWithName();
+                this.loading = false;
+                this.dialogRef.close();
+            }
+        }
+    }
 
-          if (isAnimal) {
-            this.dataUpdate.setAnimalData({ ...this.selectedAnimal });
-            
-            await updateDoc(this.getUserID(), {
-                animals: this.user.animals.map(animal =>
-                    (animal.id === isAnimal.id) ? { ...this.selectedAnimal } : animal.toJsonAnimals()
-                )
-            }); 
-            let events = await this.getAllEventsForAnimal(this.selectedAnimal.id);
+    async updateUserAnimalsInFirestore(isAnimal:any) {
+        await updateDoc(this.getUserID(), {
+            animals: this.user.animals.map(animal =>
+                (animal.id === isAnimal.id) ? { ...this.selectedAnimal } : animal.toJsonAnimals()
+            )
+        });
+    }
 
-            await Promise.all(events.map(event => 
-                updateDoc(doc(collection(this.firestore, 'events'), event.id), {
-                    name: this.selectedAnimal.name
-                })
-            ));
-            this.loading = false;
-            this.dialogRef.close();
-          }
-      }
-  }
+    async updateEventsWithName() {
+        const events = await this.getAllEventsForAnimal(this.selectedAnimal.id);
 
-  async getAllEventsForAnimal(animalID: string) {
-      const eventsRef = collection(this.firestore, 'events');
-      const querySnapshot = await getDocs(query(eventsRef, where('animalID', '==', animalID)));
+        await Promise.all(events.map(event =>
+            updateDoc(doc(collection(this.firestore, 'events'), event.id), {
+                name: this.selectedAnimal.name
+            })
+        ));
+    }
 
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  }
+    async getAllEventsForAnimal(animalID: string) {
+        let eventsRef = collection(this.firestore, 'events');
+        let querySnapshot = await getDocs(query(eventsRef, where('animalID', '==', animalID)));
 
-  getUserID() {
-      return doc(collection(this.firestore, 'users'), this.user.id);
-  }
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+
+    getUserID() {
+        return doc(collection(this.firestore, 'users'), this.user.id);
+    }
   
-  limitLength(event: any) {
-      const maxLength = 15;
-      if (event.target.value.length > maxLength) {
-          event.target.value = event.target.value.slice(0, maxLength);
-      }
+    limitLength(event: any) {
+        let maxLength = 15;
+        if (event.target.value.length > maxLength) {
+            event.target.value = event.target.value.slice(0, maxLength);
+        }
     }
 }
 

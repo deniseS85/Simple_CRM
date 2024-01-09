@@ -57,18 +57,20 @@ export class NavigationComponent implements OnInit {
     ngOnInit() {
         this.checkScreenWidth();
         this.getUpdateDate();
-        this.userName = localStorage.getItem('userName') || ''; 
-        this.router.events.pipe(
-            filter((event): event is NavigationEnd => event instanceof NavigationEnd)
-            ).subscribe((event: NavigationEnd) => {
-                this.showNavbar = event.url !== '/';
-                    if (this.showNavbar) {
-                        document.getElementById('drawer')?.classList.remove('d-none');
-                        document.getElementById('menu')?.classList.remove('d-none');
-                    } else {
-                        document.getElementById('drawer')?.classList.add('d-none');
-                        document.getElementById('menu')?.classList.add('d-none');
-                    }
+        this.userName = localStorage.getItem('userName') || '';
+        this.subscribeToRouterEvents(); 
+    }
+
+    subscribeToRouterEvents() {
+        this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+            this.showNavbar = event.url !== '/';
+                if (this.showNavbar) {
+                    document.getElementById('drawer')?.classList.remove('d-none');
+                    document.getElementById('menu')?.classList.remove('d-none');
+                } else {
+                    document.getElementById('drawer')?.classList.add('d-none');
+                    document.getElementById('menu')?.classList.add('d-none');
+                }
         });
     }
 
@@ -166,7 +168,7 @@ export class NavigationComponent implements OnInit {
      * Der Nutzer kann sich ausloggen, bei anonymen Nutzer wird dieser in der Firebase gelöscht
      */
     async logout() {
-        const user = this.authService.auth.currentUser;
+        let user = this.authService.auth.currentUser;
 
         if (user) {
             if (user.isAnonymous) {
