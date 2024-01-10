@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { Firestore, collection, doc, onSnapshot, updateDoc, Timestamp } from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
@@ -7,13 +7,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogEditAnimalComponent } from '../dialog-edit-animal/dialog-edit-animal.component';
 import { DataUpdateService } from '../data-update.service';
 import { Events } from '../models/events.class';
+import { HttpClient } from '@angular/common/http';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
     selector: 'app-animal-detail',
     templateUrl: './animal-detail.component.html',
     styleUrl: './animal-detail.component.scss'
 })
-export class AnimalDetailComponent implements OnInit{
+export class AnimalDetailComponent implements OnInit {
     firestore: Firestore = inject(Firestore);
     user = new User();
     animal = new Animals();
@@ -26,8 +28,10 @@ export class AnimalDetailComponent implements OnInit{
     nextAppointment: string = '';
     animalIds: any[] = [];
     treatments: any[] = [];
-
-    constructor(private route: ActivatedRoute, private router: Router, public dialog: MatDialog, private dataUpdate: DataUpdateService) {
+    imageUrl: string | null = null;
+    @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+    
+    constructor(private cdr: ChangeDetectorRef, private route: ActivatedRoute, private router: Router, public dialog: MatDialog, private dataUpdate: DataUpdateService, private http: HttpClient) {
         this.userID = this.route.snapshot.paramMap.get('id');
         this.animalNameUrl = this.route.snapshot.paramMap.get('animal');
         this.unsubAnimalList = this.getAnimalfromUser();
@@ -177,6 +181,101 @@ export class AnimalDetailComponent implements OnInit{
             data: { animal: this.selectedAnimal }
         });
         dialog.componentInstance.user = new User(this.user.toJson());
+    }
+
+    getImageUrl(filePath: string): string {
+        return filePath ? './assets/' + filePath : '';
+    }
+
+    onFileChange(event: any) {
+        let file = event.target.files[0];
+      
+        if (file) {
+            this.handleImageChange(file);
+        }
+    }
+
+    editImage() {
+        const inputElement = document.getElementById('fileToUpload');
+        if (inputElement) {
+            inputElement.click();
+            inputElement.addEventListener('change', (event) => {
+                const file = (event.target as HTMLInputElement).files?.[0];
+                if (file) {
+                    this.handleImageChange(file);
+                }
+            });
+        }
+    }
+
+    private handleImageChange(file: File) {
+        if (file) {
+            if (this.selectedAnimal.imageUrl) {
+                this.deleteImage();
+            }
+            this.uploadImage(file);
+        }
+    }
+    
+    uploadImage(file: File) {
+        let formData = new FormData();
+        formData.append('fileToUpload', file);
+
+        this.http.post('https://denise.selfcoders.com/simple-crm/image_uploader.php', formData, { responseType: 'text' })
+            .subscribe({
+                next: (response: string) => {
+                    let fileName = response.replace('The file ', '').replace(' has been uploaded.', '').trim();
+                    this.selectedAnimal.imageUrl = 'img/' + fileName;
+                    this.cdr.detectChanges();
+                    this.saveImageUrlToFirestore(this.selectedAnimal.imageUrl);
+                },
+            error: (error) => {
+                console.error('Upload failed', error);
+            }
+            });
+    }
+
+    saveImageUrlToFirestore(imageUrl: string) {
+        let updatedAnimals = this.user.animals.map(animal => {
+          if (animal.id === this.selectedAnimal.id) {
+            let updatedAnimal = new Animals(animal.toJsonAnimals());
+            updatedAnimal.imageUrl = imageUrl;
+            return updatedAnimal.toJsonAnimals();
+          } else {
+            return animal.toJsonAnimals();
+          }
+        });
+      
+        updateDoc(this. getUserID(), { animals: updatedAnimals })
+          .then(() => {
+            console.log('Image URL saved to Firestore successfully');
+          })
+          .catch((error) => {
+            console.error('Error saving image URL to Firestore:', error);
+          });
+    }
+
+    openImageMenu() {
+        this.menuTrigger.openMenu();
+    }
+
+    deleteImage() {
+        if (this.selectedAnimal) {
+            let fileName = this.selectedAnimal.imageUrl.split('/').pop();
+        
+            this.http.post('https://denise.selfcoders.com/simple-crm/image_delete.php', { filename: fileName })
+                .subscribe({
+                    next: () => {
+                        this.selectedAnimal.imageUrl = '';
+                        this.saveImageUrlToFirestore('');
+                    },
+                    error: (error) => {
+                        console.error('Fehler beim Löschen des Bildes vom Server:', error);
+                    }
+                });
+        } else {
+            console.error('Kein ausgewähltes Tier vorhanden.');
+        }
     }
 }
 

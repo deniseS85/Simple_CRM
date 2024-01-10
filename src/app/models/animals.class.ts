@@ -5,6 +5,7 @@ export class Animals {
     gender: string;
     birthDate: number;
     microchipID: number;
+    imageUrl: string;
 
     constructor(obj?: any) {
         this.id = obj && obj.id ? obj.id : '';
@@ -13,6 +14,7 @@ export class Animals {
         this.gender = obj && obj.gender ? obj.gender : '';
         this.birthDate = obj && obj.birthDate ? obj.birthDate : 0;
         this.microchipID = obj && obj.microchipID ? obj.microchipID : "";
+        this.imageUrl = obj && obj.imageUrl ? obj.imageUrl : "";
     }
 
     public toJsonAnimals() {
@@ -22,7 +24,8 @@ export class Animals {
             species: this.species,
             gender: this.gender,
             birthDate: this.birthDate,
-            microchipID: this.microchipID
+            microchipID: this.microchipID,
+            imageUrl: this.imageUrl
         };
     }
 
@@ -33,7 +36,8 @@ export class Animals {
             species: obj?.species || "",
             gender: obj?.gender || "",
             birthDate: obj?.birthDate || 0,
-            microchipID: obj?.microchipID || ""
+            microchipID: obj?.microchipID || "",
+            imageUrl: obj?.imageUrl || ""
         });
     } 
 

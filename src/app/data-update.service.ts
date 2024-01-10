@@ -87,6 +87,7 @@ export class DataUpdateService {
             this.allAnimalIdsSubject.next(animalIdsArray);
         });
     }
+    
 }
 
    

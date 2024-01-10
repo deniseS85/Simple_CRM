@@ -42,6 +42,7 @@ import { DialogAddEventComponent } from './dialog-add-event/dialog-add-event.com
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { DialogEditEventComponent } from './dialog-edit-event/dialog-edit-event.component';
 import { ImprintComponent } from './imprint/imprint.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -89,6 +90,7 @@ import { ImprintComponent } from './imprint/imprint.component';
     MatRadioModule,
     DragDropModule,
     MatSnackBarModule,
+    HttpClientModule,
 
     provideFirebaseApp(() => initializeApp({"projectId":"simple-crm-81f85","appId":"1:42929532343:web:114f439e3a4c9d10d00c32","storageBucket":"simple-crm-81f85.appspot.com","apiKey":"AIzaSyAmh3k8XdBQM1L7PkZCNwV12ToCmptF0rk","authDomain":"simple-crm-81f85.firebaseapp.com","messagingSenderId":"42929532343"})),
     provideAuth(() => getAuth()),
