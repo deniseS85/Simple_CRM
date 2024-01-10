@@ -184,7 +184,7 @@ export class AnimalDetailComponent implements OnInit {
     }
 
     getImageUrl(filePath: string): string {
-        return filePath ? './assets/' + filePath : '';
+        return filePath ? 'https://denise.selfcoders.com/simple-crm/uploads/' + filePath : '';
     }
 
     onFileChange(event: any) {
@@ -220,18 +220,25 @@ export class AnimalDetailComponent implements OnInit {
     uploadImage(file: File) {
         let formData = new FormData();
         formData.append('fileToUpload', file);
+        formData.append('AnimalID', this.selectedAnimal.id);
 
         this.http.post('https://denise.selfcoders.com/simple-crm/image_uploader.php', formData, { responseType: 'text' })
             .subscribe({
                 next: (response: string) => {
-                    let fileName = response.replace('The file ', '').replace(' has been uploaded.', '').trim();
-                    this.selectedAnimal.imageUrl = 'img/' + fileName;
-                    this.cdr.detectChanges();
-                    this.saveImageUrlToFirestore(this.selectedAnimal.imageUrl);
+                    let fileName = response;
+                    if (response.search('Error:') > -1) {
+                        alert(fileName);
+                    } else {
+                        this.selectedAnimal.imageUrl = fileName;
+                        this.cdr.detectChanges();
+                        this.saveImageUrlToFirestore(this.selectedAnimal.imageUrl);
+                    }
                 },
-            error: (error) => {
-                console.error('Upload failed', error);
-            }
+                error: (error) => {
+                    console.error('Upload failed', error);
+                    this.selectedAnimal.imageUrl = '';
+                    this.cdr.detectChanges();
+                }
             });
     }
 
@@ -262,19 +269,21 @@ export class AnimalDetailComponent implements OnInit {
     deleteImage() {
         if (this.selectedAnimal) {
             let fileName = this.selectedAnimal.imageUrl.split('/').pop();
-    
-            // Löschen vom Server
-            this.http.post('https://denise.selfcoders.com/simple-crm/image_delete.php', { filename: fileName })
-                .subscribe({
-                    error: (error) => {
-                        console.error('Fehler beim Löschen des Bildes vom Server:', error);
+
+            this.http.post('https://denise.selfcoders.com/simple-crm/image_delete.php', { filename: fileName }, { responseType: 'text' })
+            .subscribe({
+                next: (response: string) => {
+                    if (response.search('Error:') > -1) {
+                        alert(response);
+                    } else {
+                        this.selectedAnimal.imageUrl = '';
+                        this.saveImageUrlToFirestore('');
                     }
-                });
-    
-            // Löschen von Firebase
-            this.saveImageUrlToFirestore('');
-        } else {
-            console.error('Kein ausgewähltes Tier vorhanden.');
+                },
+                error: (error) => {
+                    console.error('Upload failed', error);
+                }
+            });
         }
     }
     
