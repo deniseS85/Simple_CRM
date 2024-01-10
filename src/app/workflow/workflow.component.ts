@@ -37,21 +37,21 @@ export class WorkflowComponent implements OnInit{
   popupOpenMap: { [itemId: string]: boolean } = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
   
-  constructor(public dataUpdate: DataUpdateService) {
-      this.unsubUser = this.subUsersList();
-      this.dataUpdate.getAllEvents();
-      window.addEventListener('resize', () => {
-            this.checkScreenWidth();
-      });
-      this.checkScreenWidth();
-  }
+    constructor(public dataUpdate: DataUpdateService) {
+        this.unsubUser = this.subUsersList();
+        this.dataUpdate.getAllEvents();
+        window.addEventListener('resize', () => {
+                this.checkScreenWidth();
+        });
+        this.checkScreenWidth();
+    }
 
-  ngOnInit(): void {
-    this.loadTodayEvents().then(() => {
-      this.dataUpdate.getAllEvents(); // Verschieben Sie diesen Aufruf hierhin, nachdem die heutigen Termine geladen wurden.
-      this.initializeWorkflow();
-    });
-  }
+    ngOnInit(): void {
+        this.loadTodayEvents().then(() => {
+        this.dataUpdate.getAllEvents();
+        this.initializeWorkflow();
+        });
+    }
 
     checkScreenWidth() {
         this.isMobile = window.innerWidth <= 700;
@@ -91,11 +91,11 @@ export class WorkflowComponent implements OnInit{
     }
 
     initializeWorkflow(): void {
+        this.deleteOldWorkflowItems();
         this.loadWorkflowItems();
         this.innerJoin();
         this.setNextDayStartInterval();
-        this.deleteOldWorkflowItems();
-      }
+    }
 
     async addWorkflowItemsToDatabase() {
         for (let event of this.todayEvents) {
