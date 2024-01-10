@@ -262,21 +262,22 @@ export class AnimalDetailComponent implements OnInit {
     deleteImage() {
         if (this.selectedAnimal) {
             let fileName = this.selectedAnimal.imageUrl.split('/').pop();
-        
+    
+            // Löschen vom Server
             this.http.post('https://denise.selfcoders.com/simple-crm/image_delete.php', { filename: fileName })
                 .subscribe({
-                    next: () => {
-                        this.selectedAnimal.imageUrl = '';
-                        this.saveImageUrlToFirestore('');
-                    },
                     error: (error) => {
                         console.error('Fehler beim Löschen des Bildes vom Server:', error);
                     }
                 });
+    
+            // Löschen von Firebase
+            this.saveImageUrlToFirestore('');
         } else {
             console.error('Kein ausgewähltes Tier vorhanden.');
         }
     }
+    
 }
 
 

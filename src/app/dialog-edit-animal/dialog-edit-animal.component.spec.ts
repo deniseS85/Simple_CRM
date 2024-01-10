@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DialogEditAnimalComponent } from './dialog-edit-animal.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 describe('DialogEditAnimalComponent', () => {
   let component: DialogEditAnimalComponent;
@@ -8,7 +9,8 @@ describe('DialogEditAnimalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DialogEditAnimalComponent]
+      declarations: [DialogEditAnimalComponent],
+      providers: [MatDialogModule]
     })
     .compileComponents();
     
