@@ -14,7 +14,6 @@
                     <input type="file" name="fileToUpload" id="fileToUpload" (change)="onFileChange($event)" style="display: none;">
                     <img *ngIf="selectedAnimal?.imageUrl" [src]="getImageUrl(selectedAnimal?.imageUrl)" alt="Uploaded Image" class="uploaded-image" [matMenuTriggerFor]="imageMenu">
                     <mat-menu #imageMenu="matMenu">
-                        <button mat-menu-item (click)="editImage()">Edit Image</button>
                         <button mat-menu-item (click)="deleteImage()">Delete Image</button>
                     </mat-menu>
                 </form>

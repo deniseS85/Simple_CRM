@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Firestore, collection, doc, onSnapshot, updateDoc, Timestamp } from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
@@ -189,40 +189,13 @@ export class AnimalDetailComponent implements OnInit {
 
     onFileChange(event: any) {
         let file = event.target.files[0];
-      
-        if (file) {
-            this.handleImageChange(file);
-        }
-    }
 
-    editImage() {
-        const inputElement = document.getElementById('fileToUpload');
-        if (inputElement) {
-            inputElement.click();
-            inputElement.addEventListener('change', (event) => {
-                const file = (event.target as HTMLInputElement).files?.[0];
-                if (file) {
-                    this.handleImageChange(file);
-                }
-            });
-        }
-    }
-
-    private handleImageChange(file: File) {
         if (file) {
-            if (this.selectedAnimal.imageUrl) {
-                this.deleteImage();
-            }
-            this.uploadImage(file);
-        }
-    }
+            let formData = new FormData();
+            formData.append('fileToUpload', file);
+            formData.append('AnimalID', this.selectedAnimal.id);
     
-    uploadImage(file: File) {
-        let formData = new FormData();
-        formData.append('fileToUpload', file);
-        formData.append('AnimalID', this.selectedAnimal.id);
-
-        this.http.post('https://denise.selfcoders.com/simple-crm/image_uploader.php', formData, { responseType: 'text' })
+            this.http.post('https://denise.selfcoders.com/simple-crm/image_uploader.php', formData, { responseType: 'text' })
             .subscribe({
                 next: (response: string) => {
                     let fileName = response;
@@ -237,10 +210,11 @@ export class AnimalDetailComponent implements OnInit {
                 error: (error) => {
                     console.error('Upload failed', error);
                     this.selectedAnimal.imageUrl = '';
-                    this.cdr.detectChanges();
                 }
             });
+        }
     }
+
 
     saveImageUrlToFirestore(imageUrl: string) {
         let updatedAnimals = this.user.animals.map(animal => {

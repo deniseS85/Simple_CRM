@@ -129,6 +129,10 @@
             tr {
                 text-align: center;
             }
+            td {
+                height: clamp(1.5625rem, 1.3393rem + 1.1161vw, 3.125rem);
+                width: 40px;
+            }
             .single-day:hover:not(.saturday,.sunday) {
                 color: rgb(5, 251, 251);
                 cursor:pointer;
@@ -138,7 +142,7 @@
             background-color: #00bcd4;
             color: white;
             border-radius: 50%;
-            padding: 5px 10px;
+            padding: clamp(0.3125rem, 0.2679rem + 0.2232vw, 0.625rem);
             border: 1px solid white;
         }
         .saturday, .sunday {
