@@ -33,4 +33,20 @@ background-color: #f9f6c3;
 .operation {
 background-color: #DBDBDB;
 }
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 0; 
+}
+  
+::-webkit-scrollbar-track {
+border-radius: 10px;
+}
+   
+::-webkit-scrollbar-thumb {
+    background: rgb(5, 251, 251); 
+    border-radius: 10px;
+}
+
+  
   

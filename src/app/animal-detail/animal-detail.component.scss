@@ -6,7 +6,8 @@
     }
     mat-card {
         background-color: rgb(3, 33, 56);
-        box-shadow: 0 0 10px rgb(1,103,175);
+        border-radius: 10px;
+        border:  2px solid rgb(1,103,175);
         width: 100%;
     }
     .animal-profile-container {
@@ -75,10 +76,6 @@
                     background-color: rgb(1,103,175);
                 }
             }
-            /* .edit-upload-image {
-                position: absolute;
-                right: 36%;
-            } */
         }
         .left-right {
             height: 140px;
@@ -174,7 +171,8 @@
     gap: 30px;
     .animal-subinfo-container {
         background-color: rgb(3, 33, 56);
-        box-shadow: 0 0 10px rgb(1,103,175);
+        border-radius: 10px;
+        border:  2px solid rgb(1,103,175);
         width: 100%;
         padding-bottom: 16px;
         @media only screen and (max-width: 700px) {

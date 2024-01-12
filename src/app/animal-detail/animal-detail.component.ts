@@ -229,7 +229,6 @@ export class AnimalDetailComponent implements OnInit {
       
         updateDoc(this. getUserID(), { animals: updatedAnimals })
           .then(() => {
-            console.log('Image URL saved to Firestore successfully');
           })
           .catch((error) => {
             console.error('Error saving image URL to Firestore:', error);

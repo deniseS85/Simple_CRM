@@ -1,42 +1,19 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, OnDestroy, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Animals } from '../models/animals.class';
 import { addDoc, collection, doc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
 import { Firestore } from '@angular/fire/firestore';
-import { Events } from '../models/events.class';
+import { Events, TreatmentsSelection } from '../models/events.class';
 import { MatSnackBar,} from '@angular/material/snack-bar';
 import { DataUpdateService } from '../data-update.service';
 
-interface TreatmentsSelection {
-    name: string;
-    categoryColor: string;
-    duration: number;
-}
 
 @Component({
   selector: 'app-dialog-add-event',
   templateUrl: './dialog-add-event.component.html',
   styleUrls: ['./dialog-add-event.component.scss']
 })
-export class DialogAddEventComponent {
-    treatments: TreatmentsSelection[] = [ 
-        { name: 'Medical Check-Up ', categoryColor: '#c9f7f9', duration: 2 },
-        { name: 'Dental Care', categoryColor: '#fbd1d1', duration: 1 },
-        { name: 'Vaccination', categoryColor: '#eec3fd', duration: 1 },
-        { name: 'Castration', categoryColor: '#d4f9c6', duration: 2 },
-        { name: 'Laboratory Test', categoryColor: '#f9f6c3', duration: 1 },
-        { name: 'Operation', categoryColor: '#DBDBDB', duration: 3 },
-    ];
-    eventData: { day: Date, hour: string, name: string, treatmentName: string, duration: number, categoryColor: string, animalID:string, id:string } = {
-      day: new Date(),
-      hour: '',
-      name: '',
-      treatmentName: '',
-      duration: 0,
-      categoryColor: '',
-      animalID: '',
-      id: ''
-    };
+export class DialogAddEventComponent implements OnDestroy {
     loading = false;
     hideRequired = 'true';
     hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
@@ -46,19 +23,24 @@ export class DialogAddEventComponent {
     event = new Events();
     selectedTreatment!:any;
     existingEventsArray: any[] = [];
+    treatmentsData: TreatmentsSelection[] = Events.treatments;
 
 
     constructor(@Inject(MAT_DIALOG_DATA) public data: { day: Date, hour: string, row: number, column: number  }, private dialogRef: MatDialogRef<DialogAddEventComponent>, private snackBar: MatSnackBar, public dataUpdate: DataUpdateService) {
-        this.eventData.day = data.day || new Date();
-        this.eventData.hour = data.hour;
+        this.event.day = data.day || new Date();
+        this.event.hour = data.hour;
         this.unsubList = this.subAnimalList();
     }
 
+    ngOnDestroy() {
+        this.unsubList(); 
+    }
+
     async saveEvent() {
-        let animalID = this.findAnimalIDByName(this.eventData.name);
+        let animalID = this.findAnimalIDByName(this.event.name);
     
         if (this.selectedTreatment) {
-            this.prepareEventData(this.selectedTreatment);
+            this.prepareEventData(this.selectedTreatment, animalID);
 
             if (this.isEventAfterClosingTime()) {
                 this.messageEventAfterClosingTime();
@@ -69,20 +51,20 @@ export class DialogAddEventComponent {
                 return;
             }
             if (animalID) {
-                let eventData = this.createEventData(animalID);
-                let docRef = await this.saveEventData(eventData);
-                await this.updateDocument(docRef);
-                this.saveProcess(eventData, docRef);               
+                let docRef = await addDoc(this.getEventRef(), this.event.toEventJson());
+                await updateDoc(doc(this.getEventRef(), docRef.id), { id: docRef.id });
+                this.dialogRef.close({ ...this.event.toEventJson(), id: docRef.id });
+                this.loading = false;      
             } 
         }
+       
     }
 
-    prepareEventData(selectedTreatment:any) {
-        let { name, categoryColor, duration } = selectedTreatment;
-    
-        this.eventData.treatmentName = name;
-        this.eventData.categoryColor = categoryColor;
-        this.eventData.duration = duration;
+    prepareEventData(selectedTreatment: TreatmentsSelection, animalID: any) {
+        this.event.animalID = animalID;
+        this.event.treatmentName = selectedTreatment.name;
+        this.event.categoryColor = selectedTreatment.categoryColor;
+        this.event.duration = selectedTreatment.duration;
         this.loading = true;
     }
     
@@ -100,31 +82,6 @@ export class DialogAddEventComponent {
         this.loading = false;
     }
 
-    createEventData(animalID:string) {
-        return {
-            day: this.eventData.day,
-            hour: this.eventData.hour,
-            name: this.eventData.name,
-            treatmentName: this.eventData.treatmentName,
-            duration: this.eventData.duration,
-            categoryColor: this.eventData.categoryColor,
-            animalID: animalID,
-        };
-    }
-
-    async saveEventData(eventData:any) {
-        let eventsObject = new Events(eventData);
-        return await addDoc(this.getEventRef(), eventsObject.toEventJson());
-    }
-
-    async updateDocument(docRef:any) {
-        await updateDoc(doc(this.getEventRef(), docRef.id), { id: docRef.id });
-    }
-
-    saveProcess(eventData:any, docRef:any) {
-        this.dialogRef.close({ ...eventData, id: docRef.id });
-        this.loading = false;
-    }
 
     findAnimalIDByName(animalName: string): string | undefined {
         let foundAnimal = this.animalList.find((animal: Animals) => animal.name === animalName);
@@ -132,7 +89,7 @@ export class DialogAddEventComponent {
     }
 
     isEventAfterClosingTime(): boolean {
-        let endHour = this.calculateEndTime(this.eventData.hour, this.eventData.duration);
+        let endHour = this.calculateEndTime(this.event.hour, this.event.duration);
         return endHour > '19:00';
     }
 
@@ -151,21 +108,22 @@ export class DialogAddEventComponent {
     }
 
     async isTreatmentDurationValid(): Promise<boolean> {
-        await this.getExistingEventsForDay(this.eventData.day);
-
-        let newEndHour = this.calculateEndTime(this.eventData.hour, this.selectedTreatment.duration);
-    
+        await this.getExistingEventsForDay(this.event.day);
+      
+        let newEndHour = this.calculateEndTime(this.event.hour, this.selectedTreatment.duration);
+      
         for (let i = 0; i < this.existingEventsArray.length; i++) {
-            let existingEvent = this.existingEventsArray[i];
-            let existingStartHour = existingEvent.hour;
-            let existingEndHour = this.calculateEndTime(existingEvent.hour, existingEvent.duration);
-    
-            if (newEndHour > existingStartHour && newEndHour <= existingEndHour) {
-                return false;
-            }
+          let existingEvent = this.existingEventsArray[i];
+          let existingStartHour = existingEvent.hour;
+          let existingEndHour = this.calculateEndTime(existingEvent.hour, existingEvent.duration);
+      
+          if (newEndHour > existingStartHour && newEndHour <= existingEndHour) {
+            return false;
+          }
         }
         return true;
-    }
+      }
+      
 
     async getExistingEventsForDay(day: Date): Promise<any[]> {
         let startOfDay = new Date(day);
@@ -176,7 +134,7 @@ export class DialogAddEventComponent {
         let querySnapshot = await getDocs(query(collection(this.firestore, 'events'),
             where('day', '>=', startOfDay),
             where('day', '<=', endOfDay),
-            where('day', '<', this.eventData.day) 
+            where('day', '<', this.event.day)
         ));
     
         this.existingEventsArray = [];
@@ -202,7 +160,7 @@ export class DialogAddEventComponent {
     subAnimalList() {
         return onSnapshot(this.getUserRef(), (usersSnapshot) => {
             this.animalList = [];
-      
+
             usersSnapshot.forEach((userDoc) => {
                 let userData = userDoc.data();
                 if (userData && userData["animals"]) {
@@ -213,10 +171,6 @@ export class DialogAddEventComponent {
                 }
             });
         });
-    }
-
-    ngOnDestroy() {
-        this.unsubList(); 
     }
 
     getUserRef() {

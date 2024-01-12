@@ -36,6 +36,7 @@ export class WorkflowComponent implements OnInit{
   selectedItem: any;
   popupOpenMap: { [itemId: string]: boolean } = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
+
   
     constructor(public dataUpdate: DataUpdateService) {
         this.unsubUser = this.subUsersList();
@@ -48,8 +49,8 @@ export class WorkflowComponent implements OnInit{
 
     ngOnInit(): void {
         this.loadTodayEvents().then(() => {
-        this.dataUpdate.getAllEvents();
-        this.initializeWorkflow();
+            this.dataUpdate.getAllEvents();
+            this.initializeWorkflow();
         });
     }
 
@@ -152,8 +153,7 @@ export class WorkflowComponent implements OnInit{
         let  workflowItems: WorkflowItem[] = this.mapQuerySnapshotToWorkflowItems(querySnapshot);
         this.workflow = workflowItems;
         this.sortTasksByTime(this.workflow); 
-        this. updateFilterArrays()
-        
+        this.updateFilterArrays();
     }
 
     private mapQuerySnapshotToWorkflowItems(querySnapshot: QuerySnapshot<DocumentData>): WorkflowItem[] {

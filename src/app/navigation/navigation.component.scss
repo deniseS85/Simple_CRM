@@ -5,12 +5,12 @@
         width: 300px;
         background-color: rgb(3, 33, 56);
         border-right: none;
-        box-shadow: 0 0 10px rgb(1,103,175);
+        border-right:  2px solid rgb(1,103,175);
         @media only screen and (max-width: 560px) {
             width: 100%;
         }
         .logo-container {
-            box-shadow: 0 0 10px rgb(1,103,175);
+            border-bottom:  2px solid rgb(1,103,175);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -78,7 +78,7 @@
     mat-toolbar {
         height: clamp(3.75rem, 3.2679rem + 2.4107vw, 7.125rem);
         background-color: rgb(3, 33, 56);
-        box-shadow: 0 0 10px rgb(1, 103, 175);
+        border-bottom:  2px solid rgb(1,103,175);
         display: flex;
         align-items: center;
         justify-content: space-between;

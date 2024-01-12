@@ -1,11 +1,11 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { DialogAddEventComponent } from '../dialog-add-event/dialog-add-event.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DataUpdateService } from '../data-update.service';
 import { Events } from '../models/events.class';
 import { Subject, takeUntil } from 'rxjs';
-import { DialogEditEventComponent } from '../dialog-edit-event/dialog-edit-event.component';
 import { ActivatedRoute } from '@angular/router';
+import { Firestore, collection, deleteDoc, doc, getDocs, query, where } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-calendar',
@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 
 export class CalendarComponent implements OnInit, OnDestroy  {
+    firestore: Firestore = inject(Firestore);
     currentWeek: { start: Date, end: Date } = { start: new Date(), end: new Date() };
     daysOfWeek: Date[] = [];
     hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
@@ -24,6 +25,9 @@ export class CalendarComponent implements OnInit, OnDestroy  {
     @ViewChild('calendarContainer', { read: ElementRef }) calendarContainer!: ElementRef;
     selectedDate: Date | null = null;
     isMobileView: boolean = false;
+    isConfirmationVisible = false;
+    loading = false;
+    selectedEvent: Events | null = null;  
 
     constructor(public dialog: MatDialog, public dataUpdate: DataUpdateService, private route: ActivatedRoute) {
         this.dataUpdate.getAllEvents();
@@ -165,8 +169,12 @@ export class CalendarComponent implements OnInit, OnDestroy  {
         let isCellOccupied = this.isCellOccupied(day, hour);
 
         if (isCellOccupied) {
-            this.editEvent(day, hour);
-            return;
+            let visibleEvents = this.getVisibleEvents(day, hour);
+        if (visibleEvents.length > 0) {
+            this.selectedEvent = visibleEvents[0];
+            this.openDeleteConfirmationDialog();
+        }
+        return;
         }
         
         this.dialog.open(DialogAddEventComponent, {
@@ -182,29 +190,6 @@ export class CalendarComponent implements OnInit, OnDestroy  {
             }
         });
     }
-
-    editEvent(day:Date, hour: string) {
-        let visibleEvents = this.getVisibleEvents(day, hour);
-
-        if (visibleEvents.length > 0) {
-            let firstEvent = visibleEvents[0];
-
-            const dialog = this.dialog.open(DialogEditEventComponent, {
-                data: {
-                    id: firstEvent.id,
-                    day: day,
-                    hour: hour,
-                    name: firstEvent.name,
-                    treatmentName: firstEvent.treatmentName
-                }
-            });
-            dialog.afterClosed().subscribe(result => {
-                this.dataUpdate.getAllEvents();
-                this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true));
-            });
-        }
-    } 
-
 
     isDurationOneHour(event:any, row:number, column:number) {
         if (event.length > 0) {
@@ -345,5 +330,46 @@ export class CalendarComponent implements OnInit, OnDestroy  {
         });
     
         return rowspan;
+    }
+
+    openDeleteConfirmationDialog() {
+        this.isConfirmationVisible = true;
+    }
+
+    closeDeleteConfirmationDialog(): void {
+        this.isConfirmationVisible = false;
+    }
+
+    doNotClose(event: any): void {
+        event.stopPropagation();
+    }
+
+    deleteEvent(): void {
+        if (this.selectedEvent) {
+            this.loading = true;
+            deleteDoc(this.getEventID(this.selectedEvent.id)).then(async () => {
+                let querySnapshot = await getDocs(query(this.getWorkflowRef(), where('id', '==', this.selectedEvent?.id)));
+    
+                if (querySnapshot.size > 0) {
+                    let existingWorkflowItem = querySnapshot.docs[0];
+                    await deleteDoc(existingWorkflowItem.ref);
+                }
+                this.loading = false;
+                this.selectedEvent = null;
+                this.calendarArray = new Array(9).fill(true).map(() => new Array(5).fill(true));
+            }).catch((error) => {
+                console.error('Error deleting event from Firebase: ', error);
+                this.loading = false;
+            });
+            this.isConfirmationVisible = false;
+        }
+    }
+
+    getEventID(eventId: string) {
+        return doc(this.firestore, 'events', eventId);
+    }
+
+    getWorkflowRef() {
+        return collection(this.firestore, 'workflow');
     }
 }
