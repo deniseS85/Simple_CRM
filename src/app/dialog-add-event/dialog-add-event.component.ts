@@ -1,7 +1,7 @@
-import { Component, Inject, OnDestroy, inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Animals } from '../models/animals.class';
-import { addDoc, collection, doc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
+import { QuerySnapshot, addDoc, collection, doc, getDocs, onSnapshot, query, updateDoc, where } from '@angular/fire/firestore';
 import { Firestore } from '@angular/fire/firestore';
 import { Events, TreatmentsSelection } from '../models/events.class';
 import { MatSnackBar,} from '@angular/material/snack-bar';
@@ -13,13 +13,13 @@ import { DataUpdateService } from '../data-update.service';
   templateUrl: './dialog-add-event.component.html',
   styleUrls: ['./dialog-add-event.component.scss']
 })
-export class DialogAddEventComponent implements OnDestroy {
+export class DialogAddEventComponent implements OnInit{
     loading = false;
     hideRequired = 'true';
     hours: string[] = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
     firestore: Firestore = inject(Firestore);
     animalList:any = [];
-    unsubList;
+    unsubList:any;
     event = new Events();
     selectedTreatment!:any;
     existingEventsArray: any[] = [];
@@ -29,14 +29,14 @@ export class DialogAddEventComponent implements OnDestroy {
     constructor(@Inject(MAT_DIALOG_DATA) public data: { day: Date, hour: string, row: number, column: number  }, private dialogRef: MatDialogRef<DialogAddEventComponent>, private snackBar: MatSnackBar, public dataUpdate: DataUpdateService) {
         this.event.day = data.day || new Date();
         this.event.hour = data.hour;
-        this.unsubList = this.subAnimalList();
     }
 
-    ngOnDestroy() {
-        this.unsubList(); 
+    async ngOnInit() {
+        await this.subAnimalListAndSubscribe();
     }
 
     async saveEvent() {
+        const startTime = performance.now(); 
         let animalID = this.findAnimalIDByName(this.event.name);
     
         if (this.selectedTreatment) {
@@ -54,6 +54,10 @@ export class DialogAddEventComponent implements OnDestroy {
                 let docRef = await addDoc(this.getEventRef(), this.event.toEventJson());
                 await updateDoc(doc(this.getEventRef(), docRef.id), { id: docRef.id });
                 this.dialogRef.close({ ...this.event.toEventJson(), id: docRef.id });
+                const endTime = performance.now(); // Endzeit messen
+                const duration = endTime - startTime; // Dauer berechnen
+
+                console.log(`Terminerstellung dauerte ${duration} Millisekunden.`);
                 this.loading = false;      
             } 
         }
@@ -157,22 +161,29 @@ export class DialogAddEventComponent implements OnDestroy {
         return `${formattedDay}.${formattedMonth}.${year}`;
     }
 
-    subAnimalList() {
-        return onSnapshot(this.getUserRef(), (usersSnapshot) => {
-            this.animalList = [];
-
-            usersSnapshot.forEach((userDoc) => {
-                let userData = userDoc.data();
-                if (userData && userData["animals"]) {
-                  let userAnimals = userData["animals"].map((animalData: any) => {
-                      return new Animals().setAnimalObject(animalData, animalData.id);
-                  });
-                  this.animalList.push(...userAnimals);
-                }
-            });
+    async subAnimalListAndSubscribe() {
+        let updateAnimalList = (snapshot: QuerySnapshot) => {
+          this.animalList = [];
+    
+          snapshot.forEach((userDoc) => {
+            let userData = userDoc.data();
+            if (userData && userData["animals"]) {
+              let userAnimals = userData["animals"].map((animalData: any) => {
+                return new Animals().setAnimalObject(animalData, animalData.id);
+              });
+              this.animalList.push(...userAnimals);
+            }
+          });
+        };
+    
+        let usersSnapshot = await getDocs(this.getUserRef());
+        updateAnimalList(usersSnapshot);
+    
+        return onSnapshot(this.getUserRef(), (updatedUsersSnapshot) => {
+            updateAnimalList(updatedUsersSnapshot);
         });
     }
-
+    
     getUserRef() {
         return collection(this.firestore, 'users');
     }
