@@ -245,4 +245,8 @@
     display: none !important;
 }
 
+::ng-deep .mat-mdc-menu-content {
+    background-color: rgb(12, 54, 89);
+}
+
  

@@ -156,3 +156,7 @@
         outline:none;
     }
 }
+
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface {
+    --mdc-plain-tooltip-container-color: rgb(12, 54, 89) !important;
+}

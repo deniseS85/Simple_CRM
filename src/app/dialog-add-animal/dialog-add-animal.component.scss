@@ -91,3 +91,12 @@ input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+::ng-deep .mat-primary.mdc-menu-surface {
+    background-color: rgb(3, 33, 56);
+}
+
+
+::ng-deep .mat-calendar {
+    background-color: rgb(3, 33, 56);
+}

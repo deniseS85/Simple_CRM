@@ -57,3 +57,7 @@
         font-size: clamp(1rem, 0.9643rem + 0.1786vw, 1.25rem);
     }
 }
+
+::ng-deep .mat-calendar {
+    background-color: rgb(3, 33, 56);
+}
