@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { User } from '../models/user.class';
 import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 import { collection, addDoc } from "firebase/firestore"; 
 import { MatDialogRef } from '@angular/material/dialog';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-dialog-add-user',
@@ -16,6 +17,7 @@ export class DialogAddUserComponent {
   loading = false;
   firestore: Firestore = inject(Firestore);
   hideRequired ="true";
+  @ViewChild('addUserForm') addUserForm!: NgForm;
 
   constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>) {}
   

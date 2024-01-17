@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { Firestore, collection, doc, onSnapshot, updateDoc, Timestamp } from '@angular/fire/firestore';
+import { Firestore, collection, doc, onSnapshot, updateDoc, Timestamp, Unsubscribe } from '@angular/fire/firestore';
 import { Animals } from '../models/animals.class';
 import { User } from '../models/user.class';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -30,6 +30,7 @@ export class AnimalDetailComponent implements OnInit {
     treatments: any[] = [];
     imageUrl: string | null = null;
     @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+    private unsubscribeSnapshot: Unsubscribe | undefined;
     
     constructor(private cdr: ChangeDetectorRef, private route: ActivatedRoute, private router: Router, public dialog: MatDialog, private dataUpdate: DataUpdateService, private http: HttpClient) {
         this.userID = this.route.snapshot.paramMap.get('id');
@@ -43,7 +44,9 @@ export class AnimalDetailComponent implements OnInit {
     }
 
     ngOnDestroy(){
-        this.unsubAnimalList();
+        if (this.unsubscribeSnapshot) {
+            this.unsubscribeSnapshot();
+          }
     }
 
     loadSelectedAnimal(): void {
@@ -68,12 +71,22 @@ export class AnimalDetailComponent implements OnInit {
         return doc(collection(this.firestore, 'users'), this.userID);
     }
 
-    getAnimalfromUser() {
+   /*  getAnimalfromUser() {
         return onSnapshot(this.getUserID(), (element) => {
             this.user = new User(element.data());
             this.animalList = this.user.animals;
             this.getSelectedAnimalFromUser();
         });
+    } */
+
+    getAnimalfromUser() {
+        if (this.userID) {
+            this.unsubscribeSnapshot = onSnapshot(this.getUserID(), (element) => {
+                this.user = new User(element.data());
+                this.animalList = this.user.animals;
+                this.getSelectedAnimalFromUser();
+            })
+        }
     }
 
     getSelectedAnimalFromUser() {
@@ -214,7 +227,6 @@ export class AnimalDetailComponent implements OnInit {
             });
         }
     }
-
 
     saveImageUrlToFirestore(imageUrl: string) {
         let updatedAnimals = this.user.animals.map(animal => {

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../models/user.class';
-import { Firestore } from '@angular/fire/firestore';
+import { Firestore, Unsubscribe } from '@angular/fire/firestore';
 import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditUserComponent } from '../dialog-edit-user/dialog-edit-user.component';
@@ -22,6 +22,7 @@ export class UserDetailComponent {
     animal = new Animals();
     userID: any;
     userList;
+    private unsubscribeSnapshot: Unsubscribe | undefined;
 
     constructor(private router: Router, private route: ActivatedRoute, public dialog: MatDialog) {
         this.userID = this.route.snapshot.paramMap.get('id');
@@ -29,20 +30,24 @@ export class UserDetailComponent {
     }
  
     ngOnDestroy(){
-        this.userList();
+        if (this.unsubscribeSnapshot) {
+            this.unsubscribeSnapshot();
+          }
     }
 
     getUserID() {
         return doc(collection(this.firestore, 'users'), this.userID);
     }
 
-    getUserfromFirebase() {
-        return onSnapshot(this.getUserID(), (element) => {
+    getUserfromFirebase(): void {
+        if (this.userID) {
+            this.unsubscribeSnapshot = onSnapshot(this.getUserID(), (element) => {
             this.user = new User(element.data());
             this.user.id = this.userID;
-        });
+          });
+        }
     }
-    
+
     async deleteUser() {
         await deleteDoc(this.getUserID()).catch(
             (err) => { console.error(err); }
@@ -56,7 +61,6 @@ export class UserDetailComponent {
 
     editUser() { 
         const dialog = this.dialog.open(DialogEditUserComponent);
-        /* Kopie vom Objekt erstellen, damit es nicht gleich überschrieben wird, sondern erst beim speichern */
         dialog.componentInstance.user = new User(this.user.toJson()); 
     }
 
